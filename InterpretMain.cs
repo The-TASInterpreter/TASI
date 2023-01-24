@@ -35,6 +35,7 @@
                 funcArgs = new string[0];
             List<List<Command>> funcPartsCommand = new List<List<Command>>(funcParts.Length);
             List<Command> currentArg = new List<Command>();
+            List<VarDef> methodInput;
             foreach (string funcArg in funcArgs)
             {
                 foreach (Command funcPartCommand in StringProcess.ConvertLineToCommand(funcArg))
@@ -148,5 +149,29 @@
             return result;
         }
 
+        public static Method FindMethodUsingMethodPath(string methodPath)
+        {
+            Method currentmethod;
+            foreach (Method method in Global.Namespaces[].namespaceMethods)
+            {
+                
+                currentmethod = method;
+                while (true)
+                {
+                    if (method.methodLocation == methodPath)
+                        return method;
+                    if (method.subMethods != 0)
+                }
+            }
+        }
+        public static Method SearchAllSubmethodsForPath(string methodPath, List<Method> searchMethods)
+        {
+            foreach (Method method in searchMethods)
+            {
+                if (method.methodLocation == searchMethods)
+                        return method;
+                SearchAllSubmethodsForPath(methodPath, method.subMethods)
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿// E.U.0001: Still in string mode even at end of line (Try to add a "\"")
+﻿//THIS INTERPRETER IS IN A VERY EARLY STATE!
+// E.U.0001: Still in string mode even at end of line (Try to add a "\"")
 // E.U.0002: Still in method mode even at end of line (Try to add a "]")
 // E.U.0003: Still in NumCalculation mode even at end of line (Try to add a ")")
 // E.U.0004: Invalid Command.CommandType at method Statement part 2
@@ -26,6 +27,7 @@ namespace Text_adventure_Script_Interpreter
             
             try
             {
+                Global.InitInternalNamespaces();
                 interpretInitLog.path = "C:\\Users\\ewolf\\AppData\\Roaming\\text_adventure_launcher\\temp\\HarryPotterComicSimVer1.6\\HarryPotterComicSim\\interpretInitLog.txt";
                 interpretInitLog.loggerEnabled = true;
                 Console.WriteLine(StringProcess.GetConcatInside('[', ']', "[Console.Writeline [Random.Int.Between 1, 10]]"));

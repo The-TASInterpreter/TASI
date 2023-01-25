@@ -1,4 +1,6 @@
-﻿namespace Text_adventure_Script_Interpreter
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace Text_adventure_Script_Interpreter
 {
     internal class InterpretMain
     {
@@ -29,7 +31,7 @@
         {
             string[] funcParts = func.commandText.Split(':');
             string[] funcArgs;
-            if (funcParts.Length > 1) 
+            if (funcParts.Length > 1)
                 funcArgs = funcParts[1].Split(',');
             else
                 funcArgs = new string[0];
@@ -149,29 +151,38 @@
             return result;
         }
 
-        public static Method FindMethodUsingMethodPath(string methodPath)
+        public static Method? FindMethodUsingMethodPath(string methodPath)
         {
             Method currentmethod;
-            foreach (Method method in Global.Namespaces[].namespaceMethods)
+            foreach (NamespaceInfo @namespace in Global.Namespaces)
             {
-                
-                currentmethod = method;
-                while (true)
+                foreach (Method method in @namespace.namespaceMethods)
                 {
                     if (method.methodLocation == methodPath)
                         return method;
-                    if (method.subMethods != 0)
+                    if (method.subMethods != null)
+                    {
+                        currentmethod = SearchAllSubmethodsForPath(methodPath, method.subMethods);
+                        if (currentmethod != null)
+                            return currentmethod;
+                    }
                 }
+
+
+
             }
+            return null;
         }
+        
         public static Method SearchAllSubmethodsForPath(string methodPath, List<Method> searchMethods)
         {
             foreach (Method method in searchMethods)
             {
-                if (method.methodLocation == searchMethods)
-                        return method;
-                SearchAllSubmethodsForPath(methodPath, method.subMethods)
+                if (method.methodLocation == methodPath)
+                    return method;
+                SearchAllSubmethodsForPath(methodPath, method.subMethods);
             }
+            return null;
         }
     }
 }

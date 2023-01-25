@@ -10,18 +10,8 @@ namespace Text_adventure_Script_Interpreter
     {
         
          
-        public static string HandleFunc (string func, NamespaceInfo currentNamespace)
+        public static string HandleInternalFunc (List<Command> commands)
         {
-            string[] subFunction = func.Split('.');
-
-            switch(subFunction[0])
-            {
-                case "TASI":
-                    InternalFuncs.TASI(subFunction, currentNamespace);
-                    break;
-
-            }
-
             return null;
         }
 

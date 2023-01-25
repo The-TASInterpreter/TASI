@@ -22,4 +22,15 @@
             commandLine = -1;
         }
     }
+
+    public class MethodCall
+    {
+        public Method callMethod;
+        public List<Var> inputVars;
+        public MethodCall(Method callMethod, List<Var> inputVars)
+        {
+            this.callMethod = callMethod;
+            this.inputVars = new List<Var>(  inputVars);
+        }
+    }
 }

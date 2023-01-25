@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text adventure Script Interpreter", "Text adventure Script Interpreter.csproj", "{C75469C0-8EAC-4BF7-A183-5A258A835278}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Text adventure Script Interpreter", "Text adventure Script Interpreter.csproj", "{CA2DFD99-F74F-49B9-B4D9-1CB4D4E2C980}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C75469C0-8EAC-4BF7-A183-5A258A835278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C75469C0-8EAC-4BF7-A183-5A258A835278}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C75469C0-8EAC-4BF7-A183-5A258A835278}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C75469C0-8EAC-4BF7-A183-5A258A835278}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA2DFD99-F74F-49B9-B4D9-1CB4D4E2C980}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA2DFD99-F74F-49B9-B4D9-1CB4D4E2C980}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA2DFD99-F74F-49B9-B4D9-1CB4D4E2C980}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA2DFD99-F74F-49B9-B4D9-1CB4D4E2C980}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {647E4BCB-0C0A-4709-8EE8-6A1D1354FDDE}
+		SolutionGuid = {0C5BFE07-A82E-4665-8E45-8486D87000CA}
 	EndGlobalSection
 EndGlobal

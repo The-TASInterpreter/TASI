@@ -2,7 +2,8 @@
 {
     internal class Global
     {
-        public static List<NamespaceInfo> Namespaces;
+        public static List<NamespaceInfo> Namespaces = new List<NamespaceInfo>();
+        public static List<Method> AllMethods = new List<Method>();
         public static void InitInternalNamespaces()
         {
             Namespaces = new List<NamespaceInfo>();

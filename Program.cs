@@ -9,6 +9,7 @@
 // E.U.0008: Can't create a variable with the type void
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
 
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Text_adventure_Script_Interpreter
@@ -30,7 +31,8 @@ namespace Text_adventure_Script_Interpreter
                 Global.InitInternalNamespaces();
                 interpretInitLog.path = "C:\\Users\\ewolf\\AppData\\Roaming\\text_adventure_launcher\\temp\\HarryPotterComicSimVer1.6\\HarryPotterComicSim\\interpretInitLog.txt";
                 interpretInitLog.loggerEnabled = true;
-                Console.WriteLine(StringProcess.GetConcatInside('[', ']', "[Console.Writeline [Random.Int.Between 1, 10]]"));
+                Console.WriteLine("Pre-compiling...");
+                Stopwatch time = Stopwatch.StartNew();
                 NamespaceInfo testNamespace = new NamespaceInfo(NamespaceInfo.NamespaceIntend.Main, "testNamespace");
 
                 List<Command> lineCommandTest = new List<Command>(StringProcess.ConvertLineToCommand("[TASI.DecFunc \"Main\",\"void\",[SArray.DecArray \"array cum, string cool\"]]"));
@@ -43,7 +45,8 @@ namespace Text_adventure_Script_Interpreter
                 }
                 List<UnspecifiedMethod> testScanMethods = InterpretMain.FindAllMethods(InterpretMain.ConvertCommandLineToCommand(testReadFile));
                 InterpretMain.UseFunc(new Command(Command.CommandTypes.VoidMethod, "INF.DefFunc:\"Main\",,\"void\", new array string {\"string\"; \"string_argument\"; \"num\"; \"num_argument\";};"));
-                Console.WriteLine("Success!");
+                time.Stop();
+                Console.WriteLine($"Success! Took {time.ElapsedMilliseconds}ms");
                 interpretInitLog.Flush();
                 Console.ReadKey();
             }

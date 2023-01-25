@@ -63,8 +63,8 @@
                     return parentNamespace.name + "." + result;
 
                 checkSubPath = checkSubPath.parentMethod;
-            } while (result.Length < 512);
-            throw new Exception("To large submethod-method name lenght");
+            } while (result.Length < 1024);
+            throw new Exception("To large submethod-method name lenght. I could easily make the max lenght bigger, but I woun't. Haha!");
         }
 
 

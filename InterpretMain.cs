@@ -153,36 +153,11 @@ namespace Text_adventure_Script_Interpreter
 
         public static Method? FindMethodUsingMethodPath(string methodPath)
         {
-            Method currentmethod;
-            foreach (NamespaceInfo @namespace in Global.Namespaces)
-            {
-                foreach (Method method in @namespace.namespaceMethods)
-                {
-                    if (method.methodLocation == methodPath)
-                        return method;
-                    if (method.subMethods != null)
-                    {
-                        currentmethod = SearchAllSubmethodsForPath(methodPath, method.subMethods);
-                        if (currentmethod != null)
-                            return currentmethod;
-                    }
-                }
-
-
-
-            }
+            foreach (Method method in Global.AllMethods)
+                if (method.methodLocation == methodPath)
+                    return method;
             return null;
         }
         
-        public static Method SearchAllSubmethodsForPath(string methodPath, List<Method> searchMethods)
-        {
-            foreach (Method method in searchMethods)
-            {
-                if (method.methodLocation == methodPath)
-                    return method;
-                SearchAllSubmethodsForPath(methodPath, method.subMethods);
-            }
-            return null;
-        }
     }
 }

@@ -10,25 +10,32 @@ namespace Text_adventure_Script_Interpreter
     {
         
          
-        public static string HandleInternalFunc (List<Command> commands)
+        public static void HandleInternalFunc (MethodCall methodCall)
         {
-            return null;
+            switch(methodCall.callMethod.parentNamespace.name)
+            {
+                case "INF":
+                    InternalFuncs.INF(methodCall);
+                    break;
+
+            }
+            return;
         }
 
     }
 
    internal class InternalFuncs
     {
-        public static void TASI(string[] restOfFunction, NamespaceInfo namespaceInfo)
+        public static void INF(MethodCall methodCall)
         {
-            switch(restOfFunction[1])
+            switch(methodCall.callMethod.methodLocation)
             {
-                case "Ver":
-                    if (restOfFunction[2] != Text_adventure_Script_Interpreter_Main.interpreterVer)
-                        Console.WriteLine("!WARNING! The current programm has been written on an outdated interpreter version. Some things might not work as expected.");
-                    break;
-                case "Intend":
-                    namespaceInfo.namespaceIntend = Enum.Parse < NamespaceInfo.NamespaceIntend >(restOfFunction[2]);
+                case "INF.DefFunc":
+                    if (InterpretMain.FindMethodUsingMethodPath(methodCall.inputVars[0].stringValue) == null)
+                        throw new Exception($"Can't define func {methodCall.inputVars[0].stringValue}, because it isn't declared anywhere. E.U 0010\nTry to add something like this:\nmethod {methodCall.inputVars[0].stringValue} {{\n/code here\n}}.");
+                    if (!Enum.TryParse<VarDef.evarType>(methodCall.inputVars[1].stringValue, out VarDef.evarType result))
+                        throw new Exception($"{methodCall.inputVars[1].stringValue} is an invalid variable type. E.U 0011\nValid types are:\nnum\nvoid\nbool\nstring");
+                 
                     break;
 
             }

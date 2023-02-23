@@ -4,6 +4,7 @@
     {
         public Method callMethod;
         public List<Var> inputVars;
+        public List<CommandLine> argumentCommands;
         public MethodCall(Method callMethod, List<Var> inputVars)
         {
             this.callMethod = callMethod;
@@ -20,6 +21,8 @@
             int braceDeph = 0;
             bool inString = false;
             bool lastBackslash = false;
+
+            //split method name from arguments and arguments with comma
             foreach (char c in command.commandText)
             {
                 if (doingName)
@@ -82,6 +85,7 @@
 
                 }
             }
+            //Check if syntax are valid
             if (inString)
                 throw new Exception("Expected \"");
             if (braceDeph != 0)
@@ -92,11 +96,72 @@
             if (currentArgument.Replace(" ", "") == "") // If argument minus Space is nothing
                 throw new Exception("Cant have an empty argument (Check for double commas like \"[Example.Method:test,,]\")");
             methodArguments.Add(currentArgument);
-            List<CommandLine> argumentCommands = new(methodArguments.Count);
-            foreach (string argument in methodArguments)
+            argumentCommands = new(methodArguments.Count);
+            foreach (string argument in methodArguments) //Convert string arguments to commands
                 argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), Text_adventure_Script_Interpreter_Main.line));
+
+            // search for method
+            string[] methodLocationSplit = methodName.Split('.');
+
+            if (methodLocationSplit.Length < 2)
+            {
+                if (methodLocationSplit.Length == 0) throw new Exception("The methodname cant be empty.");
+                if (methodLocationSplit.Length == 1) throw new Exception("A namespace cant be used as a method directly.");
+            }
+
+            NamespaceInfo methodParentNamespace = new(NamespaceInfo.NamespaceIntend.Internal, "Invalid");
+
+            foreach (NamespaceInfo namespaceInfo in Global.Namespaces)
+            {
+                if (namespaceInfo.name == methodLocationSplit[0])
+                {
+                    methodParentNamespace = namespaceInfo;
+                    break;
+                }
+            }
+            if (methodParentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.Internal && methodParentNamespace.name == "Invalid")
+                throw new Exception($"The namespace \"{methodLocationSplit[0]}\" cant be found."); // Hella good code
+
+            Method directNamespaceParentMethod = new("", VarDef.evarType.Void, new(NamespaceInfo.NamespaceIntend.Internal, "Invalid"), new());
+            foreach (Method method in methodParentNamespace.namespaceMethods)
+            {
+                if (method.funcName == methodLocationSplit[1])
+                {
+                    directNamespaceParentMethod = method;
+                    break;
+                }
+            }
+
+            if (directNamespaceParentMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.Internal && directNamespaceParentMethod.parentNamespace.name == "Invalid")
+                throw new Exception($"The method \"{methodLocationSplit[1]}\" cant be found."); // Hella good code
+            List<Method> submethods = new List<Method>();
+            submethods.Add(directNamespaceParentMethod);
+            for (int i = 2; i < methodLocationSplit.Length; i++)
+            {
+                foreach (Method method in submethods.Last().subMethods)
+                {
+                    if (method.funcName == methodLocationSplit[i])
+                    {
+                        submethods.Add(method);
+                        continue;
+                    }
+
+                }
+                throw new Exception($"The submethod \"{methodLocationSplit[i]}\" does not exist");
+            }
+            this.callMethod = submethods.Last();
+
+
+
+
+            return;
+        }
+
+
+        public Var DoMethodCall()
+        {
             inputVars = new();
-            foreach (CommandLine commandLine in argumentCommands)
+            foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
             {
                 switch (commandLine.commands[0].commandType)
                 {
@@ -109,14 +174,18 @@
                         inputVars.Add(Statement.ReturnStatement(commandLine.commands));
                         break;
 
-                    default: 
-                        
+                    default:
+
 
                         throw new Exception($"Internal error: Unimplemented commandType ({commandLine.commands[0].commandType})");
                 }
             }
-            
-            return;
+
+            if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.Internal)
+            {
+                return FuncHandle.HandleInternalFunc(callMethod.methodLocation, inputVars);
+            }
+            throw new Exception("Internal: Only internal functions are implemented");
         }
 
     }

@@ -26,8 +26,9 @@ namespace Text_adventure_Script_Interpreter
 
 
 
-
+            Global.InitInternalNamespaces();
             MethodCall methodCallTest = new(StringProcess.ConvertLineToCommand(Console.ReadLine()).Last());
+            methodCallTest.DoMethodCall();
 
             return;
 

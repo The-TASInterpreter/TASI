@@ -64,6 +64,13 @@
                     throw new Exception("Unknown variable type at NamespaceInfo.Var(Switch(vartype). E.Internal.0001");
             }
         }
+        public Var()
+        {
+            tempVar = true;
+            varDef = new(VarDef.evarType.Void, "");
+
+
+        }
 
 
     }

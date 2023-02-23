@@ -104,6 +104,10 @@ namespace Text_adventure_Script_Interpreter
                                 methodDeph--;
                                 if (methodDeph == 0)
                                 {
+                                    if ( CheckIfUnspecifiedMethodAlreadyHasMethodName(result, currentMethodName))
+                                    {
+                                        throw new Exception($"Method \"{currentMethodName}\" is defined multible times.");
+                                    }
                                     result.Add(new UnspecifiedMethod(currentMethodName, currentMethod));
                                     currentMethod.Clear();
                                     methodDefMode = 0;
@@ -158,6 +162,18 @@ namespace Text_adventure_Script_Interpreter
                     return method;
             return null;
         }
+
+        private static bool CheckIfUnspecifiedMethodAlreadyHasMethodName(List<UnspecifiedMethod> methods, string name)
+        {
+            foreach (UnspecifiedMethod method in methods)
+            {
+                if (method.methodName == name) return true;
+            }
+            return false;
+        }
+
+
+        
         
     }
 }

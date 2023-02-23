@@ -11,6 +11,7 @@
 
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Text_adventure_Script_Interpreter
 {
@@ -22,6 +23,13 @@ namespace Text_adventure_Script_Interpreter
         public static void Main(string[] args)
         {
 
+
+
+
+
+            MethodCall methodCallTest = new(StringProcess.ConvertLineToCommand(Console.ReadLine()).Last());
+
+            return;
 
 
 

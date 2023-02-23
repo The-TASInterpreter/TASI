@@ -12,10 +12,10 @@
         public List<VarDef.evarType> methodPrivateVars;
         public List<Method> subMethods;
         public NamespaceInfo parentNamespace;
-        public List<VarDef> methodArguments;
+        public List<List<VarDef>> methodArguments;
 
 
-        public Method(string funcName, Method parentMethod, VarDef.evarType returnType, NamespaceInfo parentNamespace, List<VarDef> methodArguments) // Has a variable return type and is not a void, but is a sub method
+        public Method(string funcName, Method parentMethod, VarDef.evarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments) // Has a variable return type and is not a void, but is a sub method
         {
             this.funcName = funcName;
             this.parentMethod = parentMethod;
@@ -27,12 +27,12 @@
             this.parentNamespace = parentNamespace;
             parentNamespace.namespaceMethods.Add(this);
             methodLocation = GetMethodLocationString();
-            this.methodArguments = new List<VarDef>(methodArguments);
+            this.methodArguments = new List<List<VarDef>>(methodArguments);
             Global.AllMethods.Add(this);
 
         }
 
-        public Method(string funcName, VarDef.evarType returnType, NamespaceInfo parentNamespace, List<VarDef> methodArguments) // Is a Main method and is not a void
+        public Method(string funcName, VarDef.evarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments) // Is a Main method and is not a void
         {
             this.funcName = funcName;
             this.parentMethod = null;
@@ -44,7 +44,7 @@
             this.parentNamespace = parentNamespace;
             parentNamespace.namespaceMethods.Add(this);
             methodLocation = GetMethodLocationString();
-            this.methodArguments = new List<VarDef>(methodArguments);
+            this.methodArguments = new List<List<VarDef>>(methodArguments);
             Global.AllMethods.Add(this);
 
         }

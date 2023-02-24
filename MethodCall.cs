@@ -157,6 +157,29 @@
             return;
         }
 
+        public bool CheckIfMethodCallHasValidArgTypes(List<Var> inputVars)
+        {
+            bool matching;
+            foreach (List<VarDef> methodInputType in callMethod.methodArguments)
+            {
+                if (methodInputType.Count == inputVars.Count) {
+                    matching = true;
+                    for (int i = 0; i < inputVars.Count; i++)
+                    {
+                        if (methodInputType[i].varType != inputVars[i].varDef.varType)
+                        {
+                            matching = false;
+                            break;
+                        }
+                    }
+                    if (matching)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+
 
         public Var DoMethodCall()
         {
@@ -180,6 +203,10 @@
                         throw new Exception($"Internal error: Unimplemented commandType ({commandLine.commands[0].commandType})");
                 }
             }
+
+            if (!CheckIfMethodCallHasValidArgTypes(inputVars))
+                throw new Exception($"The method \"{callMethod.methodLocation}\" doesent support the provided input types.");
+
 
             if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.Internal)
             {

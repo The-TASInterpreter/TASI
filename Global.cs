@@ -23,14 +23,17 @@
             }));
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Console"));
-            Namespaces[1].namespaceMethods.Add(new("WriteLine", VarDef.evarType.Void, Namespaces[0], new List<List<VarDef>> {
+            Namespaces[1].namespaceMethods.Add(new("WriteLine", VarDef.evarType.Void, Namespaces[1], new List<List<VarDef>> {
                 new List<VarDef> { new(VarDef.evarType.String, "text")}
             }));
-            Namespaces[1].namespaceMethods.Add(new("Write", VarDef.evarType.Void, Namespaces[0], new List<List<VarDef>> {
+            Namespaces[1].namespaceMethods.Add(new("Write", VarDef.evarType.Void, Namespaces[1], new List<List<VarDef>> {
                 new List<VarDef> { new(VarDef.evarType.String, "text")}
             }));
-            Namespaces[1].namespaceMethods.Add(new("Write", VarDef.evarType.String, Namespaces[0], new List<List<VarDef>> {
+            Namespaces[1].namespaceMethods.Add(new("ReadLine", VarDef.evarType.String, Namespaces[1], new List<List<VarDef>> {
                 new List<VarDef> { new(VarDef.evarType.Bool, "showTextWhenTyping")},
+                new List<VarDef> {}
+            }));
+            Namespaces[1].namespaceMethods.Add(new("Clear", VarDef.evarType.String, Namespaces[1], new List<List<VarDef>> {
                 new List<VarDef> {}
             }));
 

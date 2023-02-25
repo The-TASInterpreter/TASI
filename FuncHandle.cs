@@ -7,16 +7,16 @@
         {
             switch (funcName)
             {
-                case "Test.HelloWorld":
-                    if (input.Count != 2)
-                        throw new Exception("Invalid arguments for \"Test.HelloWorld\"");
-                    
-
+                case "Test.HelloWorld":                 
                     if (input[0].numValue == 1)
                         Console.WriteLine(input[1].stringValue);
                     else
                         Console.WriteLine("No text pritable.");
                     return new Var();
+                case "Console.ReadLine":
+                    return new Var(new(VarDef.evarType.String, ""), true, Console.ReadLine());
+
+
 
                 default: throw new Exception("Internal: No definition for " + funcName);
             }

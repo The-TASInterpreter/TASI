@@ -27,8 +27,27 @@ namespace Text_adventure_Script_Interpreter
 
 
             Global.InitInternalNamespaces();
-            MethodCall methodCallTest = new(StringProcess.ConvertLineToCommand(Console.ReadLine()).Last());
-            methodCallTest.DoMethodCall();
+
+            foreach(Command command in StringProcess.ConvertLineToCommand(Console.ReadLine()))
+            {
+                switch (command.commandType)
+                {
+                    case Command.CommandTypes.UnknownMethod:
+                        new MethodCall(command).DoMethodCall();
+                        break;
+                    default:
+                        throw new NotImplementedException($"Internal: Not implemented type: {command.commandType}");
+                }
+            }
+
+
+
+
+
+
+
+
+
 
             return;
 

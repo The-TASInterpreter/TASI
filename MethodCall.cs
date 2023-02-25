@@ -93,9 +93,10 @@
             if (squareDeph != 0)
                 throw new Exception("Expected ]");
 
-            if (currentArgument.Replace(" ", "") == "") // If argument minus Space is nothing
+            if (currentArgument.Replace(" ", "") == "" && methodArguments.Count != 0) // If argument minus Space is nothing
                 throw new Exception("Cant have an empty argument (Check for double commas like \"[Example.Method:test,,]\")");
-            methodArguments.Add(currentArgument);
+            if (methodArguments.Count != 0)
+                methodArguments.Add(currentArgument);
             argumentCommands = new(methodArguments.Count);
             foreach (string argument in methodArguments) //Convert string arguments to commands
                 argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), Text_adventure_Script_Interpreter_Main.line));
@@ -162,7 +163,8 @@
             bool matching;
             foreach (List<VarDef> methodInputType in callMethod.methodArguments)
             {
-                if (methodInputType.Count == inputVars.Count) {
+                if (methodInputType.Count == inputVars.Count)
+                {
                     matching = true;
                     for (int i = 0; i < inputVars.Count; i++)
                     {
@@ -188,18 +190,22 @@
             {
                 switch (commandLine.commands[0].commandType)
                 {
-                    case Command.CommandTypes.StringMethod or Command.CommandTypes.String:
+                    case Command.CommandTypes.String:
                         if (commandLine.commands.Count != 1)
                             throw new Exception($"Not expected {commandLine.commands[1].commandType} after string (\"{commandLine.commands[1].commandText}\")");
                         inputVars.Add(new(new(VarDef.evarType.String, ""), true, commandLine.commands[0].commandText));
                         break;
+
+                    case Command.CommandTypes.UnknownMethod:
+                        MethodCall tempMethodCall = new(commandLine.commands[0]);
+                        inputVars.Add(tempMethodCall.DoMethodCall());
+                        break;
+
                     case Command.CommandTypes.Statement:
                         inputVars.Add(Statement.ReturnStatement(commandLine.commands));
                         break;
 
                     default:
-
-
                         throw new Exception($"Internal error: Unimplemented commandType ({commandLine.commands[0].commandType})");
                 }
             }

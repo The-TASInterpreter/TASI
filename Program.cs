@@ -27,13 +27,32 @@ namespace Text_adventure_Script_Interpreter
 
 
             Global.InitInternalNamespaces();
-
+            Global.CurrentlyAccessableVars.Add(new(new(VarDef.evarType.String, "helloWorld"), false, ""));
+            bool statementMode = false;
+            CommandLine? commandLine = null;
             foreach(Command command in StringProcess.ConvertLineToCommand(Console.ReadLine()))
             {
+                if (statementMode)
+                {
+                    if (command.commandType == Command.CommandTypes.EndCommand)
+                    {
+                        Statement.StaticStatement(commandLine);
+                        statementMode = false;
+                        continue;
+                    }
+                    commandLine.commands.Add(command);
+                    continue;
+                }
+
+
                 switch (command.commandType)
                 {
                     case Command.CommandTypes.UnknownMethod:
                         new MethodCall(command).DoMethodCall();
+                        break;
+                    case Command.CommandTypes.Statement:
+                        statementMode = true;
+                        commandLine = new(new List<Command> { command }, 1);
                         break;
                     default:
                         throw new NotImplementedException($"Internal: Not implemented type: {command.commandType}");

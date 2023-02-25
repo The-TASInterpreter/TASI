@@ -15,7 +15,12 @@
                     return new Var();
                 case "Console.ReadLine":
                     return new Var(new(VarDef.evarType.String, ""), true, Console.ReadLine());
-
+                case "Console.Clear":
+                    Console.Clear();
+                    return new();
+                case "Console.WriteLine":
+                    Console.WriteLine(input[0].stringValue);
+                    return new();
 
 
                 default: throw new Exception("Internal: No definition for " + funcName);

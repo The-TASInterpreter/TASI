@@ -40,6 +40,8 @@
                 {
                     if (inString)
                     {
+                        if (c == '\\')
+                            lastBackslash = true;
                         if (!lastBackslash && c == '\"')
                             inString = false;
                         currentArgument += c;
@@ -95,7 +97,7 @@
 
             if (currentArgument.Replace(" ", "") == "" && methodArguments.Count != 0) // If argument minus Space is nothing
                 throw new Exception("Cant have an empty argument (Check for double commas like \"[Example.Method:test,,]\")");
-            if (methodArguments.Count != 0)
+            if (methodArguments.Count != 0 || (currentArgument.Replace(" ", "") != ""))
                 methodArguments.Add(currentArgument);
             argumentCommands = new(methodArguments.Count);
             foreach (string argument in methodArguments) //Convert string arguments to commands

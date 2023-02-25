@@ -64,7 +64,6 @@ namespace Text_adventure_Script_Interpreter
         {
             if (commandLine.commands.Count < 3) throw new Exception("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
             if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
-            if (commandLine.commands[2].commandType == Command.CommandTypes.Statement) throw new Exception("Statement cant be converted to value");
 
             Var? correctVar = null;
             foreach (Var var in Global.CurrentlyAccessableVars) //Search for variable

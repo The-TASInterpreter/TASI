@@ -40,10 +40,13 @@
                 {
                     if (inString)
                     {
-                        if (c == '\\')
-                            lastBackslash = true;
+
                         if (!lastBackslash && c == '\"')
                             inString = false;
+                        if (c == '\\')
+                            lastBackslash = true;
+                        else
+                            lastBackslash = false;
                         currentArgument += c;
                         continue;
                     }

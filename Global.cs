@@ -33,11 +33,14 @@
                 new List<VarDef> { new(VarDef.evarType.Bool, "showTextWhenTyping")},
                 new List<VarDef> {}
             }));
-            Namespaces[1].namespaceMethods.Add(new("Clear", VarDef.evarType.String, Namespaces[1], new List<List<VarDef>> {
+            Namespaces[1].namespaceMethods.Add(new("Clear", VarDef.evarType.Void, Namespaces[1], new List<List<VarDef>> {
                 new List<VarDef> {}
             }));
-
-
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Programm"));
+            Namespaces[2].namespaceMethods.Add(new("Pause", VarDef.evarType.Void, Namespaces[2], new List<List<VarDef>> {
+                new List<VarDef> {},
+                new List<VarDef> {new(VarDef.evarType.Bool, "showPausedMessage")}
+            }));
         }
     }
 }

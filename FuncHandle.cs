@@ -21,6 +21,12 @@
                 case "Console.WriteLine":
                     Console.WriteLine(input[0].stringValue);
                     return new();
+                case "Programm.Pause":
+                    if (input.Count == 1 && input[0].numValue == 1)
+                        Console.WriteLine("Press any key to continue.");
+                    Console.ReadKey();
+                    return new();
+
 
 
                 default: throw new Exception("Internal: No definition for " + funcName);

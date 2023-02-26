@@ -47,12 +47,12 @@ namespace Text_adventure_Script_Interpreter
                 case Command.CommandTypes.Statement:
                     Var returnStatementCall = ReturnStatement(commandLine.commands);
                     if (returnStatementCall.varDef.varType != expectedType)
-                        throw new Exception($"The ReturnStatement \"{commandLine.commands[0]}\" does not return the expected {expectedType} value at all or in the given configuation.");
+                        throw new Exception($"The ReturnStatement \"{commandLine.commands[0].commandText}\" does not return the expected {expectedType} value at all or in the given configuation.");
                     return returnStatementCall;
                 case Command.CommandTypes.String:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
-                    return new Var(new(VarDef.evarType.String, "", false), true, commandLine.commands[0]);
+                    return new Var(new(VarDef.evarType.String, "", false), true, commandLine.commands[0].commandText);
 
                 default:
                     throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
@@ -95,13 +95,19 @@ namespace Text_adventure_Script_Interpreter
             switch (commands[0].commandText)
             {
                 case "true":
+                    if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
                     return new Var(new(VarDef.evarType.Bool, ""), true, true);
                 case "false":
+                    if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
                     return new Var(new(VarDef.evarType.Bool, ""), true, false);
                 case "new":
                     if (commands[1].commandType != Command.CommandTypes.Statement)
                         throw new Exception($"Unexpected {commands[1].commandType} at argument 1 of new statement\nA statement would be expected at this point.");
                     throw new NotImplementedException("Internal: New statement is not fully implemented yet");
+                case "void":
+                    if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
+                    return new();
+
 
 
                 default:

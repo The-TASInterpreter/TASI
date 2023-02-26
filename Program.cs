@@ -25,8 +25,8 @@ namespace Text_adventure_Script_Interpreter
 
 
 
-            try
-            {
+            //try
+            //{
                 Global.InitInternalNamespaces();
                 Global.CurrentlyAccessableVars.Add(new(new(VarDef.evarType.String, "helloWorld"), false, ""));
                 bool statementMode = false;
@@ -59,13 +59,13 @@ namespace Text_adventure_Script_Interpreter
                             throw new NotImplementedException($"Internal: Not implemented type: {command.commandType}");
                     }
                 }
-            } catch (Exception ex)
-            {
-                Console.WriteLine("There was an error:");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Press any key to continue.");
-                Console.ReadKey();
-            }
+            //} catch (Exception ex)
+            //{
+             //   Console.WriteLine("There was an error:");
+               // Console.WriteLine(ex.Message);
+              //  Console.WriteLine("Press any key to continue.");
+             //   Console.ReadKey();
+           // }
 
             return;   
             

@@ -26,6 +26,9 @@
                         Console.WriteLine("Press any key to continue.");
                     Console.ReadKey();
                     return new();
+                case "Inf.DefVar":
+                    Global.CurrentlyAccessableVars.Add(new(new(Enum.Parse<VarDef.evarType>(input[0].stringValue), input[1].stringValue), false, null));
+                    return new();
 
 
 

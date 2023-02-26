@@ -28,11 +28,32 @@
         public VarDef varDef;
 
         public bool tempVar;
-        public double numValue;
-        public string stringValue;
+        public double? numValue;
+        public string? stringValue;
         public double[] numArrayValue;
         public string[] stringArrayValue;
-        public Var(VarDef varDef, bool tempVar, object value)
+
+
+        public object objectValue
+        {
+            get
+            {
+                if (varDef.varType == VarDef.evarType.Num || varDef.varType == VarDef.evarType.Bool)
+                    return numValue;
+                else
+                    return stringValue;
+            }
+            set
+            {
+                if (varDef.varType == VarDef.evarType.Num || varDef.varType == VarDef.evarType.Bool)
+                    numValue = (double)value;
+                else
+                    stringValue = (string)value;
+            }
+        }
+
+
+        public Var(VarDef varDef, bool tempVar, object? value)
         {
             this.varDef = varDef;
             this.tempVar = tempVar;

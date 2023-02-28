@@ -43,12 +43,49 @@ namespace Text_adventure_Script_Interpreter
                 case Command.CommandTypes.NumCalculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
-                    throw new NotImplementedException("NumberCalculation types have not been implemented yet.");
+                    Var numCalcRet = NumCalculation.DoNumCalculation(commandLine.commands[0]);
+                    if (numCalcRet.varDef.varType != expectedType) throw new Exception($"The num calculation does not return the expected {expectedType} type.");
+                    return numCalcRet;
+
                 case Command.CommandTypes.Statement:
                     Var returnStatementCall = ReturnStatement(commandLine.commands);
                     if (returnStatementCall.varDef.varType != expectedType)
                         throw new Exception($"The ReturnStatement \"{commandLine.commands[0].commandText}\" does not return the expected {expectedType} value at all or in the given configuation.");
                     return returnStatementCall;
+
+                case Command.CommandTypes.String:
+                    if (expectedType != VarDef.evarType.String) throw new Exception($"String is not the expected {expectedType} type.");
+                    if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
+                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
+                    return new Var(new(VarDef.evarType.String, "", false), true, commandLine.commands[0].commandText);
+
+                default:
+                    throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
+            }
+        }
+        public static Var GetVarOfCommandLine(CommandLine commandLine)
+        {
+
+            switch (commandLine.commands[0].commandType)//Check var type thats provided
+            {
+                case Command.CommandTypes.UnknownMethod:
+                    MethodCall methodCall = new MethodCall(commandLine.commands[0]);
+                    if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
+                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
+                   
+                    return methodCall.DoMethodCall();
+
+                case Command.CommandTypes.NumCalculation:
+                    if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
+                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
+                    Var numCalcRet = NumCalculation.DoNumCalculation(commandLine.commands[0]);
+                    
+                    return numCalcRet;
+
+                case Command.CommandTypes.Statement:
+                    Var returnStatementCall = ReturnStatement(commandLine.commands);                
+                    return returnStatementCall;
+
                 case Command.CommandTypes.String:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");

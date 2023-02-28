@@ -193,6 +193,7 @@
             inputVars = new();
             foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
             {
+                /*
                 switch (commandLine.commands[0].commandType)
                 {
                     case Command.CommandTypes.String:
@@ -217,7 +218,10 @@
 
                     default:
                         throw new Exception($"Internal error: Unimplemented commandType ({commandLine.commands[0].commandType})");
+
                 }
+                */
+                inputVars.Add(Statement.GetVarOfCommandLine(commandLine));
             }
 
             if (!CheckIfMethodCallHasValidArgTypes(inputVars))

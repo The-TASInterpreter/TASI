@@ -209,6 +209,11 @@
                     case Command.CommandTypes.Statement:
                         inputVars.Add(Statement.ReturnStatement(commandLine.commands));
                         break;
+                    case Command.CommandTypes.NumCalculation:
+                        if (commandLine.commands.Count != 1)
+                            throw new Exception($"Not expected {commandLine.commands[1].commandType} after num calc (\"{commandLine.commands[1].commandText}\")");
+                        inputVars.Add(NumCalculation.DoNumCalculation(commandLine.commands[0]));
+                        break;
 
                     default:
                         throw new Exception($"Internal error: Unimplemented commandType ({commandLine.commands[0].commandType})");

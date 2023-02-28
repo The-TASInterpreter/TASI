@@ -32,6 +32,8 @@
         public string? stringValue;
         public double[] numArrayValue;
         public string[] stringArrayValue;
+        public bool isNumeric;
+
 
 
         public object objectValue
@@ -60,12 +62,14 @@
             switch (varDef.varType)
             {
                 case VarDef.evarType.Num:
+                    isNumeric = true;
                     if (varDef.isArray == true)
                         numArrayValue = (double[])value;
                     else
                         numValue = (double)value;
                     break;
                 case VarDef.evarType.Bool: //Bool values are just num values *Shock*
+                    isNumeric = true;
                     if (varDef.isArray == true)
                         throw new Exception("Sorry, but there are no bool arrays rn. Gonna add them in later. I promise!");
                     if ((bool)value)
@@ -74,6 +78,7 @@
                         numValue = 0;
                     break;
                 case VarDef.evarType.String:
+                    isNumeric = false;
                     if (varDef.isArray == true)
                         stringArrayValue = (string[])value;
                     else
@@ -89,6 +94,7 @@
         {
             tempVar = true;
             varDef = new(VarDef.evarType.Void, "");
+            isNumeric = false;
 
 
         }

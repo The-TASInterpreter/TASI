@@ -108,6 +108,8 @@ namespace Text_adventure_Script_Interpreter
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
                     return new();
 
+                case "nl":
+                    return new Var(new(VarDef.evarType.String, ""), true, "\n");
 
 
                 default:

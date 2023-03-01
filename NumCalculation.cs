@@ -8,6 +8,7 @@
         {
             if (command.commandType != Command.CommandTypes.NumCalculation) throw new Exception("Internal: This method only deals with NumCalculations");
             //Grab tokens
+            
             CalculationType calculation = new(command.commandText, false, true, false);
 
 
@@ -115,7 +116,6 @@
             {
                 if (type != Type.calc) throw new Exception("Internal: Only a numcalc can have subtokens.");
                 if (subTokens != null) return subTokens;
-
                 subTokens = new List<CalculationType>();
                 foreach (Command command in StringProcess.ConvertLineToCommand(token))
                     subTokens.Add(new(command.commandText, command.commandType == Command.CommandTypes.String, command.commandType == Command.CommandTypes.NumCalculation, command.commandType == Command.CommandTypes.UnknownMethod));
@@ -276,6 +276,7 @@
                 }
             }
             if (values.Count != 1) throw new Exception("Invalid num calculation (Ended up with too many or few tokens)");
+            
             return values[0];
 
         }

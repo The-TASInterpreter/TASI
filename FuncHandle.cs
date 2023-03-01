@@ -7,7 +7,7 @@
         {
             switch (funcName)
             {
-                case "Test.HelloWorld":                 
+                case "Test.HelloWorld":
                     if (input[0].numValue == 1)
                         Console.WriteLine(input[1].stringValue);
                     else
@@ -19,7 +19,11 @@
                     Console.Clear();
                     return new();
                 case "Console.WriteLine":
-                    Console.WriteLine(input[0].stringValue);
+
+                    if (input[0].isNumeric)
+                        Console.WriteLine(input[0].numValue);
+                    else
+                        Console.WriteLine(input[0].stringValue);
                     return new();
                 case "Programm.Pause":
                     if (input.Count == 1 && input[0].numValue == 1)

@@ -35,7 +35,7 @@
             } while (deph > 0);
             return result;
         }
-        internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '!'}; //A statement or syntax will end if it contains any of these chars and the correct type will follow
+        internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '!', '{', '}' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
         public static List<Command> ConvertLineToCommand(string line)
         {
             Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Finding syntax of line text:\n{line}");
@@ -48,12 +48,64 @@
             bool NumCalculationMode = false;
             bool commentMode = false;
             int methodModeDeph = 0;
+            int codeContainerDeph = 0;
+            bool codeContainerMode = false;
             bool stringModeBackslash = false;
             string commandText = string.Empty;
             char lastChar = ' ';
 
             foreach (char c in line)
             {
+                if (codeContainerMode)
+                {
+                    if (skipBecauseString)
+                    {
+                        if (c == '\"' && lastChar != '\\')
+                        {
+                            skipBecauseString = false;
+                            commandText = commandText + c;
+                            continue;
+                        }
+                        else
+                        {
+                            commandText = commandText + c;
+                            lastChar = c;
+                            continue;
+                        }
+                    }
+                    if (c == '\"')
+                    {
+                        commandText = commandText + c;
+                        lastChar = c;
+                        skipBecauseString = true;
+                        continue;
+                    }
+                    if (c == '}')
+                    {
+                        codeContainerDeph--;
+
+                        if (codeContainerDeph == 0)
+                        {
+                            Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Code container found:\n{commandText}");
+                            codeContainerMode = false;
+                            commands.Add(new Command(Command.CommandTypes.CodeContainer, commandText));
+                            commandText = string.Empty;
+                            continue;
+                        }
+                        commandText = commandText + c;
+                    }
+                    else if (c == '{')
+                    {
+                        commandText = commandText + c;
+                        codeContainerDeph++;
+                    }
+                    else
+                    {
+                        commandText = commandText + c;
+                    }
+                    continue;
+                }
+
                 if (stringMode)
                 {
                     if (c == '/')
@@ -82,7 +134,7 @@
                     {
                         Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"String found:\n{commandText}");
 
-                       commands.Add(new Command(Command.CommandTypes.String, commandText));
+                        commands.Add(new Command(Command.CommandTypes.String, commandText));
                         commandText = string.Empty;
                         stringMode = false;
                         continue;
@@ -141,6 +193,28 @@
 
                 if (NumCalculationMode)
                 {
+                    if (skipBecauseString)
+                    {
+                        if (c == '\"' && lastChar != '\\')
+                        {
+                            skipBecauseString = false;
+                            commandText = commandText + c;
+                            continue;
+                        }
+                        else
+                        {
+                            commandText = commandText + c;
+                            lastChar = c;
+                            continue;
+                        }
+                    }
+                    if (c == '\"')
+                    {
+                        commandText = commandText + c;
+                        lastChar = c;
+                        skipBecauseString = true;
+                        continue;
+                    }
                     if (c == ')')
                     {
                         methodModeDeph--;
@@ -203,9 +277,10 @@
                         methodModeDeph = 1;
                         NumCalculationMode = true;
                         break;
-                    case '{' or '}':
-                        Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Brace found \"{c}\"");
-                        commands.Add(new Command(Command.CommandTypes.Brace, Convert.ToString(c)));
+                    case '{':
+                        Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"CodeContainer found \"{c}\"");
+                        codeContainerDeph = 1;
+                        codeContainerMode = true;
                         break;
                     case ';':
                         Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"EndCommand found (;)");
@@ -243,6 +318,8 @@
 
             if (stringMode)
                 throw new Exception("Invalid string formating. E.U.0001");
+            if (codeContainerMode)
+                throw new Exception("Invalid code container formating.");
             if (methodMode)
                 if (skipBecauseString)
                     throw new Exception("Invalid method formating.\nYou probably just forgot to close an argument string. E.U.0002");

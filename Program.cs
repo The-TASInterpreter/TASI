@@ -4,7 +4,7 @@
 // E.U.0003: Still in NumCalculation mode even at end of line (Try to add a ")")
 // E.U.0004: Invalid Command.CommandType at method Statement part 2
 // E.U.0005: Invalid Command.CommandType at method Statement part 3
-// E.U.0006: Invalid Brace direction at method Statement part 3
+// E.U.0006: Invalid CodeContainer direction at method Statement part 3
 // E.U.0007: Still in method mode even at end of file/parent method (Try to add a "}")
 // E.U.0008: Can't create a variable with the type void
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
@@ -25,6 +25,15 @@ namespace Text_adventure_Script_Interpreter
         public static Logger interpretInitLog = new Logger();
         public static void Main(string[] args)
         {
+            Console.WriteLine("Doing tests...");
+            Tests.NumCalcTests();
+            Console.ReadKey(false);
+            Console.Clear();
+
+            Console.WriteLine("Write code:");
+            
+
+
             Global.InitInternalNamespaces();
 
 
@@ -32,7 +41,6 @@ namespace Text_adventure_Script_Interpreter
             //try
             //{
 
-            Global.CurrentlyAccessableVars.Add(new(new(VarDef.evarType.String, "helloWorld"), false, ""));
             bool statementMode = false;
             CommandLine? commandLine = null;
             foreach (Command command in StringProcess.ConvertLineToCommand(Console.ReadLine()))

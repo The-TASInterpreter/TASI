@@ -76,7 +76,7 @@ namespace Text_adventure_Script_Interpreter
                         }
                         break;
                     case 2:
-                        if (command.commandType == Command.CommandTypes.Brace)
+                        if (command.commandType == Command.CommandTypes.CodeContainer)
                         {
                             if (command.commandText == "{")
                             {
@@ -93,11 +93,11 @@ namespace Text_adventure_Script_Interpreter
                         else
                         {
                             Text_adventure_Script_Interpreter_Main.line = command.commandLine;
-                            throw new Exception($"Invalid method definition type at statement part 3 ({command.commandType}). The type should be {Command.CommandTypes.Brace}. The method statement should be used like this: \"method <method_name> {{\". E.U.0005");
+                            throw new Exception($"Invalid method definition type at statement part 3 ({command.commandType}). The type should be {Command.CommandTypes.CodeContainer}. The method statement should be used like this: \"method <method_name> {{\". E.U.0005");
                         }
                         break;
                     case 3:
-                        if (command.commandType == Command.CommandTypes.Brace)
+                        if (command.commandType == Command.CommandTypes.CodeContainer)
                         {
                             if (command.commandText == "}")
                             {
@@ -129,7 +129,7 @@ namespace Text_adventure_Script_Interpreter
                     continue;
                 }
 
-                if ((lastCommandType == Command.CommandTypes.EndCommand || lastCommandType == Command.CommandTypes.Brace) && (command.commandText == "method"))
+                if ((lastCommandType == Command.CommandTypes.EndCommand || lastCommandType == Command.CommandTypes.CodeContainer) && (command.commandText == "method"))
                     methodDefMode = 1;
 
                 lastCommandType = command.commandType;

@@ -7,7 +7,7 @@
         public long commandLine;
         public enum CommandTypes
         {
-            VoidMethod, BoolMethod, StringMethod, NumMethod, UnknownMethod, Statement, NumCalculation, String, Brace, EndCommand
+            VoidMethod, BoolMethod, StringMethod, NumMethod, UnknownMethod, Statement, NumCalculation, String, CodeContainer, EndCommand
         }
         public Command(CommandTypes commandType, string commandText, long commandLine)
         {

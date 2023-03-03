@@ -33,6 +33,16 @@
                 case "Inf.DefVar":
                     Global.CurrentlyAccessableVars.Add(new(new(Enum.Parse<VarDef.evarType>(input[0].stringValue), input[1].stringValue), false, null));
                     return new();
+                case "Convert.ToNum":
+                    if (!double.TryParse(input[0].stringValue, out double result))
+                        if (input[1].getBoolValue)
+                            throw new Exception("Can't convert string in current format to double.");
+                        else
+                            return new Var(new(VarDef.evarType.Num, ""), true, double.NaN);
+
+
+
+                    return new Var(new(VarDef.evarType.Num, ""), true, result);
 
 
 

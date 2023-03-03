@@ -35,7 +35,7 @@
             } while (deph > 0);
             return result;
         }
-        internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '!', '{', '}' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
+        internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '^', '{', '}' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
         public static List<Command> ConvertLineToCommand(string line)
         {
             Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Finding syntax of line text:\n{line}");
@@ -262,7 +262,7 @@
             checkChars:
                 switch (c)
                 {
-                    case '!':
+                    case '^':
                         Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Comment found; Skiping line");
                         commentMode = true;
                         break;

@@ -26,8 +26,8 @@ namespace Text_adventure_Script_Interpreter
         public static void Main(string[] args)
         {
             Console.WriteLine("Doing tests...");
-            Tests.NumCalcTests();
-            Console.ReadKey(false);
+            //Tests.NumCalcTests();
+            //Console.ReadKey(false);
             Console.Clear();
 
             Console.WriteLine("Write code:");
@@ -36,41 +36,11 @@ namespace Text_adventure_Script_Interpreter
 
             Global.InitInternalNamespaces();
 
-
+            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(Console.ReadLine()));
 
             //try
             //{
 
-            bool statementMode = false;
-            CommandLine? commandLine = null;
-            foreach (Command command in StringProcess.ConvertLineToCommand(Console.ReadLine()))
-            {
-                if (statementMode)
-                {
-                    if (command.commandType == Command.CommandTypes.EndCommand)
-                    {
-                        Statement.StaticStatement(commandLine);
-                        statementMode = false;
-                        continue;
-                    }
-                    commandLine.commands.Add(command);
-                    continue;
-                }
-
-
-                switch (command.commandType)
-                {
-                    case Command.CommandTypes.UnknownMethod:
-                        new MethodCall(command).DoMethodCall();
-                        break;
-                    case Command.CommandTypes.Statement:
-                        statementMode = true;
-                        commandLine = new(new List<Command> { command }, 1);
-                        break;
-                    default:
-                        throw new NotImplementedException($"Internal: Not implemented type: {command.commandType}");
-                }
-            }
             //} catch (Exception ex)
             //{
             //   Console.WriteLine("There was an error:");

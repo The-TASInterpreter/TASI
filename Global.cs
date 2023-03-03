@@ -49,6 +49,11 @@
             Namespaces[3].namespaceMethods.Add(new("DefVar", VarDef.evarType.Void, Namespaces[3], new List<List<VarDef>> {
                 new List<VarDef> {new(VarDef.evarType.String, "VarType"), new(VarDef.evarType.String, "VarName")}
             }));
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Convert"));
+            Namespaces[4].namespaceMethods.Add(new("ToNum", VarDef.evarType.Num, Namespaces[4], new List<List<VarDef>> {
+                new List<VarDef> {new(VarDef.evarType.String, "ConvertFrom"), new(VarDef.evarType.Bool, "errorOnParseFail")}
+            }));
+
         }
     }
 }

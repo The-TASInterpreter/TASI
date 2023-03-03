@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Data;
 
 namespace Text_adventure_Script_Interpreter
 {
@@ -20,7 +20,30 @@ namespace Text_adventure_Script_Interpreter
                     //Validate syntax
                     StaticStatementSet(commandLine);
                     break;
+                case "while":
+                    CommandLine checkStatement = new(new(), -1);
+                    for (int i = 1; i < commandLine.commands.Count; i++)
+                    {
+                        if (commandLine.commands[i].commandType == Command.CommandTypes.CodeContainer)
+                            break;
+                        checkStatement.commands.Add(commandLine.commands[i]);
+                    }
+                    if (commandLine.commands.Count != checkStatement.commands.Count + 2)
+                        if (commandLine.commands.Count > checkStatement.commands.Count + 2)
+                            throw new Exception("Missing statement (code container)");
+                        else
+                            throw new Exception($"Unexpected {commandLine.commands[checkStatement.commands.Count + 1].commandType} in while loop.");
+                    if (commandLine.commands[checkStatement.commands.Count + 1].commandType != Command.CommandTypes.CodeContainer)
+                        throw new Exception("Invalid stuff in while loop I hate writeing these messages pls kill me");
+                    List<Command> code = StringProcess.ConvertLineToCommand(commandLine.commands[checkStatement.commands.Count + 1].commandText);
+                    while (GetVarOfCommandLine(checkStatement).getBoolValue) 
+                        InterpretMain.InterpretNormalMode(code);
 
+
+
+                    break;
+                default:
+                    throw new Exception($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
 
 
             }
@@ -72,18 +95,18 @@ namespace Text_adventure_Script_Interpreter
                     MethodCall methodCall = new MethodCall(commandLine.commands[0]);
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
-                   
+
                     return methodCall.DoMethodCall();
 
                 case Command.CommandTypes.NumCalculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
                     Var numCalcRet = NumCalculation.DoNumCalculation(commandLine.commands[0]);
-                    
+
                     return numCalcRet;
 
                 case Command.CommandTypes.Statement:
-                    Var returnStatementCall = ReturnStatement(commandLine.commands);                
+                    Var returnStatementCall = ReturnStatement(commandLine.commands);
                     return returnStatementCall;
 
                 case Command.CommandTypes.String:

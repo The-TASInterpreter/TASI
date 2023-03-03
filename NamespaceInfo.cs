@@ -35,6 +35,36 @@
         public bool isNumeric;
 
 
+        public bool getBoolValue
+        {
+            get
+            {
+                switch (varDef.varType)
+                {
+                    case VarDef.evarType.Num or VarDef.evarType.Bool:
+                        if (numValue == null)
+                            throw new Exception($"The variable \"{varDef.varName}\" can't be used, because it is not defined.");
+                        if (numValue == 1) return true;
+                        if (numValue == 0) return false;
+                        if (varDef.varType == VarDef.evarType.Bool)
+                            throw new Exception("Internal: Bool is neither 0 or 1");
+
+                        throw new Exception($"The num variable \"{varDef.varName}\" can't be converted to a bool, because it is neither 1 or 0.");
+
+                    case VarDef.evarType.String:
+                        if (stringValue == null)
+                            throw new Exception($"The variable \"{varDef.varName}\" can't be used, because it is not defined.");
+                        if (stringValue == "1" || stringValue == "true") return true;
+                        if (stringValue == "0" || stringValue == "false") return false;
+                        throw new Exception($"The string variable \"{varDef.varName}\" can't be converted to a bool, because it is neither 1, 0, true or false.");
+
+                    default:
+                        throw new Exception("Invalid var type to convert to bool.");
+
+
+                }
+            }
+        }
 
         public object objectValue
         {
@@ -63,6 +93,8 @@
             {
                 case VarDef.evarType.Num:
                     isNumeric = true;
+                    if (value == null)
+                        value = 0.0;
                     if (varDef.isArray == true)
                         numArrayValue = (double[])value;
                     else

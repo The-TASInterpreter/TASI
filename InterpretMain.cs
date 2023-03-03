@@ -6,6 +6,41 @@ namespace Text_adventure_Script_Interpreter
     {
         public static List<NamespaceInfo> allNamespaces = new List<NamespaceInfo>();
         public static List<Var> allPublicVars = new List<Var>();
+
+        public static void InterpretNormalMode(List<Command> commands)
+        {
+            bool statementMode = false;
+            CommandLine? commandLine = null;
+            foreach (Command command in commands)
+            {
+                if (statementMode)
+                {
+                    if (command.commandType == Command.CommandTypes.EndCommand)
+                    {
+                        Statement.StaticStatement(commandLine);
+                        statementMode = false;
+                        continue;
+                    }
+                    commandLine.commands.Add(command);
+                    continue;
+                }
+
+
+                switch (command.commandType)
+                {
+                    case Command.CommandTypes.UnknownMethod:
+                        new MethodCall(command).DoMethodCall();
+                        break;
+                    case Command.CommandTypes.Statement:
+                        statementMode = true;
+                        commandLine = new(new List<Command> { command }, 1);
+                        break;
+                    default:
+                        throw new NotImplementedException($"Internal: Not implemented type: {command.commandType}");
+                }
+            }
+        }
+
         public static void InterpretFile(List<string> file)
         {
 

@@ -74,6 +74,10 @@
         {
             return new Var(new(VarDef.evarType.Bool, ""), true, var0.objectValue.ToString() == var1.objectValue.ToString());
         }
+        public static Var Not(Var var0)
+        {
+            return new Var(new(VarDef.evarType.Bool, ""), true, !var0.getBoolValue);
+        }
 
 
 
@@ -84,7 +88,7 @@
     {
         public enum Type
         {
-            add, sub, mul, div, mod, root, num, calc, str, syx, equ
+            add, sub, mul, div, mod, root, num, calc, str, syx, equ, not
         }
         public Type type;
         public double? value;
@@ -289,6 +293,22 @@
                         values.Clear();
                         values.Add(temp);
                         break;
+                    case Type.not:
+                        if (values.Count != 1)
+                        {
+                            if (calculationNext != null && calculationNext.isValue && values.Count == 0)
+                            {
+                                skip = 1;
+                                values.Add(calculationNext.VarReturn);
+                            }
+                            else
+                                throw new Exception("The not operator doesnt support less or more than one value.");
+                        }
+                        temp = NumCalculation.Not(values[0]);
+                        values.Clear();
+                        values.Add(temp);
+                        break;
+
                     case Type.calc or Type.syx:
                         values.Clear();
                         values.Add(calculation.CalculateValue());
@@ -375,6 +395,9 @@
                     return;
                 case "=":
                     type = Type.equ;
+                    return;
+                case "!":
+                    type = Type.not;
                     return;
                 default:
                     throw new Exception($"\"{token} is neither a number nor an operator, a method or a string.\nIf you want to use syntax, put it in braces and put a $ in front e.g.:(5+($true))");

@@ -8,7 +8,7 @@
         {
             if (command.commandType != Command.CommandTypes.NumCalculation) throw new Exception("Internal: This method only deals with NumCalculations");
             //Grab tokens
-            
+
             CalculationType calculation = new(command.commandText, false, true, false);
 
 
@@ -70,6 +70,11 @@
             }
             throw new Exception($"Cant root {var0.varDef.varType} with {var1.varDef.varType}.");
         }
+        public static Var Equ(Var var0, Var var1)
+        {
+            return new Var(new(VarDef.evarType.Bool, ""), true, var0.objectValue.ToString() == var1.objectValue.ToString());
+        }
+
 
 
     }
@@ -79,7 +84,7 @@
     {
         public enum Type
         {
-            add, sub, mul, div, mod, root, num, calc, str, syx
+            add, sub, mul, div, mod, root, num, calc, str, syx, equ
         }
         public Type type;
         public double? value;
@@ -268,6 +273,22 @@
                         values.Clear();
                         values.Add(temp);
                         break;
+
+                    case Type.equ:
+                        if (values.Count != 2)
+                        {
+                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
+                            {
+                                skip = 1;
+                                values.Add(calculationNext.VarReturn);
+                            }
+                            else
+                                throw new Exception("The equ operator doesnt support less or more than two values.");
+                        }
+                        temp = NumCalculation.Equ(values[0], values[1]);
+                        values.Clear();
+                        values.Add(temp);
+                        break;
                     case Type.calc or Type.syx:
                         values.Clear();
                         values.Add(calculation.CalculateValue());
@@ -276,7 +297,7 @@
                 }
             }
             if (values.Count != 1) throw new Exception("Invalid num calculation (Ended up with too many or few tokens)");
-            
+
             return values[0];
 
         }
@@ -351,6 +372,9 @@
                     return;
                 case "root":
                     type = Type.root;
+                    return;
+                case "=":
+                    type = Type.equ;
                     return;
                 default:
                     throw new Exception($"\"{token} is neither a number nor an operator, a method or a string.\nIf you want to use syntax, put it in braces and put a $ in front e.g.:(5+($true))");

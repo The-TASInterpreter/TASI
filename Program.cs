@@ -31,7 +31,7 @@ namespace Text_adventure_Script_Interpreter
             Console.Clear();
 
             Console.WriteLine("Write code:");
-            
+
 
 
             Global.InitInternalNamespaces();
@@ -81,74 +81,7 @@ namespace Text_adventure_Script_Interpreter
 
             return;
 
-            try
-            {
-                Global.InitInternalNamespaces();
-                interpretInitLog.path = "C:\\Users\\ewolf\\AppData\\Roaming\\text_adventure_launcher\\temp\\HarryPotterComicSimVer1.6\\HarryPotterComicSim\\interpretInitLog.txt";
-                interpretInitLog.loggerEnabled = true;
-                Console.WriteLine("Pre-compiling...");
-                Stopwatch time = Stopwatch.StartNew();
-                NamespaceInfo testNamespace = new NamespaceInfo(NamespaceInfo.NamespaceIntend.Main, "testNamespace");
 
-                List<Command> lineCommandTest = new List<Command>(StringProcess.ConvertLineToCommand("[TASI.DecFunc \"Main\",\"void\",[SArray.DecArray \"array cum, string cool\"]]"));
-
-                List<CommandLine> testReadFile = new List<CommandLine>(ScanFile.ScanFilePathToCommand("C:\\Users\\ewolf\\AppData\\Roaming\\text_adventure_launcher\\temp\\HarryPotterComicSimVer1.6\\HarryPotterComicSim\\main.TASI"));
-
-                foreach (CommandLine line in testReadFile)
-                {
-                    line.SaveToFile("C:\\Users\\ewolf\\AppData\\Roaming\\text_adventure_launcher\\temp\\HarryPotterComicSimVer1.6\\HarryPotterComicSim\\cached.txt");
-                }
-                List<UnspecifiedMethod> testScanMethods = InterpretMain.FindAllMethods(InterpretMain.ConvertCommandLineToCommand(testReadFile));
-                InterpretMain.UseFunc(new Command(Command.CommandTypes.VoidMethod, "INF.DefFunc:\"Main\",,\"void\", new array string {\"string\"; \"string_argument\"; \"num\"; \"num_argument\";};"));
-                time.Stop();
-                Console.WriteLine($"Success! Took {time.ElapsedMilliseconds}ms");
-                interpretInitLog.Flush();
-                Console.ReadKey();
-            }
-            catch (Exception ex)
-            {
-                Console.Clear();
-                Console.WriteLine("Error while interpreting:\n");
-                if (line != -1)
-                    Console.WriteLine("Error at line: " + line + "\n");
-                Console.WriteLine(ex.Message);
-
-                Console.ReadKey();
-            }
-
-
-
-
-
-
-
-
-
-
-
-            if (false)
-            {
-
-                System.ConsoleKeyInfo key;
-                GetKeys getKey = new GetKeys();
-                Task getKeys = new Task(getKey.GetPressedKeys);
-                while (true)
-                {
-                    if (Console.KeyAvailable)
-                    {
-                        key = Console.ReadKey(true);
-                        Console.WriteLine(key.Key);
-                    }
-                    Console.WriteLine(getKey.PressedKey);
-                    Console.WriteLine("test");
-                    Thread.Sleep(1000);
-
-                }
-
-            }
         }
-
-
-
     }
 }

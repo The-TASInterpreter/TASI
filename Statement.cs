@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace Text_adventure_Script_Interpreter
+﻿namespace Text_adventure_Script_Interpreter
 {
 
 
@@ -36,20 +34,39 @@ namespace Text_adventure_Script_Interpreter
                     if (commandLine.commands[checkStatement.commands.Count + 1].commandType != Command.CommandTypes.CodeContainer)
                         throw new Exception("Invalid stuff in while loop I hate writeing these messages pls kill me");
                     List<Command> code = StringProcess.ConvertLineToCommand(commandLine.commands[checkStatement.commands.Count + 1].commandText);
-                    while (GetVarOfCommandLine(checkStatement).getBoolValue) 
+                    while (GetVarOfCommandLine(checkStatement).getBoolValue)
                         InterpretMain.InterpretNormalMode(code);
+                    break;
+                case "if":
+                    if (commandLine.commands.Count < 3) throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
+                    if (commandLine.commands[2].commandType != Command.CommandTypes.CodeContainer)
+                        throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
+
+
+                    if (commandLine.commands.Count == 3)
+                    {
+                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1)).getBoolValue)
+                            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commandLine.commands[2].commandText));
+                    }
+                    else if (commandLine.commands.Count == 5)
+                    {
+                        if (commandLine.commands[3].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandText != "else")
+                            throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
+                        if (commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer)
+                            throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
+                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1)).getBoolValue)
+                            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commandLine.commands[2].commandText));
+                        else
+                            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commandLine.commands[4].commandText));
 
 
 
+                    }
                     break;
                 default:
                     throw new Exception($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
-
-
             }
         }
-
-
         public static Var GetVarOfCommandLine(CommandLine commandLine, VarDef.evarType expectedType)
         {
 

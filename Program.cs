@@ -35,8 +35,13 @@ namespace Text_adventure_Script_Interpreter
 
 
             Global.InitInternalNamespaces();
+            string command = Console.ReadLine() ?? throw new Exception("Code is null.");
 
-            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(Console.ReadLine()));
+            Stopwatch codeRuntime = new Stopwatch();
+            codeRuntime.Start();
+            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(command));
+            codeRuntime.Stop();
+            Console.WriteLine($"Runtime: {codeRuntime.ElapsedMilliseconds} ms");
 
             //try
             //{

@@ -6,7 +6,7 @@ namespace Text_adventure_Script_Interpreter
     {
         public string? path;
         public bool loggerEnabled = true;
-        private StreamWriter logWriter;
+        private StreamWriter? logWriter;
 
         public Logger(string path)
         {

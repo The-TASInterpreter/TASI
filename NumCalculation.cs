@@ -78,6 +78,24 @@
         {
             return new Var(new(VarDef.evarType.Bool, ""), true, !var0.getBoolValue);
         }
+        public static Var Grt(Var var0, Var var1)
+        {
+            if (var0.isNumeric && var1.isNumeric)
+            {
+                return new Var(new(VarDef.evarType.Bool, ""), true, var0.numValue > var1.numValue);
+            }
+            throw new Exception($"Cant grt {var0.varDef.varType} with {var1.varDef.varType}.");
+            
+        }
+        public static Var Sml(Var var0, Var var1)
+        {
+            if (var0.isNumeric && var1.isNumeric)
+            {
+                return new Var(new(VarDef.evarType.Bool, ""), true, var0.numValue < var1.numValue);
+            }
+            throw new Exception($"Cant sml {var0.varDef.varType} with {var1.varDef.varType}.");
+
+        }
 
 
 
@@ -88,7 +106,7 @@
     {
         public enum Type
         {
-            add, sub, mul, div, mod, root, num, calc, str, syx, equ, not
+            add, sub, mul, div, mod, root, num, calc, str, syx, equ, not, grt, sml
         }
         public Type type;
         public double? value;
@@ -308,6 +326,36 @@
                         values.Clear();
                         values.Add(temp);
                         break;
+                    case Type.grt:
+                        if (values.Count != 2)
+                        {
+                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
+                            {
+                                skip = 1;
+                                values.Add(calculationNext.VarReturn);
+                            }
+                            else
+                                throw new Exception("The equ operator doesnt support less or more than two values.");
+                        }
+                        temp = NumCalculation.Grt(values[0], values[1]);
+                        values.Clear();
+                        values.Add(temp);
+                        break;
+                    case Type.sml:
+                        if (values.Count != 2)
+                        {
+                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
+                            {
+                                skip = 1;
+                                values.Add(calculationNext.VarReturn);
+                            }
+                            else
+                                throw new Exception("The equ operator doesnt support less or more than two values.");
+                        }
+                        temp = NumCalculation.Sml(values[0], values[1]);
+                        values.Clear();
+                        values.Add(temp);
+                        break;
 
                     case Type.calc or Type.syx:
                         values.Clear();
@@ -398,6 +446,12 @@
                     return;
                 case "!":
                     type = Type.not;
+                    return;
+                case ">":
+                    type = Type.grt;
+                    return;
+                case "<":
+                    type = Type.sml;
                     return;
                 default:
                     throw new Exception($"\"{token} is neither a number nor an operator, a method or a string.\nIf you want to use syntax, put it in braces and put a $ in front e.g.:(5+($true))");

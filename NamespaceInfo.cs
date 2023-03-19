@@ -30,8 +30,8 @@
         public bool tempVar;
         public double? numValue;
         public string? stringValue;
-        public double[] numArrayValue;
-        public string[] stringArrayValue;
+        public double[]? numArrayValue;
+        public string[]? stringArrayValue;
         public bool isNumeric;
 
 
@@ -104,6 +104,7 @@
                     isNumeric = true;
                     if (varDef.isArray == true)
                         throw new Exception("Sorry, but there are no bool arrays rn. Gonna add them in later. I promise!");
+                    if (value == null) throw new Exception("Internal: value is null");
                     if ((bool)value)
                         numValue = 1;
                     else
@@ -111,6 +112,7 @@
                     break;
                 case VarDef.evarType.String:
                     isNumeric = false;
+                    if (value == null) throw new Exception("Internal: value is null");
                     if (varDef.isArray == true)
                         stringArrayValue = (string[])value;
                     else

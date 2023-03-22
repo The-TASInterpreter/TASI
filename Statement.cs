@@ -12,7 +12,7 @@
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
                 throw new Exception("Internal: StaticStatements must start with a Statement");
 
-            switch (commandLine.commands[0].commandText)
+            switch (commandLine.commands[0].commandText.ToLower())
             {
                 case "set":
                     //Validate syntax
@@ -63,6 +63,25 @@
 
                     }
                     break;
+                case "helpm":
+                    if (commandLine.commands.Count != 2) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
+                    if (commandLine.commands[1].commandType != Command.CommandTypes.UnknownMethod) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
+                    MethodCall helpCall = new(commandLine.commands[1]);
+                    ErrorHelp.ListMethodArguments(helpCall.callMethod);
+                    break;
+                case "listm":
+                    if (commandLine.commands.Count != 2) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
+                    if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
+                    ErrorHelp.ListLocation(commandLine.commands[1].commandText);
+                    break;
+                case "rootm":
+                    if (commandLine.commands.Count != 1) throw new Exception("Invalid rootm statement syntax. Example for right syntax:\nhelpm; (It's that simple)");
+                    Console.WriteLine("All registered namespaces are:");
+                    ErrorHelp.ListNamespaces(Global.Namespaces);
+                    break;
+
+
+
                 default:
                     throw new Exception($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
             }

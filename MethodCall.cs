@@ -106,56 +106,8 @@
             foreach (string argument in methodArguments) //Convert string arguments to commands
                 argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), Text_adventure_Script_Interpreter_Main.line));
 
-            // search for method
-            string[] methodLocationSplit = methodName.Split('.');
 
-            if (methodLocationSplit.Length < 2)
-            {
-                if (methodLocationSplit.Length == 0) throw new Exception("The methodname cant be empty.");
-                if (methodLocationSplit.Length == 1) throw new Exception("A namespace cant be used as a method directly.");
-            }
-
-            NamespaceInfo methodParentNamespace = new(NamespaceInfo.NamespaceIntend.Internal, "Invalid");
-
-            foreach (NamespaceInfo namespaceInfo in Global.Namespaces)
-            {
-                if (namespaceInfo.name == methodLocationSplit[0])
-                {
-                    methodParentNamespace = namespaceInfo;
-                    break;
-                }
-            }
-            if (methodParentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.Internal && methodParentNamespace.name == "Invalid")
-                throw new Exception($"The namespace \"{methodLocationSplit[0]}\" cant be found."); // Hella good code
-
-            Method directNamespaceParentMethod = new("", VarDef.evarType.Void, new(NamespaceInfo.NamespaceIntend.Internal, "Invalid"), new());
-            foreach (Method method in methodParentNamespace.namespaceMethods)
-            {
-                if (method.funcName == methodLocationSplit[1])
-                {
-                    directNamespaceParentMethod = method;
-                    break;
-                }
-            }
-
-            if (directNamespaceParentMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.Internal && directNamespaceParentMethod.parentNamespace.name == "Invalid")
-                throw new Exception($"The method \"{methodLocationSplit[1]}\" cant be found."); // Hella good code
-            List<Method> submethods = new List<Method>();
-            submethods.Add(directNamespaceParentMethod);
-            for (int i = 2; i < methodLocationSplit.Length; i++)
-            {
-                foreach (Method method in submethods.Last().subMethods)
-                {
-                    if (method.funcName == methodLocationSplit[i])
-                    {
-                        submethods.Add(method);
-                        continue;
-                    }
-
-                }
-                throw new Exception($"The submethod \"{methodLocationSplit[i]}\" does not exist");
-            }
-            this.callMethod = submethods.Last();
+            this.callMethod = FindMethodByPath(methodName, Global.Namespaces, true); 
 
 
 
@@ -187,6 +139,53 @@
         }
 
 
+        public static NamespaceInfo? FindNamespaceByName(string name, List<NamespaceInfo> namespaces, bool exceptionAtNotFound)
+        {
+
+            foreach (NamespaceInfo namespaceInfo in namespaces)
+                if (namespaceInfo.name == name)
+                    return namespaceInfo;
+
+            if (exceptionAtNotFound)
+                throw new Exception($"The namespace \"{name}\" was not found.");
+            else
+                return null;
+        }
+
+        public static Method? FindMethodByPath(string name, List<NamespaceInfo> parentNamespaces, bool exceptionAtNotFound)
+        {
+            string[] nameSplit = name.Split('.');
+            if (nameSplit.Length < 2)
+                throw new Exception($"Can't find method \"{name}\" because there is no method in the location.");
+            NamespaceInfo? parentNamespace = FindNamespaceByName(nameSplit[0], parentNamespaces, exceptionAtNotFound);
+            if (parentNamespace == null)
+                return null;
+            List<Method> methods = parentNamespace.namespaceMethods;
+            Method? currentMethod = null;
+            for (int i = 0; i < nameSplit.Length - 1; i++)
+            {
+                currentMethod = null;
+                foreach (Method method in methods)
+                {
+                    if (method.funcName == nameSplit[i + 1])
+                    {
+                        methods = method.subMethods;
+                        currentMethod = method;
+                        break;
+                    }
+                }
+                if (currentMethod == null)
+                {
+                    if (exceptionAtNotFound)
+                        throw new Exception($"Could not find method \"{name}\".");
+                    else
+                        return null;
+                }
+
+            }
+            return currentMethod;
+
+        }
 
         public Var DoMethodCall()
         {
@@ -225,7 +224,7 @@
             }
 
             if (!CheckIfMethodCallHasValidArgTypes(inputVars))
-                throw new Exception($"The method \"{callMethod.methodLocation}\" doesent support the provided input types.");
+                throw new Exception($"The method \"{callMethod.methodLocation}\" doesent support the provided input types. Use the syntax \"helpm <method call>;\"\nFor this method it would be: \"helpm [{callMethod.methodLocation}];\"");
 
 
             if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.Internal)

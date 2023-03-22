@@ -1,4 +1,4 @@
-﻿namespace Text_adventure_Script_Interpreter
+﻿namespace TASI
 {
     internal class ScanFile
     {
@@ -6,11 +6,11 @@
         {
             List<string> file = new List<string>(File.ReadAllLines(path));
             List<CommandLine> result = new List<CommandLine>();
-            Text_adventure_Script_Interpreter_Main.line = 0;
+            TASI_Main.line = 0;
             long lineIDX = 0;
             foreach (string line in file)
             {
-                Text_adventure_Script_Interpreter_Main.line++;
+                TASI_Main.line++;
                 lineIDX++;
                 if (line == String.Empty)
                     continue;

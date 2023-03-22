@@ -1,4 +1,4 @@
-﻿namespace Text_adventure_Script_Interpreter
+﻿namespace TASI
 {
     public class NamespaceInfo
     {
@@ -15,7 +15,7 @@
 
         public NamespaceInfo(NamespaceIntend namespaceIntend, string name)
         {
-            Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Creating new Namespace. Intend: {namespaceIntend}; Name: {name}");
+            TASI_Main.interpretInitLog.Log($"Creating new Namespace. Intend: {namespaceIntend}; Name: {name}");
             this.namespaceIntend = namespaceIntend;
             this.name = name;
         }

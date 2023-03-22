@@ -11,9 +11,9 @@
 
 using System.Diagnostics;
 
-namespace Text_adventure_Script_Interpreter
+namespace TASI
 {
-    class Text_adventure_Script_Interpreter_Main
+    class TASI_Main
     {
 
 

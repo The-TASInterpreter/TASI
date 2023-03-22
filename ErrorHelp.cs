@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 
-namespace Text_adventure_Script_Interpreter
+namespace TASI
 {
     internal class ErrorHelp
     {

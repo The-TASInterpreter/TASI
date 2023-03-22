@@ -1,6 +1,6 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 
-namespace Text_adventure_Script_Interpreter
+namespace TASI
 {
     internal class InterpretMain
     {
@@ -86,7 +86,7 @@ namespace Text_adventure_Script_Interpreter
 
         public static List<UnspecifiedMethod> FindAllMethods(List<Command> commands)
         {
-            Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Searching all methods");
+            TASI_Main.interpretInitLog.Log($"Searching all methods");
             Command.CommandTypes lastCommandType = Command.CommandTypes.EndCommand;
             int methodDeph = 0;
             int methodDefMode = 0;
@@ -101,12 +101,12 @@ namespace Text_adventure_Script_Interpreter
                         if (command.commandType == Command.CommandTypes.Statement) // The method def should be method <method_name> {
                         {
                             currentMethodName = command.commandText;
-                            Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Found new method:\n{command.commandText}");
+                            TASI_Main.interpretInitLog.Log($"Found new method:\n{command.commandText}");
                             methodDefMode++;
                         }
                         else
                         {
-                            Text_adventure_Script_Interpreter_Main.line = command.commandLine;
+                            TASI_Main.line = command.commandLine;
                             throw new Exception($"Invalid method definition type at statement part 2 ({command.commandType}). The type should be {Command.CommandTypes.Statement}. The method statement should be used like this: \"method <method_name> {{\". E.U.0004");
                         }
                         break;
@@ -120,14 +120,14 @@ namespace Text_adventure_Script_Interpreter
                             }
                             else
                             {
-                                Text_adventure_Script_Interpreter_Main.line = command.commandLine;
+                                TASI_Main.line = command.commandLine;
                                 throw new Exception($"Invalid method definition brace at statement part 3 ({command.commandText}). The brace should be {{. The method statement should be used like this: \"method <method_name> {{\". E.U.0006");
                             }
 
                         }
                         else
                         {
-                            Text_adventure_Script_Interpreter_Main.line = command.commandLine;
+                            TASI_Main.line = command.commandLine;
                             throw new Exception($"Invalid method definition type at statement part 3 ({command.commandType}). The type should be {Command.CommandTypes.CodeContainer}. The method statement should be used like this: \"method <method_name> {{\". E.U.0005");
                         }
                         break;
@@ -171,7 +171,7 @@ namespace Text_adventure_Script_Interpreter
             }
             if (methodDefMode != 0)
             {
-                Text_adventure_Script_Interpreter_Main.line = -1;
+                TASI_Main.line = -1;
                 throw new Exception($"The method \"{currentMethodName}\" doesn't end at the end of the file. E.U.0007");
             }
             return result;

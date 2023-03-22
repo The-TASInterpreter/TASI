@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Text_adventure_Script_Interpreter
+namespace TASI
 {
     internal class CommandHandle
     {

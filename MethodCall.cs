@@ -1,4 +1,4 @@
-﻿namespace Text_adventure_Script_Interpreter
+﻿namespace TASI
 {
     public class MethodCall
     {
@@ -104,7 +104,7 @@
                 methodArguments.Add(currentArgument);
             argumentCommands = new(methodArguments.Count);
             foreach (string argument in methodArguments) //Convert string arguments to commands
-                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), Text_adventure_Script_Interpreter_Main.line));
+                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), TASI_Main.line));
 
 
             this.callMethod = FindMethodByPath(methodName, Global.Namespaces, true); 

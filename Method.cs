@@ -1,4 +1,4 @@
-﻿namespace Text_adventure_Script_Interpreter
+﻿namespace TASI
 {
     // [TASI.DecFunc "Main","void",[SArray.DecArray "array cum, string cool"]];
     public class Method

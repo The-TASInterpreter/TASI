@@ -1,4 +1,4 @@
-﻿namespace Text_adventure_Script_Interpreter
+﻿namespace TASI
 {
     public class StringProcess
     {
@@ -38,7 +38,7 @@
         internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '^', '{', '}' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
         public static List<Command> ConvertLineToCommand(string line)
         {
-            Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Finding syntax of line text:\n{line}");
+            TASI_Main.interpretInitLog.Log($"Finding syntax of line text:\n{line}");
             List<Command> commands = new List<Command>();
             bool stringMode = false;
             bool methodMode = false;
@@ -86,7 +86,7 @@
 
                         if (codeContainerDeph == 0)
                         {
-                            Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Code container found:\n{commandText}");
+                            TASI_Main.interpretInitLog.Log($"Code container found:\n{commandText}");
                             codeContainerMode = false;
                             commands.Add(new Command(Command.CommandTypes.CodeContainer, commandText));
                             commandText = string.Empty;
@@ -132,7 +132,7 @@
                     }
                     else
                     {
-                        Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"String found:\n{commandText}");
+                        TASI_Main.interpretInitLog.Log($"String found:\n{commandText}");
 
                         commands.Add(new Command(Command.CommandTypes.String, commandText));
                         commandText = string.Empty;
@@ -171,7 +171,7 @@
 
                         if (methodModeDeph == 0)
                         {
-                            Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Unknown method found:\n{commandText}");
+                            TASI_Main.interpretInitLog.Log($"Unknown method found:\n{commandText}");
                             methodMode = false;
                             commands.Add(new Command(Command.CommandTypes.UnknownMethod, commandText));
                             commandText = string.Empty;
@@ -221,7 +221,7 @@
 
                         if (methodModeDeph == 0)
                         {
-                            Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Num calc found:\n{commandText}");
+                            TASI_Main.interpretInitLog.Log($"Num calc found:\n{commandText}");
                             NumCalculationMode = false;
                             commands.Add(new Command(Command.CommandTypes.NumCalculation, commandText));
                             commandText = string.Empty;
@@ -245,7 +245,7 @@
                 {
                     if (c == ' ' || specialCommandChars.Contains(c))
                     {
-                        Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Statement found:\n{commandText}");
+                        TASI_Main.interpretInitLog.Log($"Statement found:\n{commandText}");
                         commands.Add(new Command(Command.CommandTypes.Statement, commandText));
                         syntaxMode = false;
                         commandText = string.Empty;
@@ -263,7 +263,7 @@
                 switch (c)
                 {
                     case '^':
-                        Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"Comment found; Skiping line");
+                        TASI_Main.interpretInitLog.Log($"Comment found; Skiping line");
                         commentMode = true;
                         break;
                     case '\"':
@@ -278,12 +278,12 @@
                         NumCalculationMode = true;
                         break;
                     case '{':
-                        Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"CodeContainer found \"{c}\"");
+                        TASI_Main.interpretInitLog.Log($"CodeContainer found \"{c}\"");
                         codeContainerDeph = 1;
                         codeContainerMode = true;
                         break;
                     case ';':
-                        Text_adventure_Script_Interpreter_Main.interpretInitLog.Log($"EndCommand found (;)");
+                        TASI_Main.interpretInitLog.Log($"EndCommand found (;)");
                         commands.Add(new Command(Command.CommandTypes.EndCommand, Convert.ToString(';')));
                         break;
 

@@ -1,4 +1,4 @@
-# Text adventure script Interpreter
+# TASI
 This is a project of mine, which is there, to make whitelisting storys unnessesary. Storys don't need to be whitelisted anymore, because dangerus functions will be disabled.
 
 ## At the current point of time

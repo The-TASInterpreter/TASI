@@ -10,6 +10,7 @@
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
 
 using System.Diagnostics;
+using Text_adventure_Script_Interpreter;
 
 namespace TASI
 {
@@ -30,16 +31,30 @@ namespace TASI
             Console.ReadKey(false);
             Console.Clear();
 
-            Console.WriteLine("Write code:");
+            Console.WriteLine("Enter file location with code:");
 
 
 
             Global.InitInternalNamespaces();
-            string command = Console.ReadLine() ?? throw new Exception("Code is null.");
+            string location = Console.ReadLine() ?? throw new Exception("Code is null.");
+            if (!File.Exists(location)) throw new Exception("The user entered file doesn't exist.");
+            List<string> codeFile = File.ReadAllLines(location).ToList();
 
             Stopwatch codeRuntime = new Stopwatch();
             codeRuntime.Start();
-            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(command));
+            string allFileCode = "";
+            foreach (string line in codeFile)
+            {
+                List<LetterByLetterAnalysis> letters = LetterByLetterAnalysis.AnalyseString(line);
+                foreach (LetterByLetterAnalysis letter in letters)
+                {
+                    if (letter.lastLetterType == LetterByLetterAnalysis.LastLetterType.statement && letter.letterChar == '/')
+                        break;
+                    allFileCode += letter.letterChar;
+                    
+                }
+            }
+            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(allFileCode));
             codeRuntime.Stop();
             Console.WriteLine($"Runtime: {codeRuntime.ElapsedMilliseconds} ms");
 

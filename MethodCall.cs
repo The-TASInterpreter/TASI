@@ -193,30 +193,30 @@
             foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
             {
                 /*
-                switch (commandLine.commands[0].commandType)
+                switch (commandLine.commands[0].lastLetterType)
                 {
-                    case Command.CommandTypes.String:
+                    case Command.LastLetterType.String:
                         if (commandLine.commands.Count != 1)
-                            throw new Exception($"Not expected {commandLine.commands[1].commandType} after string (\"{commandLine.commands[1].commandText}\")");
+                            throw new Exception($"Not expected {commandLine.commands[1].lastLetterType} after string (\"{commandLine.commands[1].commandText}\")");
                         inputVars.Add(new(new(VarDef.evarType.String, ""), true, commandLine.commands[0].commandText));
                         break;
 
-                    case Command.CommandTypes.UnknownMethod:
+                    case Command.LastLetterType.UnknownMethod:
                         MethodCall tempMethodCall = new(commandLine.commands[0]);
                         inputVars.Add(tempMethodCall.DoMethodCall());
                         break;
 
-                    case Command.CommandTypes.Statement:
+                    case Command.LastLetterType.Statement:
                         inputVars.Add(Statement.ReturnStatement(commandLine.commands));
                         break;
-                    case Command.CommandTypes.NumCalculation:
+                    case Command.LastLetterType.NumCalculation:
                         if (commandLine.commands.Count != 1)
-                            throw new Exception($"Not expected {commandLine.commands[1].commandType} after num calc (\"{commandLine.commands[1].commandText}\")");
+                            throw new Exception($"Not expected {commandLine.commands[1].lastLetterType} after num calc (\"{commandLine.commands[1].commandText}\")");
                         inputVars.Add(NumCalculation.DoNumCalculation(commandLine.commands[0]));
                         break;
 
                     default:
-                        throw new Exception($"Internal error: Unimplemented commandType ({commandLine.commands[0].commandType})");
+                        throw new Exception($"Internal error: Unimplemented lastLetterType ({commandLine.commands[0].lastLetterType})");
 
                 }
                 */

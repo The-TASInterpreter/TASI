@@ -108,10 +108,6 @@
 
                 if (stringMode)
                 {
-                    if (c == '/')
-                    {
-                        Console.WriteLine("mos");
-                    }
 
                     if (c == '\\')
                     {

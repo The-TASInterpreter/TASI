@@ -46,7 +46,8 @@
                 new(1, "1", false),
                 new(1, "($true)", false),
                 new(0, "($false)", false),
-                new(0, "\"A\" - \"B\"", true)
+                new(0, "\"A\" - \"B\"", true),
+                new(1, "(3 > 2) and (4 < 5) or !(6 == 7)", true)
             };
             for (int i = 0; i < tests.Length; i++)
             {

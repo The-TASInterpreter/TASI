@@ -26,8 +26,8 @@ namespace TASI
         public static void Main(string[] args)
         {
             Console.WriteLine("Doing tests...");
-            //Tests.NumCalcTests();
-            //Console.ReadKey(false);
+            Tests.NumCalcTests();
+            Console.ReadKey(false);
             Console.Clear();
 
             Console.WriteLine("Write code:");

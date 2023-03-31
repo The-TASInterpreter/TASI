@@ -104,7 +104,7 @@
                     isNumeric = true;
                     if (varDef.isArray == true)
                         throw new Exception("Sorry, but there are no bool arrays rn. Gonna add them in later. I promise!");
-                    if (value == null) throw new Exception("Internal: value is null");
+                    if (value == null) value = 0.0;
                     if ((bool)value)
                         numValue = 1;
                     else
@@ -112,7 +112,7 @@
                     break;
                 case VarDef.evarType.String:
                     isNumeric = false;
-                    if (value == null) throw new Exception("Internal: value is null");
+                    if (value == null) value = "";
                     if (varDef.isArray == true)
                         stringArrayValue = (string[])value;
                     else

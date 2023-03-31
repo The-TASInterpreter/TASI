@@ -31,7 +31,9 @@
                     Console.ReadKey();
                     return new();
                 case "Inf.DefVar":
-                    Global.CurrentlyAccessableVars.Add(new(new(Enum.Parse<VarDef.evarType>(input[0].stringValue), input[1].stringValue), false, ""));
+
+
+                    Global.CurrentlyAccessableVars.Add(new(new(Enum.Parse<VarDef.evarType>(input[0].stringValue), input[1].stringValue), false, null));
                     return new();
                 case "Convert.ToNum":
                     if (!double.TryParse(input[0].stringValue, out double result))

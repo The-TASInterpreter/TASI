@@ -22,16 +22,16 @@
         {
             if (var0.isNumeric && var1.isNumeric)
                 //If both are either num or bool (Its the same)
-                return new Var(new(VarDef.evarType.Num, ""), true, var0.numValue + var1.numValue);
-            if (var0.varDef.varType == VarDef.evarType.String || var1.varDef.varType == VarDef.evarType.String)
+                return new Var(new(VarDef.EvarType.Num, ""), true, var0.numValue + var1.numValue);
+            if (var0.varDef.varType == VarDef.EvarType.String || var1.varDef.varType == VarDef.EvarType.String)
                 //Checking if either are string. (If one or both are, convert both to strings and attatch.
-                return new Var(new(VarDef.evarType.String, ""), true, Convert.ToString(var0.objectValue) + Convert.ToString(var1.objectValue));
+                return new Var(new(VarDef.EvarType.String, ""), true, Convert.ToString(var0.ObjectValue) + Convert.ToString(var1.ObjectValue));
             throw new Exception($"Cant add {var0.varDef.varType} with {var1.varDef.varType}.");
         }
         public static Var Sub(Var var0, Var var1)
         {
             if (var0.isNumeric && var1.isNumeric)
-                return new Var(new(VarDef.evarType.Num, ""), true, var0.numValue - var1.numValue);
+                return new Var(new(VarDef.EvarType.Num, ""), true, var0.numValue - var1.numValue);
             throw new Exception($"Can't sub {var0.varDef.varType} with {var1.varDef.varType}.");
         }
 
@@ -39,7 +39,7 @@
         {
             if (var0.isNumeric && var1.isNumeric)
             {
-                return new Var(new(VarDef.evarType.Num, ""), true, var0.numValue * var1.numValue);
+                return new Var(new(VarDef.EvarType.Num, ""), true, var0.numValue * var1.numValue);
             }
             throw new Exception($"Cant mul {var0.varDef.varType} with {var1.varDef.varType}.");
         }
@@ -48,7 +48,7 @@
             if (var0.isNumeric && var1.isNumeric)
             {
                 if (var1.numValue == 0) throw new Exception("Cant devide by 0");
-                return new Var(new(VarDef.evarType.Num, ""), true, var0.numValue / var1.numValue);
+                return new Var(new(VarDef.EvarType.Num, ""), true, var0.numValue / var1.numValue);
             }
             throw new Exception($"Cant div {var0.varDef.varType} with {var1.varDef.varType}.");
         }
@@ -56,7 +56,7 @@
         {
             if (var0.isNumeric && var1.isNumeric)
             {
-                return new Var(new(VarDef.evarType.Num, ""), true, var0.numValue % var1.numValue);
+                return new Var(new(VarDef.EvarType.Num, ""), true, var0.numValue % var1.numValue);
             }
             throw new Exception($"Cant mod {var0.varDef.varType} with {var1.varDef.varType}.");
         }
@@ -65,24 +65,24 @@
         {
             if (var0.isNumeric && var1.isNumeric)
             {
-                return new Var(new(VarDef.evarType.Num, ""), true, Math.Pow(var0.numValue ?? throw new Exception("Internal: numValue of arg 0 is null"), 1 / var1.numValue ?? throw new Exception("Internal: numValue of arg 1 is null")));
+                return new Var(new(VarDef.EvarType.Num, ""), true, Math.Pow(var0.numValue ?? throw new Exception("Internal: numValue of arg 0 is null"), 1 / var1.numValue ?? throw new Exception("Internal: numValue of arg 1 is null")));
                 // Math.Pow(X, (1 / N)) is the same as Nth root of X
             }
             throw new Exception($"Cant root {var0.varDef.varType} with {var1.varDef.varType}.");
         }
         public static Var Equ(Var var0, Var var1)
         {
-            return new Var(new(VarDef.evarType.Bool, ""), true, var0.objectValue.ToString() == var1.objectValue.ToString());
+            return new Var(new(VarDef.EvarType.Bool, ""), true, var0.ObjectValue.ToString() == var1.ObjectValue.ToString());
         }
         public static Var Not(Var var0)
         {
-            return new Var(new(VarDef.evarType.Bool, ""), true, !var0.getBoolValue);
+            return new Var(new(VarDef.EvarType.Bool, ""), true, !var0.GetBoolValue);
         }
         public static Var Grt(Var var0, Var var1)
         {
             if (var0.isNumeric && var1.isNumeric)
             {
-                return new Var(new(VarDef.evarType.Bool, ""), true, var0.numValue > var1.numValue);
+                return new Var(new(VarDef.EvarType.Bool, ""), true, var0.numValue > var1.numValue);
             }
             throw new Exception($"Cant grt {var0.varDef.varType} with {var1.varDef.varType}.");
 
@@ -91,7 +91,7 @@
         {
             if (var0.isNumeric && var1.isNumeric)
             {
-                return new Var(new(VarDef.evarType.Bool, ""), true, var0.numValue < var1.numValue);
+                return new Var(new(VarDef.EvarType.Bool, ""), true, var0.numValue < var1.numValue);
             }
             throw new Exception($"Cant sml {var0.varDef.varType} with {var1.varDef.varType}.");
 
@@ -99,12 +99,12 @@
 
         public static Var And(Var var0, Var var1)
         {
-            return new Var(new(VarDef.evarType.Bool, ""), true, var0.getBoolValue && var1.getBoolValue);
+            return new Var(new(VarDef.EvarType.Bool, ""), true, var0.GetBoolValue && var1.GetBoolValue);
         }
 
         public static Var Or(Var var0, Var var1)
         {
-            return new Var(new(VarDef.evarType.Bool, ""), true, var0.getBoolValue || var1.getBoolValue);
+            return new Var(new(VarDef.EvarType.Bool, ""), true, var0.GetBoolValue || var1.GetBoolValue);
         }
 
 
@@ -135,10 +135,10 @@
                 switch (type)
                 {
                     case Type.num:
-                        varReturn = new(new(VarDef.evarType.Num, ""), true, value);
+                        varReturn = new(new(VarDef.EvarType.Num, ""), true, value);
                         break;
                     case Type.str:
-                        varReturn = new(new(VarDef.evarType.String, ""), true, stringValue);
+                        varReturn = new(new(VarDef.EvarType.String, ""), true, stringValue);
                         break;
                     default:
                         throw new Exception("Internal: Only values can have a var return.");
@@ -193,12 +193,12 @@
                         temp = calculationNext.CalculateValue();
                         switch (temp.varDef.varType)
                         {
-                            case VarDef.evarType.Num or VarDef.evarType.Bool:
+                            case VarDef.EvarType.Num or VarDef.EvarType.Bool:
                                 calculationNext = new CalculationType(temp.numValue.ToString(), false, false, false);
                                 break;
-                            case VarDef.evarType.Void:
+                            case VarDef.EvarType.Void:
                                 throw new Exception("Can't calculate with a void type.");
-                            case VarDef.evarType.String:
+                            case VarDef.EvarType.String:
                                 calculationNext = new CalculationType(temp.stringValue, true, false, false);
                                 break;
                             default:
@@ -435,13 +435,13 @@
                 isValue = true;
                 switch (methodCall.callMethod.returnType)
                 {
-                    case VarDef.evarType.Void:
+                    case VarDef.EvarType.Void:
                         throw new Exception("A void type cant be used in a num calculation.");
-                    case VarDef.evarType.Num or VarDef.evarType.Bool:
+                    case VarDef.EvarType.Num or VarDef.EvarType.Bool:
                         type = Type.num;
                         value = methodCall.DoMethodCall().numValue;
                         break;
-                    case VarDef.evarType.String:
+                    case VarDef.EvarType.String:
                         type = Type.str;
                         stringValue = methodCall.DoMethodCall().stringValue;
                         break;

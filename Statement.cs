@@ -39,7 +39,7 @@
                     if (commandLine.commands[checkStatement.commands.Count + 1].commandType != Command.CommandTypes.CodeContainer)
                         throw new Exception("Invalid stuff in while loop I hate writeing these messages pls kill me");
                     List<Command> code = StringProcess.ConvertLineToCommand(commandLine.commands[checkStatement.commands.Count + 1].commandText);
-                    while (GetVarOfCommandLine(checkStatement).getBoolValue)
+                    while (GetVarOfCommandLine(checkStatement).GetBoolValue)
                         InterpretMain.InterpretNormalMode(code);
                     return new();
                 case "if":
@@ -50,7 +50,7 @@
 
                     if (commandLine.commands.Count == 3)
                     {
-                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1)).getBoolValue)
+                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1)).GetBoolValue)
                             InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commandLine.commands[2].commandText));
                     }
                     else if (commandLine.commands.Count == 5)
@@ -59,7 +59,7 @@
                             throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                         if (commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer)
                             throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
-                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1)).getBoolValue)
+                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1)).GetBoolValue)
                             InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commandLine.commands[2].commandText));
                         else
                             InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commandLine.commands[4].commandText));
@@ -91,7 +91,7 @@
                     throw new Exception($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
             }
         }
-        public static Var GetVarOfCommandLine(CommandLine commandLine, VarDef.evarType expectedType)
+        public static Var GetVarOfCommandLine(CommandLine commandLine, VarDef.EvarType expectedType)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -118,10 +118,10 @@
                     return returnStatementCall;
 
                 case Command.CommandTypes.String:
-                    if (expectedType != VarDef.evarType.String) throw new Exception($"String is not the expected {expectedType} type.");
+                    if (expectedType != VarDef.EvarType.String) throw new Exception($"String is not the expected {expectedType} type.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
-                    return new Var(new(VarDef.evarType.String, "", false), true, commandLine.commands[0].commandText);
+                    return new Var(new(VarDef.EvarType.String, "", false), true, commandLine.commands[0].commandText);
 
                 default:
                     throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
@@ -133,7 +133,7 @@
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
                 case Command.CommandTypes.UnknownMethod:
-                    MethodCall methodCall = new MethodCall(commandLine.commands[0]);
+                    MethodCall methodCall = new(commandLine.commands[0]);
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
 
@@ -153,7 +153,7 @@
                 case Command.CommandTypes.String:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
-                    return new Var(new(VarDef.evarType.String, "", false), true, commandLine.commands[0].commandText);
+                    return new Var(new(VarDef.EvarType.String, "", false), true, commandLine.commands[0].commandText);
 
                 default:
                     throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
@@ -179,10 +179,10 @@
 
             switch (correctVar.varDef.varType) //Check var type thats needed
             {
-                case VarDef.evarType.Num or VarDef.evarType.Bool:
+                case VarDef.EvarType.Num or VarDef.EvarType.Bool:
                     correctVar.numValue = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), correctVar.varDef.varType).numValue;
                     break;
-                case VarDef.evarType.String:
+                case VarDef.EvarType.String:
                     correctVar.stringValue = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), correctVar.varDef.varType).stringValue;
                     break;
                 default: throw new Exception("Internal: Unimplemented VarType");
@@ -197,10 +197,10 @@
             {
                 case "true":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
-                    return new Var(new(VarDef.evarType.Bool, ""), true, true);
+                    return new Var(new(VarDef.EvarType.Bool, ""), true, true);
                 case "false":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
-                    return new Var(new(VarDef.evarType.Bool, ""), true, false);
+                    return new Var(new(VarDef.EvarType.Bool, ""), true, false);
                 case "new":
                     if (commands[1].commandType != Command.CommandTypes.Statement)
                         throw new Exception($"Unexpected {commands[1].commandType} at argument 1 of new statement\nA statement would be expected at this point.");
@@ -210,18 +210,18 @@
                     return new();
 
                 case "nl":
-                    return new Var(new(VarDef.evarType.String, ""), true, "\n");
+                    return new Var(new(VarDef.EvarType.String, ""), true, "\n");
 
                 case "if":
                     //Check if if statement usage is correct
                     Var? returnVar = null;
                     if (commands.Count != 5 || commands[2].commandType != Command.CommandTypes.CodeContainer || commands[3].commandType != Command.CommandTypes.Statement || commands[3].commandText.ToLower() != "else" || commands[4].commandType != Command.CommandTypes.CodeContainer)
                         throw new Exception("Invalid return-type if statement; Correct usage:\nif <code container> else <code container>");
-                    if (GetVarOfCommandLine(new(new List<Command> { commands[1] }, -1)).getBoolValue)
+                    if (GetVarOfCommandLine(new(new List<Command> { commands[1] }, -1)).GetBoolValue)
                         returnVar = InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commands[2].commandText));
                     else
                         returnVar = InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commands[4].commandText));
-                    if (returnVar.varDef.varType == VarDef.evarType.Return)
+                    if (returnVar.varDef.varType == VarDef.EvarType.Return)
                         return returnVar.returnStatementValue ?? throw new Exception("Internal: return-var var is null");
                     else
                         throw new Exception("The return-type if statemtent didn't return anything");

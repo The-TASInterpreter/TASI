@@ -2,40 +2,7 @@
 {
     public class StringProcess
     {
-        public static string GetConcatInside(char inChar, char outChar, string line)
-        {
-            int deph = 0;
-            int i = 0;
-            char currentChar;
-            string result = string.Empty;
-            do
-            {
-                currentChar = Convert.ToChar(line.Substring(i, 1));
-
-
-                if (currentChar == outChar)
-                    deph--;
-
-                if (deph != 0)
-                    result = result + currentChar;
-
-                if (currentChar == inChar)
-                    deph++;
-
-                if (deph < 0)
-                    throw new Exception("Invalid Concat amount. Try with some more " + inChar);
-
-                if (i > line.Length)
-                    throw new Exception("Invalid Concat amount. Try with some more " + outChar);
-
-
-                i++;
-
-
-            } while (deph > 0);
-            return result;
-        }
-        internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '^', '{', '}' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
+        internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '{', '}' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
         public static List<Command> ConvertLineToCommand(string line)
         {
             TASI_Main.interpretInitLog.Log($"Finding syntax of line text:\n{line}");
@@ -43,7 +10,7 @@
             bool stringMode = false;
             bool methodMode = false;
             bool skipBecauseString = false;
-            bool statementMode = false;
+
             bool syntaxMode = false;
             bool NumCalculationMode = false;
             bool commentMode = false;
@@ -54,7 +21,7 @@
             string commandText = string.Empty;
             char lastChar = ' ';
 
-            foreach (char c in line)
+            foreach (char c in line) //Thats some shit code and imma have to fix it some time, but it basically is the main syntax analysis method.
             {
                 if (codeContainerMode)
                 {
@@ -63,19 +30,19 @@
                         if (c == '\"' && lastChar != '\\')
                         {
                             skipBecauseString = false;
-                            commandText = commandText + c;
+                            commandText += c;
                             continue;
                         }
                         else
                         {
-                            commandText = commandText + c;
+                            commandText += c;
                             lastChar = c;
                             continue;
                         }
                     }
                     if (c == '\"')
                     {
-                        commandText = commandText + c;
+                        commandText += c;
                         lastChar = c;
                         skipBecauseString = true;
                         continue;
@@ -92,16 +59,16 @@
                             commandText = string.Empty;
                             continue;
                         }
-                        commandText = commandText + c;
+                        commandText += c;
                     }
                     else if (c == '{')
                     {
-                        commandText = commandText + c;
+                        commandText += c;
                         codeContainerDeph++;
                     }
                     else
                     {
-                        commandText = commandText + c;
+                        commandText += c;
                     }
                     continue;
                 }
@@ -114,7 +81,7 @@
                         if (stringModeBackslash)
                         {
                             stringModeBackslash = false;
-                            commandText = commandText + c;
+                            commandText += c;
                             continue;
                         }
                         stringModeBackslash = true;
@@ -123,7 +90,7 @@
                     if (c != '\"' || stringModeBackslash)
                     {
                         stringModeBackslash = false;
-                        commandText = commandText + c;
+                        commandText += c;
                         continue;
                     }
                     else
@@ -144,19 +111,19 @@
                         if (c == '\"' && lastChar != '\\')
                         {
                             skipBecauseString = false;
-                            commandText = commandText + c;
+                            commandText += c;
                             continue;
                         }
                         else
                         {
-                            commandText = commandText + c;
+                            commandText += c;
                             lastChar = c;
                             continue;
                         }
                     }
                     if (c == '\"')
                     {
-                        commandText = commandText + c;
+                        commandText += c;
                         lastChar = c;
                         skipBecauseString = true;
                         continue;
@@ -173,16 +140,16 @@
                             commandText = string.Empty;
                             continue;
                         }
-                        commandText = commandText + c;
+                        commandText += c;
                     }
                     else if (c == '[')
                     {
-                        commandText = commandText + c;
+                        commandText += c;
                         methodModeDeph++;
                     }
                     else
                     {
-                        commandText = commandText + c;
+                        commandText += c;
                     }
                     continue;
                 }
@@ -194,19 +161,19 @@
                         if (c == '\"' && lastChar != '\\')
                         {
                             skipBecauseString = false;
-                            commandText = commandText + c;
+                            commandText += c;
                             continue;
                         }
                         else
                         {
-                            commandText = commandText + c;
+                            commandText += c;
                             lastChar = c;
                             continue;
                         }
                     }
                     if (c == '\"')
                     {
-                        commandText = commandText + c;
+                        commandText += c;
                         lastChar = c;
                         skipBecauseString = true;
                         continue;
@@ -223,16 +190,16 @@
                             commandText = string.Empty;
                             continue;
                         }
-                        commandText = commandText + c;
+                        commandText += c;
                     }
                     else if (c == '(')
                     {
-                        commandText = commandText + c;
+                        commandText += c;
                         methodModeDeph++;
                     }
                     else
                     {
-                        commandText = commandText + c;
+                        commandText += c;
                     }
                     continue;
                 }
@@ -251,7 +218,7 @@
                         }
                         continue;
                     }
-                    commandText = commandText + c;
+                    commandText += c;
                     continue;
                 }
 
@@ -289,7 +256,7 @@
                         else
                         {
                             syntaxMode = true;
-                            commandText = commandText + c;
+                            commandText += c;
                             continue;
                         }
 
@@ -304,12 +271,8 @@
                 lastChar = c;
             }
             if (syntaxMode && commandText != String.Empty) // if syntax mode has not ended yet
-            {
-
                 commands.Add(new Command(Command.CommandTypes.Statement, commandText));
-                statementMode = false;
 
-            }
 
 
             if (stringMode)

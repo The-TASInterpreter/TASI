@@ -19,40 +19,40 @@
             */
             Namespaces = new();
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Test"));
-            new Method("HelloWorld", VarDef.evarType.Void, Namespaces[0], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.evarType.Bool, "display"), new(VarDef.evarType.String, "text")}
+            new Method("HelloWorld", VarDef.EvarType.Void, Namespaces[0], new List<List<VarDef>> {
+                new List<VarDef> { new(VarDef.EvarType.Bool, "display"), new(VarDef.EvarType.String, "text")}
             });
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Console"));
-            new Method("WriteLine", VarDef.evarType.Void, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.evarType.String, "text")},
-                new List<VarDef> { new(VarDef.evarType.Num, "num")},
-                new List<VarDef> { new(VarDef.evarType.Bool, "bool")}
+            new Method("WriteLine", VarDef.EvarType.Void, Namespaces[1], new List<List<VarDef>> {
+                new List<VarDef> { new(VarDef.EvarType.String, "text")},
+                new List<VarDef> { new(VarDef.EvarType.Num, "num")},
+                new List<VarDef> { new(VarDef.EvarType.Bool, "bool")}
             });
-            new Method("Write", VarDef.evarType.Void, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.evarType.String, "text")}
+            new Method("Write", VarDef.EvarType.Void, Namespaces[1], new List<List<VarDef>> {
+                new List<VarDef> { new(VarDef.EvarType.String, "text")}
             });
-            new Method("ReadLine", VarDef.evarType.String, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.evarType.Bool, "showTextWhenTyping")},
+            new Method("ReadLine", VarDef.EvarType.String, Namespaces[1], new List<List<VarDef>> {
+                new List<VarDef> { new(VarDef.EvarType.Bool, "showTextWhenTyping")},
                 new List<VarDef> {}
             });
-            new Method("Clear", VarDef.evarType.Void, Namespaces[1], new List<List<VarDef>> {
+            new Method("Clear", VarDef.EvarType.Void, Namespaces[1], new List<List<VarDef>> {
                 new List<VarDef> {}
             });
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Programm"));
-            new Method("Pause", VarDef.evarType.Void, Namespaces[2], new List<List<VarDef>> {
+            new Method("Pause", VarDef.EvarType.Void, Namespaces[2], new List<List<VarDef>> {
                 new List<VarDef> {},
-                new List<VarDef> {new(VarDef.evarType.Bool, "showPausedMessage")}
+                new List<VarDef> {new(VarDef.EvarType.Bool, "showPausedMessage")}
             });
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Inf"));
-            new Method("DefVar", VarDef.evarType.Void, Namespaces[3], new List<List<VarDef>> {
-                new List<VarDef> {new(VarDef.evarType.String, "VarType"), new(VarDef.evarType.String, "VarName")}
+            new Method("DefVar", VarDef.EvarType.Void, Namespaces[3], new List<List<VarDef>> {
+                new List<VarDef> {new(VarDef.EvarType.String, "VarType"), new(VarDef.EvarType.String, "VarName")}
             });
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Convert"));
-            new Method("ToNum", VarDef.evarType.Num, Namespaces[4], new List<List<VarDef>> {
-                new List<VarDef> {new(VarDef.evarType.String, "ConvertFrom"), new(VarDef.evarType.Bool, "errorOnParseFail")}
+            new Method("ToNum", VarDef.EvarType.Num, Namespaces[4], new List<List<VarDef>> {
+                new List<VarDef> {new(VarDef.EvarType.String, "ConvertFrom"), new(VarDef.EvarType.Bool, "errorOnParseFail")}
             });
 
         }

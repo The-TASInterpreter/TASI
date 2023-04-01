@@ -8,14 +8,14 @@
         public bool isSubmethod;
         public Method? parentMethod;
         public bool isVoid;
-        public VarDef.evarType? returnType;
-        public List<VarDef.evarType> methodPrivateVars;
+        public VarDef.EvarType? returnType;
+        public List<VarDef.EvarType> methodPrivateVars;
         public List<Method> subMethods;
         public NamespaceInfo parentNamespace;
         public List<List<VarDef>> methodArguments;
 
 
-        public Method(string funcName, Method parentMethod, VarDef.evarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments) // Has a variable return type and is not a void, but is a sub method
+        public Method(string funcName, Method parentMethod, VarDef.EvarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments) // Has a variable return type and is not a void, but is a sub method
         {
             this.funcName = funcName;
             this.parentMethod = parentMethod;
@@ -23,7 +23,7 @@
             this.isVoid = false;
             this.returnType = returnType;
             this.subMethods = new List<Method>();
-            this.methodPrivateVars = new List<VarDef.evarType>();
+            this.methodPrivateVars = new List<VarDef.EvarType>();
             this.parentNamespace = parentNamespace;
             parentNamespace.namespaceMethods.Add(this);
             methodLocation = GetMethodLocationString();
@@ -32,7 +32,7 @@
 
         }
 
-        public Method(string funcName, VarDef.evarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments) // Is a Main method and is not a void
+        public Method(string funcName, VarDef.EvarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments) // Is a Main method and is not a void
         {
             this.funcName = funcName;
             this.parentMethod = null;
@@ -40,7 +40,7 @@
             this.isVoid = false;
             this.returnType = returnType;
             this.subMethods = new List<Method>();
-            this.methodPrivateVars = new List<VarDef.evarType>();
+            this.methodPrivateVars = new List<VarDef.EvarType>();
             this.parentNamespace = parentNamespace;
             parentNamespace.namespaceMethods.Add(this);
             methodLocation = GetMethodLocationString();
@@ -62,7 +62,7 @@
                 if (!checkSubPath.isSubmethod)
                     return parentNamespace.name + "." + result;
 
-                checkSubPath = checkSubPath.parentMethod;
+                checkSubPath = checkSubPath.parentMethod ?? throw new Exception("Internal: Parent method of current method is null for some reason.");
             } while (result.Length < 1024);
             throw new Exception("To large submethod-method name lenght. I could easily make the max lenght bigger, but I woun't. Haha!");
         }

@@ -23,7 +23,7 @@ namespace TASI
 
         public static long line;
         public const string interpreterVer = "1.0";
-        public static Logger interpretInitLog = new Logger();
+        public static Logger interpretInitLog = new();
         public static void Main(string[] args)
         {
             Console.WriteLine("Doing tests...");
@@ -40,7 +40,7 @@ namespace TASI
             if (!File.Exists(location)) throw new Exception("The user entered file doesn't exist.");
             List<string> codeFile = File.ReadAllLines(location).ToList();
 
-            Stopwatch codeRuntime = new Stopwatch();
+            Stopwatch codeRuntime = new();
             codeRuntime.Start();
             string allFileCode = "";
             foreach (string line in codeFile)

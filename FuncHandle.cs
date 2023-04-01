@@ -14,7 +14,7 @@
                         Console.WriteLine("No text pritable.");
                     return new Var();
                 case "Console.ReadLine":
-                    return new Var(new(VarDef.evarType.String, ""), true, Console.ReadLine());
+                    return new Var(new(VarDef.EvarType.String, ""), true, Console.ReadLine());
                 case "Console.Clear":
                     Console.Clear();
                     return new();
@@ -33,18 +33,18 @@
                 case "Inf.DefVar":
 
 
-                    Global.CurrentlyAccessableVars.Add(new(new(Enum.Parse<VarDef.evarType>(input[0].stringValue), input[1].stringValue), false, null));
+                    Global.CurrentlyAccessableVars.Add(new(new(Enum.Parse<VarDef.EvarType>(input[0].stringValue), input[1].stringValue), false, null));
                     return new();
                 case "Convert.ToNum":
                     if (!double.TryParse(input[0].stringValue, out double result))
-                        if (input[1].getBoolValue)
+                        if (input[1].GetBoolValue)
                             throw new Exception("Can't convert string in current format to double.");
                         else
-                            return new Var(new(VarDef.evarType.Num, ""), true, double.NaN);
+                            return new Var(new(VarDef.EvarType.Num, ""), true, double.NaN);
 
 
 
-                    return new Var(new(VarDef.evarType.Num, ""), true, result);
+                    return new Var(new(VarDef.EvarType.Num, ""), true, result);
 
 
 
@@ -67,7 +67,7 @@
                 case "INF.DefFunc":
                     if (InterpretMain.FindMethodUsingMethodPath(methodCall.inputVars[0].stringValue) == null)
                         throw new Exception($"Can't define func {methodCall.inputVars[0].stringValue}, because it isn't declared anywhere. E.U 0010\nTry to add something like this:\nmethod {methodCall.inputVars[0].stringValue} {{\n/code here\n}}.");
-                    if (!Enum.TryParse<VarDef.evarType>(methodCall.inputVars[1].stringValue, out VarDef.evarType result))
+                    if (!Enum.TryParse<VarDef.EvarType>(methodCall.inputVars[1].stringValue, out VarDef.EvarType result))
                         throw new Exception($"{methodCall.inputVars[1].stringValue} is an invalid variable type. E.U 0011\nValid types are:\nnum\nvoid\nbool\nstring");
 
                     break;

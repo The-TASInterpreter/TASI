@@ -1,15 +1,14 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-namespace TASI
+﻿namespace TASI
 {
     internal class InterpretMain
     {
         public static List<NamespaceInfo> allNamespaces = new List<NamespaceInfo>();
         public static List<Var> allPublicVars = new List<Var>();
 
-        public static void InterpretNormalMode(List<Command> commands)
+        public static Var InterpretNormalMode(List<Command> commands)
         {
             bool statementMode = false;
+            Var returnValue = new();
             CommandLine? commandLine = null;
             foreach (Command command in commands)
             {
@@ -17,7 +16,10 @@ namespace TASI
                 {
                     if (command.commandType == Command.CommandTypes.EndCommand)
                     {
-                        Statement.StaticStatement(commandLine);
+                        returnValue = Statement.StaticStatement(commandLine);
+                        if (returnValue.varDef.varType == VarDef.evarType.Return) 
+                            return returnValue;
+
                         statementMode = false;
                         continue;
                     }
@@ -39,6 +41,7 @@ namespace TASI
                         throw new NotImplementedException($"Internal: Not implemented type: {command.commandType}");
                 }
             }
+            return new();
         }
 
         public static void InterpretFile(List<string> file)
@@ -139,7 +142,7 @@ namespace TASI
                                 methodDeph--;
                                 if (methodDeph == 0)
                                 {
-                                    if ( CheckIfUnspecifiedMethodAlreadyHasMethodName(result, currentMethodName))
+                                    if (CheckIfUnspecifiedMethodAlreadyHasMethodName(result, currentMethodName))
                                     {
                                         throw new Exception($"Method \"{currentMethodName}\" is defined multible times.");
                                     }
@@ -208,7 +211,7 @@ namespace TASI
         }
 
 
-        
-        
+
+
     }
 }

@@ -32,6 +32,7 @@
         public string? stringValue;
         public double[]? numArrayValue;
         public string[]? stringArrayValue;
+        public Var? returnStatementValue;
         public bool isNumeric;
 
 
@@ -124,6 +125,14 @@
                     throw new Exception("Unknown variable type at NamespaceInfo.Var(Switch(vartype). E.Internal.0001");
             }
         }
+
+        public Var(Var varValue)
+        {
+            this.varDef = new(VarDef.evarType.Return, "");
+            this.tempVar = true;
+            this.returnStatementValue = varValue;
+        }
+
         public Var()
         {
             tempVar = true;
@@ -154,7 +163,7 @@
         }
         public enum evarType
         {
-            @Num, @String, @Bool, @Void
+            @Num, @String, @Bool, @Void, @Return
         }
         public evarType varType;
         public string varName;

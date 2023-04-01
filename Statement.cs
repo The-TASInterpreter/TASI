@@ -7,17 +7,22 @@
     {
         public static string[] staticStatements = { "set" };
 
-        public static void StaticStatement(CommandLine commandLine)
+        public static Var StaticStatement(CommandLine commandLine)
         {
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
                 throw new Exception("Internal: StaticStatements must start with a Statement");
 
             switch (commandLine.commands[0].commandText.ToLower())
             {
+
+                case "return":
+                    if (commandLine.commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
+                    return new(GetVarOfCommandLine(new(commandLine.commands.GetRange(1, commandLine.commands.Count - 1), -1))); ;
+
                 case "set":
                     //Validate syntax
                     StaticStatementSet(commandLine);
-                    break;
+                    return new();
                 case "while":
                     CommandLine checkStatement = new(new(), -1);
                     for (int i = 1; i < commandLine.commands.Count; i++)
@@ -36,7 +41,7 @@
                     List<Command> code = StringProcess.ConvertLineToCommand(commandLine.commands[checkStatement.commands.Count + 1].commandText);
                     while (GetVarOfCommandLine(checkStatement).getBoolValue)
                         InterpretMain.InterpretNormalMode(code);
-                    break;
+                    return new();
                 case "if":
                     if (commandLine.commands.Count < 3) throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                     if (commandLine.commands[2].commandType != Command.CommandTypes.CodeContainer)
@@ -62,23 +67,23 @@
 
 
                     }
-                    break;
+                    return new();
                 case "helpm":
                     if (commandLine.commands.Count != 2) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
                     if (commandLine.commands[1].commandType != Command.CommandTypes.UnknownMethod) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
                     MethodCall helpCall = new(commandLine.commands[1]);
                     ErrorHelp.ListMethodArguments(helpCall.callMethod);
-                    break;
+                    return new();
                 case "listm":
                     if (commandLine.commands.Count != 2) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
                     if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
                     ErrorHelp.ListLocation(commandLine.commands[1].commandText);
-                    break;
+                    return new();
                 case "rootm":
                     if (commandLine.commands.Count != 1) throw new Exception("Invalid rootm statement syntax. Example for right syntax:\nhelpm; (It's that simple)");
                     Console.WriteLine("All registered namespaces are:");
                     ErrorHelp.ListNamespaces(Global.Namespaces);
-                    break;
+                    return new();
 
 
 
@@ -206,6 +211,20 @@
 
                 case "nl":
                     return new Var(new(VarDef.evarType.String, ""), true, "\n");
+
+                case "if":
+                    //Check if if statement usage is correct
+                    Var? returnVar = null;
+                    if (commands.Count != 5 || commands[2].commandType != Command.CommandTypes.CodeContainer || commands[3].commandType != Command.CommandTypes.Statement || commands[3].commandText.ToLower() != "else" || commands[4].commandType != Command.CommandTypes.CodeContainer)
+                        throw new Exception("Invalid return-type if statement; Correct usage:\nif <code container> else <code container>");
+                    if (GetVarOfCommandLine(new(new List<Command> { commands[1] }, -1)).getBoolValue)
+                        returnVar = InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commands[2].commandText));
+                    else
+                        returnVar = InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commands[4].commandText));
+                    if (returnVar.varDef.varType == VarDef.evarType.Return)
+                        return returnVar.returnStatementValue ?? throw new Exception("Internal: return-var var is null");
+                    else
+                        throw new Exception("The return-type if statemtent didn't return anything");
 
 
                 default:

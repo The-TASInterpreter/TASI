@@ -73,6 +73,8 @@
             {
                 if (varDef.varType == VarDef.EvarType.Num || varDef.varType == VarDef.EvarType.Bool)
                     return numValue ?? throw new Exception("Internal: correct object value is null");
+                else if (varDef.varType == VarDef.EvarType.Void)
+                    return "void";
                 else
                     return stringValue ?? throw new Exception("Internal: correct object value is null");
             }

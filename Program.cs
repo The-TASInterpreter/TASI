@@ -43,19 +43,21 @@ namespace TASI
 
             Stopwatch codeRuntime = new();
             codeRuntime.Start();
-            string allFileCode = "";
+
+            //Remove comments (
             for (int i = 0; i < codeFile.Count; i++)
             {
-                string line = codeFile[i];
-                List<LetterByLetterAnalysis> letters = LetterByLetterAnalysis.AnalyseString(line, i + 1);
-                foreach (LetterByLetterAnalysis letter in letters)
+                string lineWithoutCommands = "";
+                for (int j = 0; j < codeFile[i].Length; j++)
                 {
-                    if (letter.lastLetterType == LetterByLetterAnalysis.LastLetterType.statement && letter.letterChar == '#')
-                        break;
-                    allFileCode += letter.letterChar;
-                    
+                    if ((codeFile[i][j] == '#' && j == 0) || (codeFile[i][j] == '#' && codeFile[i][j - 1] != '\\')) break; //Remove what comes next in the line, if there is a comment
+                    lineWithoutCommands += codeFile[i][j];
                 }
+                codeFile[i] = lineWithoutCommands;
             }
+
+            LineString allFileCode = new(codeFile);
+            
             InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(allFileCode));
             codeRuntime.Stop();
             Console.WriteLine($"Runtime: {codeRuntime.ElapsedMilliseconds} ms");

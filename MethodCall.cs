@@ -229,7 +229,14 @@
 
             if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.Internal)
             {
-                return FuncHandle.HandleInternalFunc(callMethod.methodLocation, inputVars);
+                Var returnValue = FuncHandle.HandleInternalFunc(callMethod.methodLocation, inputVars);
+                if (Global.debugMode)
+                {
+                    Console.WriteLine($"Did method call to {callMethod.parentNamespace.namespaceIntend}-intend {callMethod.methodLocation}.\nIt returns a {callMethod.returnType}.\nIt returned a {returnValue.varDef.varType}-type with a value of \"{returnValue.ObjectValue}\".");
+                    Console.ReadKey();
+                }
+                return returnValue;
+                
             }
             throw new Exception("Internal: Only internal functions are implemented");
         }

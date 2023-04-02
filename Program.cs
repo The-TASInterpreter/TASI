@@ -28,6 +28,7 @@ namespace TASI
         {
             Console.WriteLine("Doing tests...");
             Tests.NumCalcTests();
+            SyntaxAnalysis.AnalyseSyntax(StringProcess.ConvertLineToCommand("set helloWorld [Console.ReadLine];"));
             Console.ReadKey(false);
             Console.Clear();
 
@@ -43,12 +44,13 @@ namespace TASI
             Stopwatch codeRuntime = new();
             codeRuntime.Start();
             string allFileCode = "";
-            foreach (string line in codeFile)
+            for (int i = 0; i < codeFile.Count; i++)
             {
-                List<LetterByLetterAnalysis> letters = LetterByLetterAnalysis.AnalyseString(line);
+                string line = codeFile[i];
+                List<LetterByLetterAnalysis> letters = LetterByLetterAnalysis.AnalyseString(line, i + 1);
                 foreach (LetterByLetterAnalysis letter in letters)
                 {
-                    if (letter.lastLetterType == LetterByLetterAnalysis.LastLetterType.statement && letter.letterChar == '/')
+                    if (letter.lastLetterType == LetterByLetterAnalysis.LastLetterType.statement && letter.letterChar == '#')
                         break;
                     allFileCode += letter.letterChar;
                     

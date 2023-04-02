@@ -70,7 +70,7 @@
                     return new();
                 case "helpm":
                     if (commandLine.commands.Count != 2) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
-                    if (commandLine.commands[1].commandType != Command.CommandTypes.UnknownMethod) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
+                    if (commandLine.commands[1].commandType != Command.CommandTypes.MethodCall) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
                     MethodCall helpCall = new(commandLine.commands[1]);
                     ErrorHelp.ListMethodArguments(helpCall.callMethod);
                     return new();
@@ -96,7 +96,7 @@
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
-                case Command.CommandTypes.UnknownMethod:
+                case Command.CommandTypes.MethodCall:
                     MethodCall methodCall = new MethodCall(commandLine.commands[0]);
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
@@ -132,7 +132,7 @@
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
-                case Command.CommandTypes.UnknownMethod:
+                case Command.CommandTypes.MethodCall:
                     MethodCall methodCall = new(commandLine.commands[0]);
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");

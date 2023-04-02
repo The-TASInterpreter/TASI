@@ -154,7 +154,7 @@
                 if (subTokens != null) return subTokens;
                 subTokens = new List<CalculationType>();
                 foreach (Command command in StringProcess.ConvertLineToCommand(token))
-                    subTokens.Add(new(command.commandText, command.commandType == Command.CommandTypes.String, command.commandType == Command.CommandTypes.NumCalculation, command.commandType == Command.CommandTypes.UnknownMethod));
+                    subTokens.Add(new(command.commandText, command.commandType == Command.CommandTypes.String, command.commandType == Command.CommandTypes.NumCalculation, command.commandType == Command.CommandTypes.MethodCall));
                 return subTokens;
             }
         }
@@ -431,7 +431,7 @@
             }
             if (isMethod)
             { //Methods will directly be calculated.
-                MethodCall methodCall = new(new(Command.CommandTypes.UnknownMethod, token));
+                MethodCall methodCall = new(new(Command.CommandTypes.MethodCall, token));
                 isValue = true;
                 switch (methodCall.callMethod.returnType)
                 {

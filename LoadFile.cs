@@ -12,7 +12,7 @@ namespace Text_adventure_Script_Interpreter
             for (int i = 0; i < fileCommands.Count; i++)
             {
                 //Im sorry for this, but it just checks, weather the current command is a method statement and is a new command or sth.
-                if ((fileCommands[i - 1].commandType == Command.CommandTypes.UnknownMethod || fileCommands[i - 1].commandType == Command.CommandTypes.EndCommand) && fileCommands[i].commandType == Command.CommandTypes.Statement && fileCommands[i].commandText.ToLower() == "method")
+                if ((fileCommands[i - 1].commandType == Command.CommandTypes.MethodCall || fileCommands[i - 1].commandType == Command.CommandTypes.EndCommand) && fileCommands[i].commandType == Command.CommandTypes.Statement && fileCommands[i].commandText.ToLower() == "method")
                     currentMethod = true;
 
                 if (currentMethod)

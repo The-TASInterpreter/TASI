@@ -6,6 +6,7 @@
         public static List<Method> AllMethods = new List<Method>();
         public static NamespaceInfo CurrentNamespace = new(NamespaceInfo.NamespaceIntend.Generic, "Test");
         public static List<Var> CurrentlyAccessableVars = new();
+        public static bool debugMode = true;
         public static void InitInternalNamespaces()
         {
             /*

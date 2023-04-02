@@ -9,14 +9,19 @@
         {
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal methods to the code.
             bool statementMode = false;
-            Var returnValue = new();
-            CommandLine? commandLine = null;
+            Var returnValue;
+            CommandLine? commandLine = new(new(), -1);
             foreach (Command command in commands)
             {
                 if (statementMode)
                 {
                     if (command.commandType == Command.CommandTypes.EndCommand)
                     {
+                        if (Global.debugMode)
+                        {
+                            
+                        }
+
                         returnValue = Statement.StaticStatement(commandLine);
                         if (returnValue.varDef.varType == VarDef.EvarType.Return) 
                             return returnValue;
@@ -31,7 +36,7 @@
 
                 switch (command.commandType)
                 {
-                    case Command.CommandTypes.UnknownMethod:
+                    case Command.CommandTypes.MethodCall:
                         new MethodCall(command).DoMethodCall();
                         break;
                     case Command.CommandTypes.Statement:

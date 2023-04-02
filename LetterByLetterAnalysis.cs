@@ -11,23 +11,25 @@
         public LastLetterType lastLetterType;
 
         public int charInMethodDeph;
+        public int letterLine;
 
-        public LetterByLetterAnalysis(char letterChar, LastLetterType commandType, int charInMethodDeph)
+
+        public LetterByLetterAnalysis(char letterChar, LastLetterType commandType, int charInMethodDeph, int letterLine)
         {
             this.letterChar = letterChar;
             this.lastLetterType = commandType;
             this.charInMethodDeph = charInMethodDeph;
+            this.letterLine = letterLine;
         }
 
-        public static List<LetterByLetterAnalysis> AnalyseString(string text)
+        public static List<LetterByLetterAnalysis> AnalyseString(string text, int line)
         {
             List<LetterByLetterAnalysis> result = new();
-            List<LastLetterType> letterTypeStack = new List<LastLetterType>();
+            List<LastLetterType> letterTypeStack = new();
             int squareDeph = 0;
             bool lastBackslash = false;
             foreach (char c in text)
             {
-
                 if (letterTypeStack.Any() && letterTypeStack.Last() == LastLetterType.@string)
                 {
 
@@ -37,7 +39,7 @@
                         lastBackslash = true;
                     else
                         lastBackslash = false;
-                    result.Add(new(c, LastLetterType.@string, -1));
+                    result.Add(new(c, LastLetterType.@string, -1, line));
                     continue;
                 }
 
@@ -71,11 +73,11 @@
 
                 if (letterTypeStack.Any())
                     if (letterTypeStack.Last() == LastLetterType.method)
-                        result.Add(new(c, letterTypeStack.Last(), squareDeph));
+                        result.Add(new(c, letterTypeStack.Last(), squareDeph, line));
                     else
-                        result.Add(new(c, letterTypeStack.Last(), -1));
+                        result.Add(new(c, letterTypeStack.Last(), -1, line));
                 else
-                    result.Add(new(c, LastLetterType.statement, squareDeph));
+                    result.Add(new(c, LastLetterType.statement, squareDeph, line));
 
             }
 

@@ -136,7 +136,7 @@
                         {
                             TASI_Main.interpretInitLog.Log($"Unknown method found:\n{commandText}");
                             methodMode = false;
-                            commands.Add(new Command(Command.CommandTypes.UnknownMethod, commandText));
+                            commands.Add(new Command(Command.CommandTypes.MethodCall, commandText));
                             commandText = string.Empty;
                             continue;
                         }

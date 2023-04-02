@@ -72,9 +72,9 @@
             get
             {
                 if (varDef.varType == VarDef.EvarType.Num || varDef.varType == VarDef.EvarType.Bool)
-                    return numValue;
+                    return numValue ?? throw new Exception("Internal: correct object value is null");
                 else
-                    return stringValue;
+                    return stringValue ?? throw new Exception("Internal: correct object value is null");
             }
             set
             {

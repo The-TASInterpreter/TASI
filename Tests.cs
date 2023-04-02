@@ -5,7 +5,7 @@
     {
         public double? expected;
         public string calc;
-        bool expectedFail;
+        public bool expectedFail;
         public NumCalcTest(double? expected, string calc, bool expectedFail)
         {
             this.expected = expected;

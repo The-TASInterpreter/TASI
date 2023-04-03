@@ -104,7 +104,7 @@
                 methodArguments.Add(currentArgument);
             argumentCommands = new(methodArguments.Count);
             foreach (string argument in methodArguments) //Convert string arguments to commands
-                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), TASI_Main.line));
+                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), -1));
 
 
             this.callMethod = FindMethodByPath(methodName, Global.Namespaces, true); 
@@ -192,34 +192,6 @@
             inputVars = new();
             foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
             {
-                /*
-                switch (commandLine.commands[0].lastLetterType)
-                {
-                    case Command.LastLetterType.String:
-                        if (commandLine.commands.Count != 1)
-                            throw new Exception($"Not expected {commandLine.commands[1].lastLetterType} after string (\"{commandLine.commands[1].commandText}\")");
-                        inputVars.Add(new(new(VarDef.evarType.String, ""), true, commandLine.commands[0].commandText));
-                        break;
-
-                    case Command.LastLetterType.UnknownMethod:
-                        MethodCall tempMethodCall = new(commandLine.commands[0]);
-                        inputVars.Add(tempMethodCall.DoMethodCall());
-                        break;
-
-                    case Command.LastLetterType.Statement:
-                        inputVars.Add(Statement.ReturnStatement(commandLine.commands));
-                        break;
-                    case Command.LastLetterType.NumCalculation:
-                        if (commandLine.commands.Count != 1)
-                            throw new Exception($"Not expected {commandLine.commands[1].lastLetterType} after num calc (\"{commandLine.commands[1].commandText}\")");
-                        inputVars.Add(NumCalculation.DoNumCalculation(commandLine.commands[0]));
-                        break;
-
-                    default:
-                        throw new Exception($"Internal error: Unimplemented lastLetterType ({commandLine.commands[0].lastLetterType})");
-
-                }
-                */
                 inputVars.Add(Statement.GetVarOfCommandLine(commandLine));
             }
 

@@ -4,7 +4,7 @@
     {
         public string commandText;
         public CommandTypes commandType;
-        public long commandLine;
+        public int commandLine;
         public string originalCommandText;
         public List<Command>? codeContainerCommands;
         public MethodCall? methodCall;
@@ -13,7 +13,7 @@
         {
             MethodCall, Statement, NumCalculation, String, CodeContainer, EndCommand
         }
-        public Command(CommandTypes commandType, string commandText, long commandLine)
+        public Command(CommandTypes commandType, string commandText, int commandLine)
         {
             this.commandText = commandText;
             this.commandType = commandType;

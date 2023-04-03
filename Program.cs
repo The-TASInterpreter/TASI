@@ -20,11 +20,11 @@ namespace TASI
 
 
 
-        public static long line;
         public const string interpreterVer = "1.0";
         public static Logger interpretInitLog = new();
         public static void Main(string[] args)
         {
+            Global.currentLine = -1;
             Console.WriteLine("Doing tests...");
             Tests.NumCalcTests();
             //SyntaxAnalysis.AnalyseSyntax(StringProcess.ConvertLineToCommand("set helloWorld [Console.ReadLine];"));
@@ -42,42 +42,48 @@ namespace TASI
 
             Stopwatch codeRuntime = new();
             codeRuntime.Start();
-
-            //Remove comments (
-            for (int i = 0; i < codeFile.Count; i++)
+            Console.WriteLine("Comment-Removing and analysing tokens");
+            //Remove comments 
+            try
             {
-                string lineWithoutCommands = "";
-                for (int j = 0; j < codeFile[i].Length; j++)
+                for (int i = 0; i < codeFile.Count; i++)
                 {
-                    if ((codeFile[i][j] == '#' && j == 0) || (codeFile[i][j] == '#' && codeFile[i][j - 1] != '\\')) break; //Remove what comes next in the line, if there is a comment
-                    lineWithoutCommands += codeFile[i][j];
+                    string lineWithoutCommands = "";
+                    for (int j = 0; j < codeFile[i].Length; j++)
+                    {
+                        if ((codeFile[i][j] == '#' && j == 0) || (codeFile[i][j] == '#' && codeFile[i][j - 1] != '\\')) break; //Remove what comes next in the line, if there is a comment
+                        lineWithoutCommands += codeFile[i][j];
+                    }
+                    codeFile[i] = lineWithoutCommands;
                 }
-                codeFile[i] = lineWithoutCommands;
+
+                string allFileCode = "";
+                for (int i = 0; i < codeFile.Count; i++)
+                {
+                    string line = codeFile[i];
+                    if (line.Contains('Ⅼ')) throw new Exception($"Uhhhhmmm this is a weird error now. So basically, on line {i + 1} you used a character, that is already used by TASI to map code to lines (The character is:(I would have inserted it here right now, but the console can't even print this char. It looks like an L, but it's a bit larger.)). I picked this character, because I thought noone would use it directly in their code. Well, seems like I thought wrong... Simply said, you must remove this character from your code. But fear now! With the return statement \"lineChar\", you can paste this char into strings and stuff. I hope this character is worth the errors with lines! I'm sorry.\n-Ekischleki");
+                    allFileCode += $"Ⅼ{i}Ⅼ{line}";
+                }
+                List<Command> commands = StringProcess.ConvertLineToCommand(allFileCode);
+                Console.WriteLine($"Finished token analysis; Interpreting. It took {codeRuntime.ElapsedMilliseconds}ms");
+                InterpretMain.InterpretNormalMode(commands);
+                codeRuntime.Stop();
+                Console.WriteLine($"Runtime: {codeRuntime.ElapsedMilliseconds} ms");
+            }
+            catch (Exception e)
+            { 
+                
+                Console.Clear();
+                Console.WriteLine("There was an error interpreting your code:\n");
+                Console.WriteLine(e.Message);
+                if (Global.currentLine != -1)
+                    Console.WriteLine($"\nThe error happened on line: {Global.currentLine + 1}");
+                Console.ReadKey();
+                
+
             }
 
-            string allFileCode = "";
-            for (int i = 0; i < codeFile.Count; i++)
-            {
-                string line = codeFile[i];
-                if (line.Contains('Ⅼ')) throw new Exception($"Uhhhhmmm this is a weird error now. So basically, on line {i + 1} you used a character, that is already used by TASI to map code to lines (The character is:(I would have inserted it here right now, but the console can't even print this char. It looks like an L, but it's a bit larger.)). I picked this character, because I thought noone would use it directly in their code. Well, seems like I thought wrong... Simply said, you must remove this character from your code. But fear now! With the return statement \"lineChar\", you can paste this char into strings and stuff. I hope this character is worth the errors with lines! I'm sorry.\n-Ekischleki");
-                allFileCode +=$"Ⅼ{i}Ⅼ{line}";
-            }
-            
-            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(allFileCode));
-            codeRuntime.Stop();
-            Console.WriteLine($"Runtime: {codeRuntime.ElapsedMilliseconds} ms");
-
-            //try
-            //{
-
-            //} catch (Exception ex)
-            //{
-            //   Console.WriteLine("There was an error:");
-            // Console.WriteLine(ex.Message);
-            //  Console.WriteLine("Press any key to continue.");
-            //   Console.ReadKey();
-            // }
-
+           
             return;
 
 

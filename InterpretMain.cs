@@ -13,6 +13,7 @@
             CommandLine? commandLine = new(new(), -1);
             foreach (Command command in commands)
             {
+                Global.currentLine = command.commandLine;
                 if (statementMode)
                 {
                     if (command.commandType == Command.CommandTypes.EndCommand)

@@ -7,6 +7,8 @@
         public static NamespaceInfo CurrentNamespace = new(NamespaceInfo.NamespaceIntend.Generic, "Test");
         public static List<Var> CurrentlyAccessableVars = new();
         public static bool debugMode = false;
+        public static int currentLine;
+        
         public static void InitInternalNamespaces()
         {
             /*

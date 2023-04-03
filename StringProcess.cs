@@ -2,7 +2,7 @@
 {
     public class StringProcess
     {
-        internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '{', '}' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
+        internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '{', '}', 'Ⅼ' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
         public static List<Command> ConvertLineToCommand(string line)
         {
             TASI_Main.interpretInitLog.Log($"Finding syntax of line text:\n{line}");
@@ -19,10 +19,33 @@
             bool codeContainerMode = false;
             bool stringModeBackslash = false;
             string commandText = string.Empty;
+            bool lineCharMode = false;
+            string lineCharLine = "";
+            int currentLine = 1;
+            Global.currentLine = 1;
             char lastChar = ' ';
 
             foreach (char c in line) //Thats some shit code and imma have to fix it some time, but it basically is the main syntax analysis method.
             {
+
+
+                if (lineCharMode)
+                {
+                    if (c == 'Ⅼ')
+                    {
+
+                        lineCharMode = false;
+                        currentLine = Convert.ToInt32(lineCharLine);
+                        lineCharLine = "";
+                        Global.currentLine = currentLine;
+                        continue;
+                    }
+                    lineCharLine += c;
+                    continue;
+                }
+
+
+
                 if (codeContainerMode)
                 {
                     if (skipBecauseString)
@@ -55,7 +78,7 @@
                         {
                             TASI_Main.interpretInitLog.Log($"Code container found:\n{commandText}");
                             codeContainerMode = false;
-                            commands.Add(new Command(Command.CommandTypes.CodeContainer, commandText));
+                            commands.Add(new Command(Command.CommandTypes.CodeContainer, commandText, currentLine));
                             commandText = string.Empty;
                             continue;
                         }
@@ -97,7 +120,7 @@
                     {
                         TASI_Main.interpretInitLog.Log($"String found:\n{commandText}");
 
-                        commands.Add(new Command(Command.CommandTypes.String, commandText));
+                        commands.Add(new Command(Command.CommandTypes.String, commandText, currentLine));
                         commandText = string.Empty;
                         stringMode = false;
                         continue;
@@ -136,7 +159,7 @@
                         {
                             TASI_Main.interpretInitLog.Log($"Unknown method found:\n{commandText}");
                             methodMode = false;
-                            commands.Add(new Command(Command.CommandTypes.MethodCall, commandText));
+                            commands.Add(new Command(Command.CommandTypes.MethodCall, commandText, currentLine));
                             commandText = string.Empty;
                             continue;
                         }
@@ -186,7 +209,7 @@
                         {
                             TASI_Main.interpretInitLog.Log($"Num calc found:\n{commandText}");
                             NumCalculationMode = false;
-                            commands.Add(new Command(Command.CommandTypes.NumCalculation, commandText));
+                            commands.Add(new Command(Command.CommandTypes.NumCalculation, commandText, currentLine));
                             commandText = string.Empty;
                             continue;
                         }
@@ -209,7 +232,7 @@
                     if (c == ' ' || specialCommandChars.Contains(c))
                     {
                         TASI_Main.interpretInitLog.Log($"Statement found:\n{commandText}");
-                        commands.Add(new Command(Command.CommandTypes.Statement, commandText));
+                        commands.Add(new Command(Command.CommandTypes.Statement, commandText, currentLine));
                         syntaxMode = false;
                         commandText = string.Empty;
                         if (specialCommandChars.Contains(c))
@@ -225,6 +248,9 @@
             checkChars:
                 switch (c)
                 {
+                    case 'Ⅼ':
+                        lineCharMode = true;
+                        continue;
                     case '^':
                         TASI_Main.interpretInitLog.Log($"Comment found; Skiping line");
                         commentMode = true;
@@ -247,7 +273,7 @@
                         break;
                     case ';':
                         TASI_Main.interpretInitLog.Log($"EndCommand found (;)");
-                        commands.Add(new Command(Command.CommandTypes.EndCommand, Convert.ToString(';')));
+                        commands.Add(new Command(Command.CommandTypes.EndCommand, Convert.ToString(';'), currentLine));
                         break;
 
                     default:
@@ -271,7 +297,7 @@
                 lastChar = c;
             }
             if (syntaxMode && commandText != String.Empty) // if syntax mode has not ended yet
-                commands.Add(new Command(Command.CommandTypes.Statement, commandText));
+                commands.Add(new Command(Command.CommandTypes.Statement, commandText, currentLine));
 
 
 

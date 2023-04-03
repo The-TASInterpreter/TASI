@@ -13,7 +13,7 @@
             CommandLine? commandLine = new(new(), -1);
             foreach (Command command in commands)
             {
-                Global.currentLine = command.commandLine;
+                
                 if (statementMode)
                 {
                     if (command.commandType == Command.CommandTypes.EndCommand)
@@ -38,11 +38,13 @@
                 switch (command.commandType)
                 {
                     case Command.CommandTypes.MethodCall:
+                        Global.currentLine = command.commandLine;
                         if (command.methodCall == null)
                             throw new Exception("Internal: Method call was not converted to a method call.");
                         command.methodCall.DoMethodCall();
                         break;
                     case Command.CommandTypes.Statement:
+                        Global.currentLine = command.commandLine;
                         statementMode = true;
                         commandLine = new(new List<Command> { command }, 1);
                         break;

@@ -72,7 +72,7 @@ namespace TASI
                 codeRuntime.Stop();
                 Console.WriteLine($"Runtime: {codeRuntime.ElapsedMilliseconds} ms");
             }
-            catch (AccessViolationException e)
+            catch (Exception e)
             { 
                 
                 Console.Clear();

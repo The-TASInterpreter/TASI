@@ -10,7 +10,6 @@
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
 
 using System.Diagnostics;
-using Text_adventure_Script_Interpreter;
 
 namespace TASI
 {
@@ -28,7 +27,7 @@ namespace TASI
         {
             Console.WriteLine("Doing tests...");
             Tests.NumCalcTests();
-            SyntaxAnalysis.AnalyseSyntax(StringProcess.ConvertLineToCommand("set helloWorld [Console.ReadLine];"));
+            //SyntaxAnalysis.AnalyseSyntax(StringProcess.ConvertLineToCommand("set helloWorld [Console.ReadLine];"));
             Console.ReadKey(false);
             Console.Clear();
 
@@ -56,7 +55,13 @@ namespace TASI
                 codeFile[i] = lineWithoutCommands;
             }
 
-            LineString allFileCode = new(codeFile);
+            string allFileCode = "";
+            for (int i = 0; i < codeFile.Count; i++)
+            {
+                string line = codeFile[i];
+                if (line.Contains('Ⅼ')) throw new Exception($"Uhhhhmmm this is a weird error now. So basically, on line {i + 1} you used a character, that is already used by TASI to map code to lines (The character is:(I would have inserted it here right now, but the console can't even print this char. It looks like an L, but it's a bit larger.)). I picked this character, because I thought noone would use it directly in their code. Well, seems like I thought wrong... Simply said, you must remove this character from your code. But fear now! With the return statement \"lineChar\", you can paste this char into strings and stuff. I hope this character is worth the errors with lines! I'm sorry.\n-Ekischleki");
+                allFileCode +=$"Ⅼ{i}Ⅼ{line}";
+            }
             
             InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(allFileCode));
             codeRuntime.Stop();

@@ -37,7 +37,9 @@
                 switch (command.commandType)
                 {
                     case Command.CommandTypes.MethodCall:
-                        new MethodCall(command).DoMethodCall();
+                        if (command.methodCall == null)
+                            throw new Exception("Internal: Method call was not converted to a method call.");
+                        command.methodCall.DoMethodCall();
                         break;
                     case Command.CommandTypes.Statement:
                         statementMode = true;

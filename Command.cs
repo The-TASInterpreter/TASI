@@ -6,6 +6,9 @@
         public CommandTypes commandType;
         public long commandLine;
         public string originalCommandText;
+        public List<Command>? codeContainerCommands;
+        public MethodCall? methodCall;
+
         public enum CommandTypes
         {
             MethodCall, Statement, NumCalculation, String, CodeContainer, EndCommand
@@ -15,15 +18,10 @@
             this.commandText = commandText;
             this.commandType = commandType;
             this.commandLine = commandLine;
-        }
-        public Command(CommandTypes commandType, string commandText)
-        {
-            this.commandText = commandText;
-            this.commandType = commandType;
-            commandLine = -1;
             switch (commandType)
             {
                 case CommandTypes.MethodCall:
+                    this.methodCall = new(this);
                     originalCommandText = $"[{commandText}]";
                     break;
                 case CommandTypes.NumCalculation:
@@ -33,6 +31,35 @@
                     originalCommandText = $"\"{commandText}\"";
                     break;
                 case CommandTypes.CodeContainer:
+                    this.codeContainerCommands = StringProcess.ConvertLineToCommand(commandText);
+
+                    originalCommandText = "{" + commandText + "}";
+                    break;
+                default:
+                    originalCommandText = commandText;
+                    break;
+            }
+        }
+        public Command(CommandTypes commandType, string commandText)
+        {
+            this.commandText = commandText;
+            this.commandType = commandType;
+            commandLine = -1;
+            switch (commandType)
+            {
+                case CommandTypes.MethodCall:
+                    this.methodCall = new(this);
+                    originalCommandText = $"[{commandText}]";
+                    break;
+                case CommandTypes.NumCalculation:
+                    originalCommandText = $"({commandText})";
+                    break;
+                case CommandTypes.String:
+                    originalCommandText = $"\"{commandText}\"";
+                    break;
+                case CommandTypes.CodeContainer:
+                    this.codeContainerCommands = StringProcess.ConvertLineToCommand(commandText);
+
                     originalCommandText = "{" + commandText + "}";
                     break;
                 default:

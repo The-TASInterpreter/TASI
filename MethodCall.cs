@@ -147,7 +147,7 @@
                     return namespaceInfo;
 
             if (exceptionAtNotFound)
-                throw new Exception($"The namespace \"{name}\" was not found.");
+                  throw new Exception($"The namespace \"{name}\" was not found.");
             else
                 return null;
         }

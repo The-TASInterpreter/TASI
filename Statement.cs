@@ -38,7 +38,7 @@
                             throw new Exception($"Unexpected {commandLine.commands[checkStatement.commands.Count + 1].commandType} in while loop.");
                     if (commandLine.commands[checkStatement.commands.Count + 1].commandType != Command.CommandTypes.CodeContainer)
                         throw new Exception("Invalid stuff in while loop I hate writeing these messages pls kill me");
-                    List<Command> code = StringProcess.ConvertLineToCommand(commandLine.commands[checkStatement.commands.Count + 1].commandText);
+                    List<Command> code = commandLine.commands[checkStatement.commands.Count + 1].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list.");
                     while (GetVarOfCommandLine(checkStatement).GetBoolValue)
                         InterpretMain.InterpretNormalMode(code);
                     return new();
@@ -51,7 +51,7 @@
                     if (commandLine.commands.Count == 3)
                     {
                         if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1)).GetBoolValue)
-                            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commandLine.commands[2].commandText));
+                            InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."));
                     }
                     else if (commandLine.commands.Count == 5)
                     {
@@ -60,9 +60,9 @@
                         if (commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer)
                             throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                         if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1)).GetBoolValue)
-                            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commandLine.commands[2].commandText));
+                            InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."));
                         else
-                            InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commandLine.commands[4].commandText));
+                            InterpretMain.InterpretNormalMode(commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."));
 
 
 
@@ -71,7 +71,7 @@
                 case "helpm":
                     if (commandLine.commands.Count != 2) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
                     if (commandLine.commands[1].commandType != Command.CommandTypes.MethodCall) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
-                    MethodCall helpCall = new(commandLine.commands[1]);
+                    MethodCall helpCall = commandLine.commands[1].methodCall ?? throw new Exception("Internal: Method call was not converted to a method call.");
                     ErrorHelp.ListMethodArguments(helpCall.callMethod);
                     return new();
                 case "listm":
@@ -97,7 +97,7 @@
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
                 case Command.CommandTypes.MethodCall:
-                    MethodCall methodCall = new MethodCall(commandLine.commands[0]);
+                    MethodCall methodCall = commandLine.commands[0].methodCall ?? throw new Exception("Internal: Method call was not converted to a method call.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
                     if (methodCall.callMethod.returnType != expectedType) //Find out if Method returns desired type
@@ -133,7 +133,7 @@
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
                 case Command.CommandTypes.MethodCall:
-                    MethodCall methodCall = new(commandLine.commands[0]);
+                    MethodCall methodCall = commandLine.commands[0].methodCall ?? throw new Exception("Internal: Method call was not converted to a method call.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
 
@@ -211,6 +211,8 @@
 
                 case "nl":
                     return new Var(new(VarDef.EvarType.String, ""), true, "\n");
+                case "lineChar":
+                    return new Var(new(VarDef.EvarType.String, ""), true, "Ⅼ");
 
                 case "if":
                     //Check if if statement usage is correct
@@ -218,9 +220,9 @@
                     if (commands.Count != 5 || commands[2].commandType != Command.CommandTypes.CodeContainer || commands[3].commandType != Command.CommandTypes.Statement || commands[3].commandText.ToLower() != "else" || commands[4].commandType != Command.CommandTypes.CodeContainer)
                         throw new Exception("Invalid return-type if statement; Correct usage:\nif <code container> else <code container>");
                     if (GetVarOfCommandLine(new(new List<Command> { commands[1] }, -1)).GetBoolValue)
-                        returnVar = InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commands[2].commandText));
+                        returnVar = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."));
                     else
-                        returnVar = InterpretMain.InterpretNormalMode(StringProcess.ConvertLineToCommand(commands[4].commandText));
+                        returnVar = InterpretMain.InterpretNormalMode(commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."));
                     if (returnVar.varDef.varType == VarDef.EvarType.Return)
                         return returnVar.returnStatementValue ?? throw new Exception("Internal: return-var var is null");
                     else

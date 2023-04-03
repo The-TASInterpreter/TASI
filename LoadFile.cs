@@ -1,6 +1,6 @@
-﻿using TASI;
+﻿
 
-namespace Text_adventure_Script_Interpreter
+namespace TASI
 {
     internal class LoadFile
     {

@@ -1,9 +1,33 @@
-﻿namespace TASI
+﻿using DataTypeStore;
+
+namespace TASI
 {
     public class CommandLine
     {
         public List<Command> commands;
         public long lineIDX;
+
+
+
+        public CommandLine(Region region)
+        {
+            commands = new List<Command>();
+            foreach(Region region1 in region.FindSubregionWithNameArray("Cmd"))
+            {
+                commands.Add(new(region1));
+            }
+        }
+        public Region Region
+        {
+            get
+            {
+                Region result = new("CmdL", new List<Region>(), new());
+                foreach (Command cmd in commands)
+                    result.SubRegions.Add(cmd.Region);
+                return result;
+
+            }
+        }
         public CommandLine(List<Command> commands, long lineIDX)
         {
             this.commands = commands;

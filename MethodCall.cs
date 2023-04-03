@@ -1,10 +1,34 @@
-﻿namespace TASI
+﻿using DataTypeStore;
+
+namespace TASI
 {
     public class MethodCall
     {
         public Method callMethod;
         public List<Var> inputVars;
         public List<CommandLine> argumentCommands;
+
+        public MethodCall(Region region)
+        {
+            callMethod = FindMethodByPath(region.FindDirectValue("mL").value, Global.Namespaces, true);
+            argumentCommands = new List<CommandLine>();
+            foreach (Region region1 in region.FindSubregionWithNameArray("CmdL"))
+            {
+                argumentCommands.Add(new(region));
+            }
+        }
+        public Region Region
+        {
+            get
+            {
+                Region result = new("MC", new List<Region>(), new());
+                result.directValues.Add(new("mL", callMethod.methodLocation, false));
+                foreach (var arg in argumentCommands)
+                    result.SubRegions.Add(arg.Region);
+                return result;
+
+            }
+        }
         public MethodCall(Method callMethod, List<Var> inputVars)
         {
             this.callMethod = callMethod;
@@ -107,7 +131,7 @@
                 argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), -1));
 
 
-            this.callMethod = FindMethodByPath(methodName, Global.Namespaces, true); 
+            this.callMethod = FindMethodByPath(methodName, Global.Namespaces, true);
 
 
 
@@ -147,7 +171,7 @@
                     return namespaceInfo;
 
             if (exceptionAtNotFound)
-                  throw new Exception($"The namespace \"{name}\" was not found.");
+                throw new Exception($"The namespace \"{name}\" was not found.");
             else
                 return null;
         }
@@ -208,7 +232,7 @@
                     Console.ReadKey();
                 }
                 return returnValue;
-                
+
             }
             throw new Exception("Internal: Only internal functions are implemented");
         }

@@ -431,7 +431,7 @@
             }
             if (isMethod)
             { //Methods will directly be calculated.
-                MethodCall methodCall = new(new(Command.CommandTypes.MethodCall, token));
+                MethodCall methodCall = new(new Command(Command.CommandTypes.MethodCall, token));
                 isValue = true;
                 switch (methodCall.callMethod.returnType)
                 {

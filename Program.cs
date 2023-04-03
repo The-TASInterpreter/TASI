@@ -10,6 +10,7 @@
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
 
 using System.Diagnostics;
+using System.Reflection;
 
 namespace TASI
 {
@@ -65,12 +66,13 @@ namespace TASI
                     allFileCode += $"Ⅼ{i}Ⅼ{line}";
                 }
                 List<Command> commands = StringProcess.ConvertLineToCommand(allFileCode);
+               
                 Console.WriteLine($"Finished token analysis; Interpreting. It took {codeRuntime.ElapsedMilliseconds}ms");
                 InterpretMain.InterpretNormalMode(commands);
                 codeRuntime.Stop();
                 Console.WriteLine($"Runtime: {codeRuntime.ElapsedMilliseconds} ms");
             }
-            catch (Exception e)
+            catch (AccessViolationException e)
             { 
                 
                 Console.Clear();

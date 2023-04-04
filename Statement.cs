@@ -11,6 +11,7 @@ namespace TASI
 
         public static Var StaticStatement(CommandLine commandLine, List<Var> accessableVars)
         {
+            Var returnValue = new();
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
                 throw new Exception("Internal: StaticStatements must start with a Statement");
 
@@ -18,6 +19,7 @@ namespace TASI
             {
 
                 case "return":
+                    if (commandLine.commands.Count == 1) return new(new Var());
                     if (commandLine.commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
                     return new(GetVarOfCommandLine(new(commandLine.commands.GetRange(1, commandLine.commands.Count - 1), -1), accessableVars));
 
@@ -41,19 +43,28 @@ namespace TASI
                     if (commandLine.commands[checkStatement.commands.Count + 1].commandType != Command.CommandTypes.CodeContainer)
                         throw new Exception("Invalid stuff in while loop I hate writeing these messages pls kill me");
                     List<Command> code = commandLine.commands[checkStatement.commands.Count + 1].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list.");
+                    
                     while (GetVarOfCommandLine(checkStatement, accessableVars).GetBoolValue)
-                        InterpretMain.InterpretNormalMode(code, accessableVars);
+                    {
+                        returnValue = InterpretMain.InterpretNormalMode(code, accessableVars);
+                        if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
+                    }
+                    
+
                     return new();
                 case "if":
                     if (commandLine.commands.Count < 3) throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                     if (commandLine.commands[2].commandType != Command.CommandTypes.CodeContainer)
                         throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
 
-
                     if (commandLine.commands.Count == 3)
                     {
                         if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableVars).GetBoolValue)
-                            InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                        {
+                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                            if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
+                        }
+
                     }
                     else if (commandLine.commands.Count == 5)
                     {
@@ -62,10 +73,15 @@ namespace TASI
                         if (commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer)
                             throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                         if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1 ), accessableVars).GetBoolValue)
-                            InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                        {
+                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                            if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
+                        }
                         else
-                            InterpretMain.InterpretNormalMode(commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
-
+                        {
+                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                            if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
+                        }
 
 
                     }
@@ -169,6 +185,7 @@ namespace TASI
             if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
 
             Var? correctVar = null;
+            commandLine.commands[1].commandText = commandLine.commands[1].commandText.ToLower();
             foreach (Var var in accessableVars) //Search for variable
             {
                 if (var.varDef.varName == commandLine.commands[1].commandText)

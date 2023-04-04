@@ -277,7 +277,7 @@
                         break;
 
                     default:
-                        if (c == ' ')
+                        if (c == ' ' || c == '\t')
                             continue;
                         else
                         {

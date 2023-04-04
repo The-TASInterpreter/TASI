@@ -32,8 +32,6 @@
                     return new();
                 case "inf.defvar":
 
-                    Console.WriteLine(input[0].stringValue);
-                    Console.WriteLine(input[1].stringValue);
                     if (!Enum.TryParse<VarDef.EvarType>(input[0].stringValue, true, out VarDef.EvarType varType) || input[0].stringValue.ToLower() == VarDef.EvarType.@return.ToString()) throw new Exception($"The vartype \"{input[0].stringValue}\" doesn't exist.");
 
                     accessableVars.Add(new(new(varType, input[1].stringValue), false, null));

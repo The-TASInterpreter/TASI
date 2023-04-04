@@ -170,7 +170,7 @@
         public VarDef(EvarType evarType, string varName)
         {
             varType = evarType;
-            this.varName = varName;
+            this.varName = varName.ToLower();
             this.isArray = false;
         }
         public VarDef(EvarType evarType, string varName, bool isArray)

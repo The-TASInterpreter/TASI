@@ -43,7 +43,7 @@
                 new List<VarDef> {}
             });
 
-            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Programm"));
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Program"));
             new Method("Pause", VarDef.EvarType.Void, Namespaces[2], new List<List<VarDef>> {
                 new List<VarDef> {},
                 new List<VarDef> {new(VarDef.EvarType.Bool, "showPausedMessage")}

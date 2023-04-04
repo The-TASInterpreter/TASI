@@ -23,7 +23,7 @@ while (!(($times) = ($i))) #Repeate while times does not equal to i
     [Console.WriteLine:(($printText) + " | " + (($i) + 1) + " out of " + ($times))]
     set i (($i) + 1);  #Set i to i + 1
 }; 
-[Programm.Pause:true] #Pause after programm is done.
+[Program.Pause:true] #Pause after program is done.
 ```
 You'll just have to put the code in a - by the interpreter accessable - file and enter the path.
 

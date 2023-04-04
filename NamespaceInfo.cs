@@ -2,9 +2,12 @@
 {
     public class NamespaceInfo
     {
-        public enum NamespaceIntend
+        public enum NamespaceIntend 
         {
-            Main, Supervisor, Generic, Internal
+            Supervisor, // A special namespace, used for handeling permissions, preimporting Librarys and starting a project.
+            Generic, // A normal program, with a start, that will have all permissions when started alone.
+            Internal, // An internal namspace hard-coded in.
+            Library // An also normal program, which doesn't have a start
         }
         public string name;
         public List<Method> namespaceMethods = new();

@@ -10,7 +10,6 @@
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
 
 using System.Diagnostics;
-using System.Reflection;
 
 namespace TASI
 {
@@ -38,6 +37,7 @@ namespace TASI
 
             Global.InitInternalNamespaces();
             string location = Console.ReadLine() ?? throw new Exception("Code is null.");
+            location = location.Trim('"');
             if (!File.Exists(location)) throw new Exception("The user entered file doesn't exist.");
             List<string> codeFile = File.ReadAllLines(location).ToList();
 
@@ -66,26 +66,32 @@ namespace TASI
                     allFileCode += $"Ⅼ{i}Ⅼ{line}";
                 }
                 List<Command> commands = StringProcess.ConvertLineToCommand(allFileCode);
-               
+
                 Console.WriteLine($"Finished token analysis; Interpreting. It took {codeRuntime.ElapsedMilliseconds}ms");
-                InterpretMain.InterpretNormalMode(commands);
+
+                List<Command> startCode = InterpretMain.InerpretHeaders(commands) ?? throw new Exception("You can't start a library-type namespace directly.");
+                foreach (MethodCall methodCall in Global.allMethodCalls) //Activate methodcalls after scanning headers to not cause any errors.
+                    methodCall.SearchCallMethod();
+                InterpretMain.InterpretNormalMode(startCode, new());
                 codeRuntime.Stop();
-                Console.WriteLine($"Runtime: {codeRuntime.ElapsedMilliseconds} ms");
+                Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
+                Console.ReadKey(false);
+
             }
-            catch (Exception e)
-            { 
-                
+            catch (ArgumentException e)
+            {
+
                 Console.Clear();
                 Console.WriteLine("There was an error interpreting your code:\n");
                 Console.WriteLine(e.Message);
                 if (Global.currentLine != -1)
                     Console.WriteLine($"\nThe error happened on line: {Global.currentLine + 1}");
                 Console.ReadKey();
-                
+
 
             }
 
-           
+
             return;
 
 

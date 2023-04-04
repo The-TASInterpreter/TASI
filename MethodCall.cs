@@ -1,4 +1,5 @@
 ﻿using DataTypeStore;
+using System.Reflection;
 
 namespace TASI
 {
@@ -7,6 +8,7 @@ namespace TASI
         public Method callMethod;
         public List<Var> inputVars;
         public List<CommandLine> argumentCommands;
+        private string methodName;
 
         public MethodCall(Region region)
         {
@@ -37,7 +39,7 @@ namespace TASI
 
         public MethodCall(Command command)
         {
-            string methodName = "";
+            methodName = "";
             List<string> methodArguments = new();
             string currentArgument = "";
             bool doingName = true;
@@ -129,9 +131,9 @@ namespace TASI
             argumentCommands = new(methodArguments.Count);
             foreach (string argument in methodArguments) //Convert string arguments to commands
                 argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), -1));
+            Global.allMethodCalls.Add(this);
 
 
-            this.callMethod = FindMethodByPath(methodName, Global.Namespaces, true);
 
 
 
@@ -139,11 +141,17 @@ namespace TASI
             return;
         }
 
-        public bool CheckIfMethodCallHasValidArgTypes(List<Var> inputVars)
+        public void SearchCallMethod() //This is there, so header analysis can be done, without any errors.
+        {
+            callMethod = FindMethodByPath(methodName.ToLower(), Global.Namespaces, true);
+        }
+
+        public MethodCallInputHelp? CheckIfMethodCallHasValidArgTypesAndReturnCode(List<Var> inputVars)
         {
             bool matching;
-            foreach (List<VarDef> methodInputType in callMethod.methodArguments)
+            for (int j = 0; j < callMethod.methodArguments.Count; j++)
             {
+                List<VarDef> methodInputType = callMethod.methodArguments[j];
                 if (methodInputType.Count == inputVars.Count)
                 {
                     matching = true;
@@ -156,10 +164,14 @@ namespace TASI
                         }
                     }
                     if (matching)
-                        return true;
+                    {
+                        if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
+                            return new(new(), new());
+                        return new(callMethod.methodCode[j], methodInputType);
+                    }
                 }
             }
-            return false;
+            return null;
         }
 
 
@@ -167,7 +179,7 @@ namespace TASI
         {
 
             foreach (NamespaceInfo namespaceInfo in namespaces)
-                if (namespaceInfo.name == name)
+                if (namespaceInfo.Name == name)
                     return namespaceInfo;
 
             if (exceptionAtNotFound)
@@ -211,21 +223,23 @@ namespace TASI
 
         }
 
-        public Var DoMethodCall()
+        public Var DoMethodCall(List<Var> accessableVars)
         {
             inputVars = new();
             foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
             {
-                inputVars.Add(Statement.GetVarOfCommandLine(commandLine));
+                inputVars.Add(Statement.GetVarOfCommandLine(commandLine, accessableVars));
             }
 
-            if (!CheckIfMethodCallHasValidArgTypes(inputVars))
+            MethodCallInputHelp? methodCallInputHelp = CheckIfMethodCallHasValidArgTypesAndReturnCode(inputVars);
+
+            if (methodCallInputHelp == null)
                 throw new Exception($"The method \"{callMethod.methodLocation}\" doesent support the provided input types. Use the syntax \"helpm <method call>;\"\nFor this method it would be: \"helpm [{callMethod.methodLocation}];\"");
 
 
-            if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.Internal)
+            if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
             {
-                Var returnValue = FuncHandle.HandleInternalFunc(callMethod.methodLocation, inputVars);
+                Var returnValue = InternalMethodHandle.HandleInternalFunc(callMethod.methodLocation, inputVars, accessableVars);
                 if (Global.debugMode)
                 {
                     Console.WriteLine($"Did method call to {callMethod.parentNamespace.namespaceIntend}-intend {callMethod.methodLocation}.\nIt returns a {callMethod.returnType}.\nIt returned a {returnValue.varDef.varType}-type with a value of \"{returnValue.ObjectValue}\".");
@@ -234,9 +248,36 @@ namespace TASI
                 return returnValue;
 
             }
-            throw new Exception("Internal: Only internal functions are implemented");
+            //return 
+            List<Var> methodCallInput = new();
+
+            for (int i = 0; i < inputVars.Count; i++)
+            {
+                methodCallInput.Add(new(new VarDef(methodCallInputHelp.inputVarType[i].varType, methodCallInputHelp.inputVarType[i].varName), false, this.inputVars[i].ObjectValue));
+            }
+
+            Var methodReturnValue = InterpretMain.InterpretNormalMode(methodCallInputHelp.inputCode, methodCallInput);
+
+            
+
+            if (methodReturnValue.varDef.varType != VarDef.EvarType.@return || methodReturnValue.returnStatementValue.varDef.varType != callMethod.returnType)
+                throw new Exception($"The method \"{callMethod.methodLocation}\" didn't return the expected {callMethod.returnType}-type.");
+            return methodReturnValue.returnStatementValue;
+
+            //throw new Exception("Internal: Only internal functions are implemented");
         }
 
+    }
+
+    public class MethodCallInputHelp
+    {
+        public List<Command> inputCode;
+        public List<VarDef> inputVarType;
+        public MethodCallInputHelp(List<Command> inputCode, List<VarDef> inputVarType)
+        {
+            this.inputCode = inputCode;
+            this.inputVarType = inputVarType;
+        }
     }
 }
 

@@ -4,10 +4,11 @@
     {
         public static List<NamespaceInfo> Namespaces = new List<NamespaceInfo>();
         public static List<Method> AllMethods = new List<Method>();
-        public static NamespaceInfo CurrentNamespace = new(NamespaceInfo.NamespaceIntend.Generic, "Test");
+        public static NamespaceInfo CurrentNamespace = new(NamespaceInfo.NamespaceIntend.generic, "Test");
         public static List<Var> CurrentlyAccessableVars = new();
         public static bool debugMode = false;
         public static int currentLine;
+        public static List<MethodCall> allMethodCalls = new();
         
         public static void InitInternalNamespaces()
         {
@@ -21,42 +22,42 @@
             Namespaces[0].namespaceMethods.Add(new Method("Invoke", VarDef.evarType.Void, Namespaces[0], new List<VarDef> { new VarDef(VarDef.evarType.String, "PermitLine0") })); //INF.Invoke String(Permit)
             */
             Namespaces = new();
-            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Test"));
-            new Method("HelloWorld", VarDef.EvarType.Void, Namespaces[0], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.EvarType.Bool, "display"), new(VarDef.EvarType.String, "text")}
-            });
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Test"));
+            new Method("HelloWorld", VarDef.EvarType.@void, Namespaces[0], new List<List<VarDef>> {
+                new List<VarDef> { new(VarDef.EvarType.@bool, "display"), new(VarDef.EvarType.@string, "text")}
+            }, new());
 
-            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Console"));
-            new Method("WriteLine", VarDef.EvarType.Void, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.EvarType.String, "text")},
-                new List<VarDef> { new(VarDef.EvarType.Num, "num")},
-                new List<VarDef> { new(VarDef.EvarType.Bool, "bool")}
-            });
-            new Method("Write", VarDef.EvarType.Void, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.EvarType.String, "text")}
-            });
-            new Method("ReadLine", VarDef.EvarType.String, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.EvarType.Bool, "showTextWhenTyping")},
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Console"));
+            new Method("WriteLine", VarDef.EvarType.@void, Namespaces[1], new List<List<VarDef>> {
+                new List<VarDef> { new(VarDef.EvarType.@string, "text")},
+                new List<VarDef> { new(VarDef.EvarType.num, "num")},
+                new List<VarDef> { new(VarDef.EvarType.@bool, "bool")}
+            }, new());
+            new Method("Write", VarDef.EvarType.@void, Namespaces[1], new List<List<VarDef>> {
+                new List<VarDef> { new(VarDef.EvarType.@string, "text")}
+            }, new());
+            new Method("ReadLine", VarDef.EvarType.@string, Namespaces[1], new List<List<VarDef>> {
+                new List<VarDef> { new(VarDef.EvarType.@bool, "showTextWhenTyping")},
                 new List<VarDef> {}
-            });
-            new Method("Clear", VarDef.EvarType.Void, Namespaces[1], new List<List<VarDef>> {
+            }, new());
+            new Method("Clear", VarDef.EvarType.@void, Namespaces[1], new List<List<VarDef>> {
                 new List<VarDef> {}
-            });
+            }, new());
 
-            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Program"));
-            new Method("Pause", VarDef.EvarType.Void, Namespaces[2], new List<List<VarDef>> {
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Program"));
+            new Method("Pause", VarDef.EvarType.@void, Namespaces[2], new List<List<VarDef>> {
                 new List<VarDef> {},
-                new List<VarDef> {new(VarDef.EvarType.Bool, "showPausedMessage")}
-            });
+                new List<VarDef> {new(VarDef.EvarType.@bool, "showPausedMessage")}
+            }, new());
 
-            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Inf"));
-            new Method("DefVar", VarDef.EvarType.Void, Namespaces[3], new List<List<VarDef>> {
-                new List<VarDef> {new(VarDef.EvarType.String, "VarType"), new(VarDef.EvarType.String, "VarName")}
-            });
-            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.Internal, "Convert"));
-            new Method("ToNum", VarDef.EvarType.Num, Namespaces[4], new List<List<VarDef>> {
-                new List<VarDef> {new(VarDef.EvarType.String, "ConvertFrom"), new(VarDef.EvarType.Bool, "errorOnParseFail")}
-            });
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Inf"));
+            new Method("DefVar", VarDef.EvarType.@void, Namespaces[3], new List<List<VarDef>> {
+                new List<VarDef> {new(VarDef.EvarType.@string, "VarType"), new(VarDef.EvarType.@string, "VarName")}
+            }, new());
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Convert"));
+            new Method("ToNum", VarDef.EvarType.num, Namespaces[4], new List<List<VarDef>> {
+                new List<VarDef> {new(VarDef.EvarType.@string, "ConvertFrom"), new(VarDef.EvarType.@bool, "errorOnParseFail")}
+            }, new());
 
         }
     }

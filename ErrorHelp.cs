@@ -7,7 +7,7 @@ namespace TASI
         public static void ListMethodArguments(Method method)
         {
             Console.WriteLine($"Help for methd: {method.funcName}");
-            Console.WriteLine($"This method is part of the \"{method.parentNamespace.name}\" parent. You can use the syntax \"Listm <method location string>;\". For this method it would be:\nListm \"{method.methodLocation}\";");
+            Console.WriteLine($"This method is part of the \"{method.parentNamespace.Name}\" parent. You can use the syntax \"Listm <method location string>;\". For this method it would be:\nListm \"{method.methodLocation}\";");
             Console.WriteLine($"Accepted arguments for this method are: ");
             foreach (List<VarDef> arguments in method.methodArguments)
             {
@@ -58,7 +58,7 @@ namespace TASI
         {
             if (namespaces.Count == 0) Console.WriteLine("\t<There are none>");
             foreach (NamespaceInfo ns in namespaces)           
-                Console.WriteLine("\t" + ns.name);
+                Console.WriteLine("\t" + ns.Name);
             return;
             
         }

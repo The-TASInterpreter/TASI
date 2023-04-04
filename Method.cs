@@ -13,9 +13,10 @@
         public List<Method> subMethods;
         public NamespaceInfo parentNamespace;
         public List<List<VarDef>> methodArguments;
+        public List<List<Command>> methodCode = new();
 
 
-        public Method(string funcName, Method parentMethod, VarDef.EvarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments) // Has a variable return type and is not a void, but is a sub method
+        public Method(string funcName, Method parentMethod, VarDef.EvarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments, List<Command> methodCode) // Has a variable return type and is not a void, but is a sub method
         {
             this.funcName = funcName;
             this.parentMethod = parentMethod;
@@ -29,12 +30,13 @@
             methodLocation = GetMethodLocationString();
             this.methodArguments = new List<List<VarDef>>(methodArguments);
             Global.AllMethods.Add(this);
+            this.methodCode.Add(methodCode);
 
         }
 
-        public Method(string funcName, VarDef.EvarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments) // Is a Main method and is not a void
+        public Method(string funcName, VarDef.EvarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> methodArguments, List<Command> methodCode) // Is a Main method and is not a void
         {
-            this.funcName = funcName;
+            this.funcName = funcName.ToLower();
             this.parentMethod = null;
             this.isSubmethod = false;
             this.isVoid = false;
@@ -46,6 +48,7 @@
             methodLocation = GetMethodLocationString();
             this.methodArguments = new List<List<VarDef>>(methodArguments);
             Global.AllMethods.Add(this);
+            this.methodCode.Add(methodCode);
 
         }
 
@@ -60,7 +63,7 @@
                 else
                     result = checkSubPath.funcName + "." + result;
                 if (!checkSubPath.isSubmethod)
-                    return parentNamespace.name + "." + result;
+                    return parentNamespace.Name + "." + result;
 
                 checkSubPath = checkSubPath.parentMethod ?? throw new Exception("Internal: Parent method of current method is null for some reason.");
             } while (result.Length < 1024);

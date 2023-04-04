@@ -2,25 +2,41 @@
 {
     public class NamespaceInfo
     {
-        public enum NamespaceIntend 
+        public enum NamespaceIntend
         {
-            Supervisor, // A special namespace, used for handeling permissions, preimporting Librarys and starting a project.
-            Generic, // A normal program, with a start, that will have all permissions when started alone.
-            Internal, // An internal namspace hard-coded in.
-            Library // An also normal program, which doesn't have a start
+            nonedef, // Not defined intend. Should only occur internaly.
+            supervisor, // A special namespace, used for handeling permissions, preimporting Librarys and starting a project.
+            generic, // A normal program, with a start, that will have all permissions when started alone.
+            @internal, // An internal namspace hard-coded in.
+            library // An also normal program, which doesn't have a start and will throw an error if tried to excecute normally.
         }
-        public string name;
+        private string? name;
         public List<Method> namespaceMethods = new();
         public List<VarDef.EvarType> namespaceVars = new();
         public List<Var> publicNamespaceVars = new();
         public NamespaceIntend namespaceIntend;
 
+        public string? Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                if (value == null)
+                    name = null;
+                else
+                    name = value.ToLower();
+            }
+        }
 
-        public NamespaceInfo(NamespaceIntend namespaceIntend, string name)
+
+        public NamespaceInfo(NamespaceIntend namespaceIntend, string? name)
         {
             TASI_Main.interpretInitLog.Log($"Creating new Namespace. Intend: {namespaceIntend}; Name: {name}");
             this.namespaceIntend = namespaceIntend;
-            this.name = name;
+            Name = name;
         }
 
     }
@@ -45,17 +61,17 @@
             {
                 switch (varDef.varType)
                 {
-                    case VarDef.EvarType.Num or VarDef.EvarType.Bool:
+                    case VarDef.EvarType.num or VarDef.EvarType.@bool:
                         if (numValue == null)
                             throw new Exception($"The variable \"{varDef.varName}\" can't be used, because it is not defined.");
                         if (numValue == 1) return true;
                         if (numValue == 0) return false;
-                        if (varDef.varType == VarDef.EvarType.Bool)
+                        if (varDef.varType == VarDef.EvarType.@bool)
                             throw new Exception("Internal: Bool is neither 0 or 1");
 
                         throw new Exception($"The num variable \"{varDef.varName}\" can't be converted to a bool, because it is neither 1 or 0.");
 
-                    case VarDef.EvarType.String:
+                    case VarDef.EvarType.@string:
                         if (stringValue == null)
                             throw new Exception($"The variable \"{varDef.varName}\" can't be used, because it is not defined.");
                         if (stringValue == "1" || stringValue == "true") return true;
@@ -74,16 +90,16 @@
         {
             get
             {
-                if (varDef.varType == VarDef.EvarType.Num || varDef.varType == VarDef.EvarType.Bool)
+                if (varDef.varType == VarDef.EvarType.num || varDef.varType == VarDef.EvarType.@bool)
                     return numValue ?? throw new Exception("Internal: correct object value is null");
-                else if (varDef.varType == VarDef.EvarType.Void)
+                else if (varDef.varType == VarDef.EvarType.@void)
                     return "void";
                 else
                     return stringValue ?? throw new Exception("Internal: correct object value is null");
             }
             set
             {
-                if (varDef.varType == VarDef.EvarType.Num || varDef.varType == VarDef.EvarType.Bool)
+                if (varDef.varType == VarDef.EvarType.num || varDef.varType == VarDef.EvarType.@bool)
                     numValue = (double)value;
                 else
                     stringValue = (string)value;
@@ -97,7 +113,7 @@
             this.tempVar = tempVar;
             switch (varDef.varType)
             {
-                case VarDef.EvarType.Num:
+                case VarDef.EvarType.num:
                     isNumeric = true;
                     value ??= 0.0;
                     if (varDef.isArray == true)
@@ -105,7 +121,7 @@
                     else
                         numValue = (double)value;
                     break;
-                case VarDef.EvarType.Bool: //Bool values are just num values *Shock*
+                case VarDef.EvarType.@bool: //Bool values are just num values *Shock*
                     isNumeric = true;
                     if (varDef.isArray == true)
                         throw new Exception("Sorry, but there are no bool arrays rn. Gonna add them in later. I promise!");
@@ -115,7 +131,7 @@
                     else
                         numValue = 0;
                     break;
-                case VarDef.EvarType.String:
+                case VarDef.EvarType.@string:
                     isNumeric = false;
                     value ??= "";
                     if (varDef.isArray == true)
@@ -123,7 +139,7 @@
                     else
                         stringValue = (string)value;
                     break;
-                case VarDef.EvarType.Void:
+                case VarDef.EvarType.@void:
                     throw new Exception("Can't create a variable with the \"Void\" type. E.U.0008");
                 default:
                     throw new Exception("Unknown variable type at NamespaceInfo.Var(Switch(vartype). E.Internal.0001");
@@ -132,7 +148,7 @@
 
         public Var(Var varValue)
         {
-            this.varDef = new(VarDef.EvarType.Return, "");
+            this.varDef = new(VarDef.EvarType.@return, "");
             this.tempVar = true;
             this.returnStatementValue = varValue;
         }
@@ -140,7 +156,7 @@
         public Var()
         {
             tempVar = true;
-            varDef = new(VarDef.EvarType.Void, "");
+            varDef = new(VarDef.EvarType.@void, "");
             isNumeric = false;
 
 
@@ -161,13 +177,13 @@
         {
             varType = evarType;
             this.varName = varName;
-            if (evarType == EvarType.Void)
+            if (evarType == EvarType.@void)
                 throw new Exception("Can't create an array with type void. I mean what you wanna put in there lol?. E.U 0009");
             this.isArray = isArray;
         }
         public enum EvarType
         {
-            @Num, @String, @Bool, @Void, @Return
+            @num, @string, @bool, @void, @return
         }
         public EvarType varType;
         public string varName;

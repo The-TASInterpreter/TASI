@@ -16,7 +16,7 @@
         {
             try
             {
-                double? testValue = NumCalculation.DoNumCalculation(new(Command.CommandTypes.NumCalculation, calc)).numValue;
+                double? testValue = NumCalculation.DoNumCalculation(new(Command.CommandTypes.NumCalculation, calc), new()).numValue;
                 if (testValue == expected)
                     Console.WriteLine($"NumCalcTest {testIdx}: Passed");
                 else

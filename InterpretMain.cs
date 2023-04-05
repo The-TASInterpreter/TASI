@@ -110,7 +110,7 @@
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of method statement.\nCorrect usage: method <statement: return type> <statement: method name> <code container: semicolon seperated input values> <code container: method code>;\nExample:\nmethod num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
 
 
-                                if (!Enum.TryParse<VarDef.EvarType>(commandLine.commands[1].commandText.ToLower(), out VarDef.EvarType methodReturnType) || commandLine.commands[1].commandText == "return") throw new Exception("Method return type is invalid.");
+                                if (!Enum.TryParse<VarDef.EvarType>(commandLine.commands[1].commandText.ToLower(), out VarDef.EvarType methodReturnType)) throw new Exception("Method return type is invalid.");
                                 Method thisMethod = null;
                                 foreach (Method method in thisNamespace.namespaceMethods) //Check if method with name already exist
                                 {
@@ -141,6 +141,13 @@
                                 else
                                     new Method(methodName, methodReturnType, thisNamespace, new() { methodInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
                                 break;
+                            case "import":
+
+
+
+
+                                break;
+
                             default: throw new Exception($"\"{commandLine.commands[0].commandText}\" isn't a recognized statement in header interpret mode.");
 
                         }
@@ -168,10 +175,24 @@
             }
 
             if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new Exception("You need to enter name and type for this namespace. You can do that using the name and type statements.");
-            Global.Namespaces.Add(thisNamespace);
+            bool found = false;
+            foreach (NamespaceInfo searchNamespace in Global.Namespaces)
+            {
+                if (searchNamespace.Name == thisNamespace.Name)
+                {
+                    found = true; break;
+                }
+            }
+            if (!found)
+                Global.Namespaces.Add(thisNamespace);
 
             return startCode;
         }
+
+
+
+
+
 
 
 
@@ -211,7 +232,10 @@
                         Global.currentLine = command.commandLine;
                         if (command.methodCall == null)
                             throw new Exception("Internal: Method call was not converted to a method call.");
-                        command.methodCall.DoMethodCall(accessableVars);
+
+                        returnValue = command.methodCall.DoMethodCall(accessableVars);
+                        if (returnValue.varDef.varType == VarDef.EvarType.@return)
+                            return returnValue;
                         break;
                     case Command.CommandTypes.Statement:
                         Global.currentLine = command.commandLine;

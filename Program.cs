@@ -78,7 +78,7 @@ namespace TASI
                 Console.ReadKey(false);
 
             }
-            catch (ArgumentException e)
+            catch (Exception e)
             {
 
                 Console.Clear();

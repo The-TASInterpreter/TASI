@@ -214,6 +214,11 @@ namespace TASI
 
             switch (commands[0].commandText)
             {
+                case "return":
+                    if (commands.Count == 1) return new(new Var());
+                    if (commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
+                    return new(GetVarOfCommandLine(new(commands.GetRange(1, commands.Count - 1), -1), accessableVars));
+
                 case "true":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
                     return new Var(new(VarDef.EvarType.@bool, ""), true, true);

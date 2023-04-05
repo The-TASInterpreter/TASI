@@ -69,7 +69,7 @@ namespace TASI
 
                 Console.WriteLine($"Finished token analysis; Interpreting. It took {codeRuntime.ElapsedMilliseconds}ms");
 
-                List<Command> startCode = InterpretMain.InerpretHeaders(commands) ?? throw new Exception("You can't start a library-type namespace directly.");
+                List<Command> startCode = (InterpretMain.InerpretHeaders(commands)).Item1 ?? throw new Exception("You can't start a library-type namespace directly.");
                 foreach (MethodCall methodCall in Global.allMethodCalls) //Activate methodcalls after scanning headers to not cause any errors.
                     methodCall.SearchCallMethod();
                 InterpretMain.InterpretNormalMode(startCode, new());

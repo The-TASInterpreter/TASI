@@ -65,7 +65,7 @@
             return result;
         }
 
-        public static List<Command>? InerpretHeaders(List<Command> commands) //This method will interpret the headers of the file and return the start code.
+        public static Tuple<List<Command>?, NamespaceInfo> InerpretHeaders(List<Command> commands) //This method will interpret the headers of the file and return the start code.
         {
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
@@ -142,6 +142,8 @@
                                     new Method(methodName, methodReturnType, thisNamespace, new() { methodInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
                                 break;
                             case "import":
+                                if (commandLine.commands.Count != 2) throw new Exception("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
+                                if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid usage of import statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
 
 
 
@@ -186,7 +188,8 @@
             if (!found)
                 Global.Namespaces.Add(thisNamespace);
 
-            return startCode;
+
+            return new(startCode, thisNamespace);
         }
 
 
@@ -196,7 +199,7 @@
 
 
 
-        public static Var InterpretNormalMode(List<Command> commands, List<Var> accessableVars)
+        public static Var InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
         {
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal methods to the code.
             bool statementMode = false;

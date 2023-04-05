@@ -14,6 +14,7 @@
         public List<Method> namespaceMethods = new();
         public List<VarDef.EvarType> namespaceVars = new();
         public List<Var> publicNamespaceVars = new();
+        public List<NamespaceInfo> importedNamespaces = new();
         public NamespaceIntend namespaceIntend;
 
         public string? Name

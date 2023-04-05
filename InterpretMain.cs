@@ -199,7 +199,7 @@
 
 
 
-        public static Var InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
+        public static Var InterpretNormalMode(List<Command> commands, List<Var> accessableVars)
         {
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal methods to the code.
             bool statementMode = false;

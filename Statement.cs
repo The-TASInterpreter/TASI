@@ -9,7 +9,7 @@ namespace TASI
     {
         public static string[] staticStatements = { "set" };
 
-        public static Var StaticStatement(CommandLine commandLine, AccessableObjects accessableObjects)
+        public static Var StaticStatement(CommandLine commandLine, List<Var> accessableVars)
         {
             Var returnValue = new();
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
@@ -113,7 +113,7 @@ namespace TASI
                     throw new Exception($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
             }
         }
-        public static Var GetVarOfCommandLine(CommandLine commandLine, VarDef.EvarType expectedType, List)
+        public static Var GetVarOfCommandLine(CommandLine commandLine, VarDef.EvarType expectedType, List<Var> accessableVars)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -149,7 +149,7 @@ namespace TASI
                     throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
             }
         }
-        public static Var GetVarOfCommandLine(CommandLine commandLine, AccessableObjects accessableObjects)
+        public static Var GetVarOfCommandLine(CommandLine commandLine, List<Var> accessableVars)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -183,7 +183,7 @@ namespace TASI
         }
 
 
-        private static void StaticStatementSet(CommandLine commandLine, AccessableObjects accessableObjects)
+        private static void StaticStatementSet(CommandLine commandLine, List<Var> accessableVars)
         {
             if (commandLine.commands.Count < 3) throw new Exception("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
             if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
@@ -211,7 +211,7 @@ namespace TASI
                 default: throw new Exception("Internal: Unimplemented VarType");
             }
         }
-        public static Var ReturnStatement(List<Command> commands, AccessableObjects accessableObjects)
+        public static Var ReturnStatement(List<Command> commands, List<Var> accessableVars)
         {
             if (commands[0].commandType != Command.CommandTypes.Statement)
                 throw new Exception("Internal: ReturnStatements must start with a Statement");

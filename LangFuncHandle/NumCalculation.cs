@@ -4,16 +4,16 @@
     {
 
 
-        public static Var DoNumCalculation(Command command, List<Var> accessableVars)
+        public static Var DoNumCalculation(Command command, AccessableObjects accessableObjects)
         {
             if (command.commandType != Command.CommandTypes.NumCalculation) throw new Exception("Internal: This method only deals with NumCalculations");
             //Grab tokens
 
-            CalculationType calculation = new(command.commandText, false, true, false, accessableVars);
+            CalculationType calculation = new(command.commandText, false, true, false, accessableObjects);
 
 
 
-            return calculation.CalculateValue(accessableVars);
+            return calculation.CalculateValue(accessableObjects);
         }
 
 
@@ -146,31 +146,31 @@
                 return varReturn;
             }
         }
-        public List<CalculationType> SubTokens(List<Var> accessableVars)
+        public List<CalculationType> SubTokens(AccessableObjects accessableObjects)
         {
 
 
-                if (type != Type.calc) throw new Exception("Internal: Only a numcalc can have subtokens.");
-                if (subTokens != null) return subTokens;
-                subTokens = new List<CalculationType>();
-                foreach (Command command in StringProcess.ConvertLineToCommand(token))
-                    subTokens.Add(new(command.commandText, command.commandType == Command.CommandTypes.String, command.commandType == Command.CommandTypes.NumCalculation, command.commandType == Command.CommandTypes.MethodCall, accessableVars));
-                return subTokens;
+            if (type != Type.calc) throw new Exception("Internal: Only a numcalc can have subtokens.");
+            if (subTokens != null) return subTokens;
+            subTokens = new List<CalculationType>();
+            foreach (Command command in StringProcess.ConvertLineToCommand(token))
+                subTokens.Add(new(command.commandText, command.commandType == Command.CommandTypes.String, command.commandType == Command.CommandTypes.NumCalculation, command.commandType == Command.CommandTypes.MethodCall, accessableObjects));
+            return subTokens;
 
         }
 
 
-        public Var CalculateValue(List<Var> accessableVars)
+        public Var CalculateValue(AccessableObjects accessableObjects)
         {
             if (type != Type.calc && type != Type.syx) throw new Exception("Internal: Only numcalcs or syntax can return a Value.");
-            if (type == Type.syx) return Statement.ReturnStatement(StringProcess.ConvertLineToCommand(token.Remove(0, 1)), accessableVars); // If its not a num calculation but a syntax/statement/(Everywhere I call shit differently), we can skip all this calculating, and 
+            if (type == Type.syx) return Statement.ReturnStatement(StringProcess.ConvertLineToCommand(token.Remove(0, 1)), accessableObjects); // If its not a num calculation but a syntax/statement/(Everywhere I call shit differently), we can skip all this calculating, and 
 
             CalculationType? calculationNext = null;
             CalculationType calculation;
             Var temp;
             List<Var> values = new List<Var>();
             int skip = 0;
-            for (int i = 0; i < SubTokens(accessableVars).Count; i++)
+            for (int i = 0; i < SubTokens(accessableObjects).Count; i++)
             {
                 if (skip > 0)
                 {
@@ -179,27 +179,27 @@
                     continue;
                 }
 
-                if (calculationNext != null && calculationNext.type != SubTokens(accessableVars)[i].type)
+                if (calculationNext != null && calculationNext.type != SubTokens(accessableObjects)[i].type)
                     //Calc has already been done last loop because of precalc.
                     calculation = calculationNext;
                 else
-                    calculation = SubTokens(accessableVars)[i];
-                if (i + 2 <= SubTokens(accessableVars).Count)
+                    calculation = SubTokens(accessableObjects)[i];
+                if (i + 2 <= SubTokens(accessableObjects).Count)
                 {
 
-                    calculationNext = SubTokens(accessableVars)[i + 1];
+                    calculationNext = SubTokens(accessableObjects)[i + 1];
                     if (calculationNext.type == Type.syx || calculationNext.type == Type.calc)
                     {
-                        temp = calculationNext.CalculateValue(accessableVars);
+                        temp = calculationNext.CalculateValue(accessableObjects);
                         switch (temp.varDef.varType)
                         {
                             case VarDef.EvarType.num or VarDef.EvarType.@bool:
-                                calculationNext = new CalculationType(temp.numValue.ToString(), false, false, false, accessableVars);
+                                calculationNext = new CalculationType(temp.numValue.ToString(), false, false, false, accessableObjects);
                                 break;
                             case VarDef.EvarType.@void:
                                 throw new Exception("Can't calculate with a void type.");
                             case VarDef.EvarType.@string:
-                                calculationNext = new CalculationType(temp.stringValue, true, false, false, accessableVars);
+                                calculationNext = new CalculationType(temp.stringValue, true, false, false, accessableObjects);
                                 break;
                             default:
                                 throw new Exception("Internal: Unimplemented var type.");
@@ -399,7 +399,7 @@
 
                     case Type.calc or Type.syx:
                         values.Clear();
-                        values.Add(calculation.CalculateValue(accessableVars));
+                        values.Add(calculation.CalculateValue(accessableObjects));
                         break;
 
                 }
@@ -410,7 +410,7 @@
 
         }
 
-        public CalculationType(string token, bool isString, bool isNumCalc, bool isMethod, List<Var> accessableVars)
+        public CalculationType(string token, bool isString, bool isNumCalc, bool isMethod, AccessableObjects accessableObjects)
         {
             this.token = token;
             isValue = false;
@@ -439,11 +439,11 @@
                         throw new Exception("A void type cant be used in a num calculation.");
                     case VarDef.EvarType.num or VarDef.EvarType.@bool:
                         type = Type.num;
-                        value = methodCall.DoMethodCall(accessableVars).numValue;
+                        value = methodCall.DoMethodCall(accessableObjects).numValue;
                         break;
                     case VarDef.EvarType.@string:
                         type = Type.str;
-                        stringValue = methodCall.DoMethodCall(accessableVars).stringValue;
+                        stringValue = methodCall.DoMethodCall(accessableObjects).stringValue;
                         break;
                     default:
                         throw new Exception("Internal: Unimplemented method return type.");

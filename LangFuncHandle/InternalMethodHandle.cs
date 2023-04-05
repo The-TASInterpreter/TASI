@@ -3,7 +3,7 @@
     internal class InternalMethodHandle
     {
 
-        public static Var HandleInternalFunc(string funcName, List<Var> input, List<Var> accessableVars)
+        public static Var HandleInternalFunc(string funcName, List<Var> input, AccessableObjects accessableObjects)
         {
             switch (funcName)
             {
@@ -34,7 +34,7 @@
 
                     if (!Enum.TryParse<VarDef.EvarType>(input[0].stringValue, true, out VarDef.EvarType varType) || input[0].stringValue.ToLower() == VarDef.EvarType.@return.ToString()) throw new Exception($"The vartype \"{input[0].stringValue}\" doesn't exist.");
 
-                    accessableVars.Add(new(new(varType, input[1].stringValue), false, null));
+                    accessableObjects.accessableVars.Add(new(new(varType, input[1].stringValue), false, null));
                     return new();
                 case "convert.tonum":
                     if (!double.TryParse(input[0].stringValue, out double result))

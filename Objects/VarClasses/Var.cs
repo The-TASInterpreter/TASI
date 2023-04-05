@@ -1,48 +1,5 @@
 ﻿namespace TASI
 {
-    public class NamespaceInfo
-    {
-        public enum NamespaceIntend
-        {
-            nonedef, // Not defined intend. Should only occur internaly.
-            supervisor, // A special namespace, used for handeling permissions, preimporting Librarys and starting a project.
-            generic, // A normal program, with a start, that will have all permissions when started alone.
-            @internal, // An internal namspace hard-coded in.
-            library // An also normal program, which doesn't have a start and will throw an error if tried to excecute normally.
-        }
-        private string? name;
-        public List<Method> namespaceMethods = new();
-        public List<VarDef.EvarType> namespaceVars = new();
-        public List<Var> publicNamespaceVars = new();
-        public List<NamespaceInfo> importedNamespaces = new();
-        public NamespaceIntend namespaceIntend;
-
-        public string? Name
-        {
-            get
-            {
-                return name;
-            }
-            set
-            {
-                if (value == null)
-                    name = null;
-                else
-                    name = value.ToLower();
-            }
-        }
-
-
-        public NamespaceInfo(NamespaceIntend namespaceIntend, string? name)
-        {
-            TASI_Main.interpretInitLog.Log($"Creating new Namespace. Intend: {namespaceIntend}; Name: {name}");
-            this.namespaceIntend = namespaceIntend;
-            Name = name;
-        }
-
-    }
-
-
     public class Var
     {
         public VarDef varDef;
@@ -164,31 +121,6 @@
         }
 
 
-    }
-
-    public class VarDef
-    {
-        public VarDef(EvarType evarType, string varName)
-        {
-            varType = evarType;
-            this.varName = varName.ToLower();
-            this.isArray = false;
-        }
-        public VarDef(EvarType evarType, string varName, bool isArray)
-        {
-            varType = evarType;
-            this.varName = varName;
-            if (evarType == EvarType.@void)
-                throw new Exception("Can't create an array with type void. I mean what you wanna put in there lol?. E.U 0009");
-            this.isArray = isArray;
-        }
-        public enum EvarType
-        {
-            @num, @string, @bool, @void, @return
-        }
-        public EvarType varType;
-        public string varName;
-        public bool isArray;
     }
 
 

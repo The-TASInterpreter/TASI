@@ -9,7 +9,7 @@ namespace TASI
     {
         public static string[] staticStatements = { "set" };
 
-        public static Var StaticStatement(CommandLine commandLine, List<Var> accessableVars)
+        public static Var StaticStatement(CommandLine commandLine, AccessableObjects accessableObjects)
         {
             Var returnValue = new();
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
@@ -25,11 +25,11 @@ namespace TASI
                 case "return":
                     if (commandLine.commands.Count == 1) return new(new Var());
                     if (commandLine.commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
-                    return new(GetVarOfCommandLine(new(commandLine.commands.GetRange(1, commandLine.commands.Count - 1), -1), accessableVars));
+                    return new(GetVarOfCommandLine(new(commandLine.commands.GetRange(1, commandLine.commands.Count - 1), -1), accessableObjects));
 
                 case "set":
                     //Validate syntax
-                    StaticStatementSet(commandLine, accessableVars);
+                    StaticStatementSet(commandLine, accessableObjects);
                     return new();
                 case "while":
                     CommandLine checkStatement = new(new(), -1);
@@ -48,9 +48,9 @@ namespace TASI
                         throw new Exception("Invalid stuff in while loop I hate writeing these messages pls kill me");
                     List<Command> code = commandLine.commands[checkStatement.commands.Count + 1].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list.");
                     
-                    while (GetVarOfCommandLine(checkStatement, accessableVars).GetBoolValue)
+                    while (GetVarOfCommandLine(checkStatement, accessableObjects).GetBoolValue)
                     {
-                        returnValue = InterpretMain.InterpretNormalMode(code, accessableVars);
+                        returnValue = InterpretMain.InterpretNormalMode(code, accessableObjects);
                         if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
                     }
                     
@@ -63,9 +63,9 @@ namespace TASI
 
                     if (commandLine.commands.Count == 3)
                     {
-                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableVars).GetBoolValue)
+                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
                         {
-                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
                         }
 
@@ -76,14 +76,14 @@ namespace TASI
                             throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                         if (commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer)
                             throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
-                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1 ), accessableVars).GetBoolValue)
+                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1 ), accessableObjects).GetBoolValue)
                         {
-                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
                         }
                         else
                         {
-                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
                         }
 
@@ -94,17 +94,17 @@ namespace TASI
                     if (commandLine.commands.Count != 2) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
                     if (commandLine.commands[1].commandType != Command.CommandTypes.MethodCall) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
                     MethodCall helpCall = commandLine.commands[1].methodCall ?? throw new Exception("Internal: Method call was not converted to a method call.");
-                    ErrorHelp.ListMethodArguments(helpCall.callMethod);
+                    Help.ListMethodArguments(helpCall.callMethod);
                     return new();
                 case "listm":
                     if (commandLine.commands.Count != 2) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
                     if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
-                    ErrorHelp.ListLocation(commandLine.commands[1].commandText);
+                    Help.ListLocation(commandLine.commands[1].commandText);
                     return new();
                 case "rootm":
                     if (commandLine.commands.Count != 1) throw new Exception("Invalid rootm statement syntax. Example for right syntax:\nhelpm; (It's that simple)");
                     Console.WriteLine("All registered namespaces are:");
-                    ErrorHelp.ListNamespaces(Global.Namespaces);
+                    Help.ListNamespaces(Global.Namespaces);
                     return new();
 
 
@@ -113,7 +113,7 @@ namespace TASI
                     throw new Exception($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
             }
         }
-        public static Var GetVarOfCommandLine(CommandLine commandLine, VarDef.EvarType expectedType, List<Var> accessableVars)
+        public static Var GetVarOfCommandLine(CommandLine commandLine, VarDef.EvarType expectedType, AccessableObjects accessableObjects)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -124,17 +124,17 @@ namespace TASI
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
                     if (methodCall.callMethod.returnType != expectedType) //Find out if Method returns desired type
                         throw new Exception($"The method {methodCall.callMethod.methodLocation} does not return the expected {expectedType} type.");
-                    return methodCall.DoMethodCall(accessableVars);
+                    return methodCall.DoMethodCall(accessableObjects);
 
                 case Command.CommandTypes.NumCalculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
-                    Var numCalcRet = NumCalculation.DoNumCalculation(commandLine.commands[0], accessableVars);
+                    Var numCalcRet = NumCalculation.DoNumCalculation(commandLine.commands[0], accessableObjects);
                     if (numCalcRet.varDef.varType != expectedType) throw new Exception($"The num calculation does not return the expected {expectedType} type.");
                     return numCalcRet;
 
                 case Command.CommandTypes.Statement:
-                    Var returnStatementCall = ReturnStatement(commandLine.commands, accessableVars);
+                    Var returnStatementCall = ReturnStatement(commandLine.commands, accessableObjects);
                     if (returnStatementCall.varDef.varType != expectedType)
                         throw new Exception($"The ReturnStatement \"{commandLine.commands[0].commandText}\" does not return the expected {expectedType} value at all or in the given configuation.");
                     return returnStatementCall;
@@ -149,7 +149,7 @@ namespace TASI
                     throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
             }
         }
-        public static Var GetVarOfCommandLine(CommandLine commandLine, List<Var> accessableVars)
+        public static Var GetVarOfCommandLine(CommandLine commandLine, AccessableObjects accessableObjects)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -159,17 +159,17 @@ namespace TASI
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
 
-                    return methodCall.DoMethodCall(accessableVars);
+                    return methodCall.DoMethodCall(accessableObjects);
 
                 case Command.CommandTypes.NumCalculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
-                    Var numCalcRet = NumCalculation.DoNumCalculation(commandLine.commands[0], accessableVars);
+                    Var numCalcRet = NumCalculation.DoNumCalculation(commandLine.commands[0], accessableObjects);
 
                     return numCalcRet;
 
                 case Command.CommandTypes.Statement:
-                    Var returnStatementCall = ReturnStatement(commandLine.commands, accessableVars);
+                    Var returnStatementCall = ReturnStatement(commandLine.commands, accessableObjects);
                     return returnStatementCall;
 
                 case Command.CommandTypes.String:
@@ -183,14 +183,14 @@ namespace TASI
         }
 
 
-        private static void StaticStatementSet(CommandLine commandLine, List<Var> accessableVars)
+        private static void StaticStatementSet(CommandLine commandLine, AccessableObjects accessableObjects)
         {
             if (commandLine.commands.Count < 3) throw new Exception("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
             if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
 
             Var? correctVar = null;
             commandLine.commands[1].commandText = commandLine.commands[1].commandText.ToLower();
-            foreach (Var var in accessableVars) //Search for variable
+            foreach (Var var in accessableObjects.accessableVars) //Search for variable
             {
                 if (var.varDef.varName == commandLine.commands[1].commandText)
                 {
@@ -203,15 +203,15 @@ namespace TASI
             switch (correctVar.varDef.varType) //Check var type thats needed
             {
                 case VarDef.EvarType.num or VarDef.EvarType.@bool:
-                    correctVar.numValue = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), correctVar.varDef.varType, accessableVars).numValue;
+                    correctVar.numValue = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), correctVar.varDef.varType, accessableObjects).numValue;
                     break;
                 case VarDef.EvarType.@string:
-                    correctVar.stringValue = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), correctVar.varDef.varType, accessableVars).stringValue;
+                    correctVar.stringValue = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), correctVar.varDef.varType, accessableObjects).stringValue;
                     break;
                 default: throw new Exception("Internal: Unimplemented VarType");
             }
         }
-        public static Var ReturnStatement(List<Command> commands, List<Var> accessableVars)
+        public static Var ReturnStatement(List<Command> commands, AccessableObjects accessableObjects)
         {
             if (commands[0].commandType != Command.CommandTypes.Statement)
                 throw new Exception("Internal: ReturnStatements must start with a Statement");
@@ -221,7 +221,7 @@ namespace TASI
                 case "return":
                     if (commands.Count == 1) return new(new Var());
                     if (commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
-                    return new(GetVarOfCommandLine(new(commands.GetRange(1, commands.Count - 1), -1), accessableVars));
+                    return new(GetVarOfCommandLine(new(commands.GetRange(1, commands.Count - 1), -1), accessableObjects));
 
                 case "true":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
@@ -247,10 +247,10 @@ namespace TASI
                     Var? returnVar = null;
                     if (commands.Count != 5 || commands[2].commandType != Command.CommandTypes.CodeContainer || commands[3].commandType != Command.CommandTypes.Statement || commands[3].commandText.ToLower() != "else" || commands[4].commandType != Command.CommandTypes.CodeContainer)
                         throw new Exception("Invalid return-type if statement; Correct usage:\nif <code container> else <code container>");
-                    if (GetVarOfCommandLine(new(new List<Command> { commands[1] }, -1), accessableVars).GetBoolValue)
-                        returnVar = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                    if (GetVarOfCommandLine(new(new List<Command> { commands[1] }, -1), accessableObjects).GetBoolValue)
+                        returnVar = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
                     else
-                        returnVar = InterpretMain.InterpretNormalMode(commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableVars);
+                        returnVar = InterpretMain.InterpretNormalMode(commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
                     if (returnVar.varDef.varType == VarDef.EvarType.@return)
                         return returnVar.returnStatementValue ?? throw new Exception("Internal: return-var var is null");
                     else
@@ -262,7 +262,7 @@ namespace TASI
                     
                     if (commands.Count != 1) throw new Exception("Unexpected syntax after varname.");
                     commands[0].commandText = commands[0].commandText.ToLower();
-                    foreach (Var var in accessableVars)
+                    foreach (Var var in accessableObjects.accessableVars)
                         if (var.varDef.varName == commands[0].commandText)
                             return var;
                     //Var not found

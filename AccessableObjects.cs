@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace TASI
 {
-    internal class AccessableObjects
+    public class AccessableObjects
     {
-        List<Var> accessableVars = new();
-        List<NamespaceInfo> importedNamespaces = new();
+        public List<Var> accessableVars = new();
+        public List<NamespaceInfo> importedNamespaces = new();
 
         public AccessableObjects(List<Var> accessableVars, List<NamespaceInfo> importedNamespaces)
         {

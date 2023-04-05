@@ -223,12 +223,12 @@ namespace TASI
 
         }
 
-        public Var DoMethodCall(List<Var> accessableVars)
+        public Var DoMethodCall(AccessableObjects accessableObjects)
         {
             inputVars = new();
             foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
             {
-                inputVars.Add(Statement.GetVarOfCommandLine(commandLine, accessableVars));
+                inputVars.Add(Statement.GetVarOfCommandLine(commandLine, accessableObjects));
             }
 
             MethodCallInputHelp? methodCallInputHelp = CheckIfMethodCallHasValidArgTypesAndReturnCode(inputVars);
@@ -239,7 +239,7 @@ namespace TASI
 
             if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
             {
-                Var returnValue = InternalMethodHandle.HandleInternalFunc(callMethod.methodLocation, inputVars, accessableVars);
+                Var returnValue = InternalMethodHandle.HandleInternalFunc(callMethod.methodLocation, inputVars, accessableObjects);
                 if (Global.debugMode)
                 {
                     Console.WriteLine($"Did method call to {callMethod.parentNamespace.namespaceIntend}-intend {callMethod.methodLocation}.\nIt returns a {callMethod.returnType}.\nIt returned a {returnValue.varDef.varType}-type with a value of \"{returnValue.ObjectValue}\".");
@@ -256,7 +256,7 @@ namespace TASI
                 methodCallInput.Add(new(new VarDef(methodCallInputHelp.inputVarType[i].varType, methodCallInputHelp.inputVarType[i].varName), false, this.inputVars[i].ObjectValue));
             }
 
-            Var methodReturnValue = InterpretMain.InterpretNormalMode(methodCallInputHelp.inputCode, methodCallInput);
+            Var methodReturnValue = InterpretMain.InterpretNormalMode(methodCallInputHelp.inputCode, new(methodCallInput, callMethod.parentNamespace.accessableNamespaces));
 
             
 

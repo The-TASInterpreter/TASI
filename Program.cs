@@ -69,10 +69,13 @@ namespace TASI
 
                 Console.WriteLine($"Finished token analysis; Interpreting. It took {codeRuntime.ElapsedMilliseconds}ms");
 
-                List<Command> startCode = (InterpretMain.InerpretHeaders(commands)).Item1 ?? throw new Exception("You can't start a library-type namespace directly.");
+                var startValues = (InterpretMain.InerpretHeaders(commands));
+                var startCode = startValues.Item1 ?? throw new Exception("You can't start a library-type namespace directly.");
+                
+
                 foreach (MethodCall methodCall in Global.allMethodCalls) //Activate methodcalls after scanning headers to not cause any errors.
                     methodCall.SearchCallMethod();
-                InterpretMain.InterpretNormalMode(startCode, new());
+                InterpretMain.InterpretNormalMode(startCode, new(new(), startValues.Item2.accessableNamespaces ));
                 codeRuntime.Stop();
                 Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
                 Console.ReadKey(false);

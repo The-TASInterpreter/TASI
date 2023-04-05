@@ -199,7 +199,7 @@
 
 
 
-        public static Var InterpretNormalMode(List<Command> commands, List<Var> accessableVars)
+        public static Var InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
         {
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal methods to the code.
             bool statementMode = false;
@@ -217,7 +217,7 @@
 
                         }
 
-                        returnValue = Statement.StaticStatement(commandLine, accessableVars);
+                        returnValue = Statement.StaticStatement(commandLine, accessableObjects);
                         if (returnValue.varDef.varType == VarDef.EvarType.@return)
                             return returnValue;
 
@@ -236,7 +236,7 @@
                         if (command.methodCall == null)
                             throw new Exception("Internal: Method call was not converted to a method call.");
 
-                        returnValue = command.methodCall.DoMethodCall(accessableVars);
+                        returnValue = command.methodCall.DoMethodCall(accessableObjects);
                         if (returnValue.varDef.varType == VarDef.EvarType.@return)
                             return returnValue;
                         break;

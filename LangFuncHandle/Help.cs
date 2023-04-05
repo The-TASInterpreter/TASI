@@ -2,7 +2,7 @@
 
 namespace TASI
 {
-    internal class ErrorHelp
+    internal class Help
     {
         public static void ListMethodArguments(Method method)
         {

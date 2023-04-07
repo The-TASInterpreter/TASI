@@ -9,12 +9,12 @@ namespace TASI
     public class AccessableObjects
     {
         public List<Var> accessableVars = new();
-        public List<NamespaceInfo> importedNamespaces = new();
+        public NamespaceInfo currentNamespace;
 
-        public AccessableObjects(List<Var> accessableVars, List<NamespaceInfo> importedNamespaces)
+        public AccessableObjects(List<Var> accessableVars, NamespaceInfo importedNamespaces)
         {
             this.accessableVars = accessableVars;
-            this.importedNamespaces = importedNamespaces;
+            this.currentNamespace = importedNamespaces;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace TASI
+﻿using System.Runtime.CompilerServices;
+
+namespace TASI
 {
     public class NamespaceInfo
     {
@@ -10,7 +12,7 @@
             @internal, // An internal namspace hard-coded in.
             library // An also normal program, which doesn't have a start and will throw an error if tried to excecute normally.
         }
-        private string? name;
+        private string? name; 
         public List<Method> namespaceMethods = new();
         public List<VarDef.EvarType> namespaceVars = new();
         public List<Var> publicNamespaceVars = new();
@@ -39,8 +41,15 @@
             this.namespaceIntend = namespaceIntend;
             Name = name;
             accessableNamespaces.Add(this);
+            accessableNamespaces.AddRange(Global.Namespaces.Where(x => x.namespaceIntend == NamespaceIntend.@internal)); //Import all internal namespaces
         }
 
+        public NamespaceInfo(string? name, List<NamespaceInfo> accessableNamespaces, NamespaceIntend namespaceIntend)
+        {
+            this.name = name;
+            this.accessableNamespaces = accessableNamespaces;
+            this.namespaceIntend = namespaceIntend;
+        }
     }
 
 

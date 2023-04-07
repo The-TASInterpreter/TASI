@@ -51,7 +51,7 @@ namespace TASI
         public static void ListSubmethodsOfMethod(string location)
         {
             Console.WriteLine($"Submethods of {location}:");
-            Console.WriteLine(ListMethods(MethodCall.FindMethodByPath(location, Global.Namespaces, true).subMethods));
+            Console.WriteLine(ListMethods(MethodCall.FindMethodByPath(location, Global.Namespaces, true, null).subMethods));
         }
 
         public static void ListNamespaces(List<NamespaceInfo> namespaces)

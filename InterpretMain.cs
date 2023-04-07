@@ -65,13 +65,14 @@
             return result;
         }
 
-        public static Tuple<List<Command>?, NamespaceInfo> InerpretHeaders(List<Command> commands) //This method will interpret the headers of the file and return the start code.
+        public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands) //This method will interpret the headers of the file and return the start code.
         {
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<Command>? startCode = null;
             NamespaceInfo thisNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, null);
-
+            List<string> alreadyImportedNamespaces = new();
+            Global.Namespaces.Add(thisNamespace);
 
             foreach (Command command in commands)
             {
@@ -145,6 +146,18 @@
                                 if (commandLine.commands.Count != 2) throw new Exception("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid usage of import statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
 
+                                if (!Global.allLoadedFiles.Any(x => ComparePaths(x, commandLine.commands[1].commandText)))
+                                {
+                                    var importNamespace = InterpretHeaders(LoadFile.ByPath(commandLine.commands[1].commandText.ToLower()));
+                                    alreadyImportedNamespaces.Add(commandLine.commands[1].commandText.ToLower());
+                                    thisNamespace.accessableNamespaces.Add(importNamespace.Item2);
+                                }
+                                else
+                                {
+                                    if (alreadyImportedNamespaces.Any(a => ComparePaths(a, commandLine.commands[1].commandText))) throw new Exception($"The namespace \"{commandLine.commands[1].commandText.ToLower()} has already been imported.");
+                                    thisNamespace.accessableNamespaces.Add(Global.Namespaces[Global.allLoadedFiles.FindIndex(a => ComparePaths(a, commandLine.commands[1].commandText))]);
+                                    alreadyImportedNamespaces.Add(commandLine.commands[1].commandText.ToLower());
+                                }
 
 
 
@@ -177,16 +190,8 @@
             }
 
             if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new Exception("You need to enter name and type for this namespace. You can do that using the name and type statements.");
-            bool found = false;
-            foreach (NamespaceInfo searchNamespace in Global.Namespaces)
-            {
-                if (searchNamespace.Name == thisNamespace.Name)
-                {
-                    found = true; break;
-                }
-            }
-            if (!found)
-                Global.Namespaces.Add(thisNamespace);
+
+
 
 
             return new(startCode, thisNamespace);
@@ -195,7 +200,10 @@
 
 
 
-
+        private static bool ComparePaths(string path1, string path2)
+        {
+            return Path.GetFullPath(path1).Replace('\\', '/').ToLower() == Path.GetFullPath(path2).Replace('\\', '/').ToLower();
+        }
 
 
 

@@ -3,12 +3,15 @@
     internal class Global
     {
         public static List<NamespaceInfo> Namespaces = new List<NamespaceInfo>();
+        public static List<string> allLoadedFiles = new(); //It is important, that allLoadedFiles and Namespaces corrospond
         public static List<Method> AllMethods = new List<Method>();
-        public static NamespaceInfo CurrentNamespace = new(NamespaceInfo.NamespaceIntend.generic, "Test");
         public static List<Var> CurrentlyAccessableVars = new();
         public static bool debugMode = false;
         public static int currentLine;
         public static List<MethodCall> allMethodCalls = new();
+
+        
+        
         
         public static void InitInternalNamespaces()
         {
@@ -23,11 +26,13 @@
             */
             Namespaces = new();
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Test"));
+            allLoadedFiles.Add("*internal");
             new Method("HelloWorld", VarDef.EvarType.@void, Namespaces[0], new List<List<VarDef>> {
                 new List<VarDef> { new(VarDef.EvarType.@bool, "display"), new(VarDef.EvarType.@string, "text")}
             }, new());
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Console"));
+            allLoadedFiles.Add("*internal");
             new Method("WriteLine", VarDef.EvarType.@void, Namespaces[1], new List<List<VarDef>> {
                 new List<VarDef> { new(VarDef.EvarType.@string, "text")},
                 new List<VarDef> { new(VarDef.EvarType.num, "num")},
@@ -45,16 +50,19 @@
             }, new());
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Program"));
+            allLoadedFiles.Add("*internal");
             new Method("Pause", VarDef.EvarType.@void, Namespaces[2], new List<List<VarDef>> {
                 new List<VarDef> {},
                 new List<VarDef> {new(VarDef.EvarType.@bool, "showPausedMessage")}
             }, new());
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Inf"));
+            allLoadedFiles.Add("*internal");
             new Method("DefVar", VarDef.EvarType.@void, Namespaces[3], new List<List<VarDef>> {
                 new List<VarDef> {new(VarDef.EvarType.@string, "VarType"), new(VarDef.EvarType.@string, "VarName")}
             }, new());
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Convert"));
+            allLoadedFiles.Add("*internal");
             new Method("ToNum", VarDef.EvarType.num, Namespaces[4], new List<List<VarDef>> {
                 new List<VarDef> {new(VarDef.EvarType.@string, "ConvertFrom"), new(VarDef.EvarType.@bool, "errorOnParseFail")}
             }, new());

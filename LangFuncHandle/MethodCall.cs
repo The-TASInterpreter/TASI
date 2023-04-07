@@ -1,18 +1,17 @@
 ﻿using DataTypeStore;
-using System.Reflection;
 
 namespace TASI
 {
     public class MethodCall
     {
-        public Method callMethod;
+        public Method? callMethod;
         public List<Var> inputVars;
         public List<CommandLine> argumentCommands;
         private string methodName;
 
         public MethodCall(Region region)
         {
-            callMethod = FindMethodByPath(region.FindDirectValue("mL").value, Global.Namespaces, true);
+            callMethod = FindMethodByPath(region.FindDirectValue("mL").value, Global.Namespaces, true, null);
             argumentCommands = new List<CommandLine>();
             foreach (Region region1 in region.FindSubregionWithNameArray("CmdL"))
             {
@@ -47,6 +46,7 @@ namespace TASI
             int braceDeph = 0;
             bool inString = false;
             bool lastBackslash = false;
+
 
             //split method name from arguments and arguments with comma
             foreach (char c in command.commandText)
@@ -141,9 +141,9 @@ namespace TASI
             return;
         }
 
-        public void SearchCallMethod() //This is there, so header analysis can be done, without any errors.
+        public void SearchCallMethod(NamespaceInfo currentNamespace) //This is there, so header analysis can be done, without any errors.
         {
-            callMethod = FindMethodByPath(methodName.ToLower(), Global.Namespaces, true);
+            callMethod = FindMethodByPath(methodName.ToLower(), Global.Namespaces, true, currentNamespace);
         }
 
         public MethodCallInputHelp? CheckIfMethodCallHasValidArgTypesAndReturnCode(List<Var> inputVars)
@@ -188,8 +188,9 @@ namespace TASI
                 return null;
         }
 
-        public static Method? FindMethodByPath(string name, List<NamespaceInfo> parentNamespaces, bool exceptionAtNotFound)
+        public static Method? FindMethodByPath(string name, List<NamespaceInfo> parentNamespaces, bool exceptionAtNotFound, NamespaceInfo? currentNamespace)
         {
+
             string[] nameSplit = name.Split('.');
             if (nameSplit.Length < 2)
                 throw new Exception($"Can't find method \"{name}\" because there is no method in the location.");
@@ -219,6 +220,10 @@ namespace TASI
                 }
 
             }
+
+            if (currentNamespace != null)
+                if (!currentNamespace.accessableNamespaces.Contains(currentMethod.parentNamespace)) throw new Exception($"The method \"{currentMethod.methodLocation}\" can't be accessed in the \"{currentNamespace.Name}\" namespace, because the \"{currentMethod.parentNamespace.Name}\" namespace wasn't imported. ");
+
             return currentMethod;
 
         }
@@ -256,9 +261,9 @@ namespace TASI
                 methodCallInput.Add(new(new VarDef(methodCallInputHelp.inputVarType[i].varType, methodCallInputHelp.inputVarType[i].varName), false, this.inputVars[i].ObjectValue));
             }
 
-            Var methodReturnValue = InterpretMain.InterpretNormalMode(methodCallInputHelp.inputCode, new(methodCallInput, callMethod.parentNamespace.accessableNamespaces));
+            Var methodReturnValue = InterpretMain.InterpretNormalMode(methodCallInputHelp.inputCode, new(methodCallInput, callMethod.parentNamespace));
 
-            
+
 
             if (methodReturnValue.varDef.varType != VarDef.EvarType.@return || methodReturnValue.returnStatementValue.varDef.varType != callMethod.returnType)
                 throw new Exception($"The method \"{callMethod.methodLocation}\" didn't return the expected {callMethod.returnType}-type.");

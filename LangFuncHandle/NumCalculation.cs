@@ -500,7 +500,7 @@
                     type = Type.or;
                     return;
                 default:
-                    throw new Exception($"\"{token} is neither a number nor an operator, a method or a string.\nIf you want to use syntax, put it in braces and put a $ in front e.g.:(5+($true))");
+                    throw new Exception($"\"{token}\" is neither a number nor an operator, a method or a string.\nIf you want to use syntax, put it in braces and put a $ in front e.g.:(5+($true))");
             }
 
         }

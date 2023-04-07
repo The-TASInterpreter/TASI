@@ -11,6 +11,7 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using static TASI.Command;
 
 namespace TASI
 {
@@ -65,7 +66,7 @@ namespace TASI
                             {
                                 Global.currentLine = overloadCode.commandLine;
                                 if (overloadCode.commandType == Command.CommandTypes.MethodCall) overloadCode.methodCall.SearchCallMethod(namespaceInfo);
-
+                                if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerMethods(namespaceInfo);
                             }
                         }
                     }

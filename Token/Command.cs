@@ -11,7 +11,14 @@ namespace TASI
         public List<Command>? codeContainerCommands;
         public MethodCall? methodCall;
 
-
+        public void initCodeContainerMethods(NamespaceInfo namespaceInfo)
+        {
+            foreach(Command command in codeContainerCommands)
+            {
+                if (command.commandType == CommandTypes.MethodCall) command.methodCall.SearchCallMethod(namespaceInfo);
+                if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerMethods(namespaceInfo);
+            }
+        }
         public Region Region
         {
             get

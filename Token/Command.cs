@@ -73,7 +73,7 @@ namespace TASI
                     originalCommandText = $"\"{commandText}\"";
                     break;
                 case CommandTypes.CodeContainer:
-                    this.codeContainerCommands = StringProcess.ConvertLineToCommand(commandText);
+                    this.codeContainerCommands = StringProcess.ConvertLineToCommand(commandText, commandLine);
 
                     originalCommandText = "{" + commandText + "}";
                     break;

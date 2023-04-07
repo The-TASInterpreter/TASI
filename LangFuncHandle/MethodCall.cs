@@ -130,7 +130,7 @@ namespace TASI
                 methodArguments.Add(currentArgument);
             argumentCommands = new(methodArguments.Count);
             foreach (string argument in methodArguments) //Convert string arguments to commands
-                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument), -1));
+                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument, command.commandLine), -1));
             Global.allMethodCalls.Add(this);
 
 

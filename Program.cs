@@ -51,6 +51,7 @@ namespace TASI
 
                 
                 var startValues = InterpretMain.InterpretHeaders(commands);
+                Global.currentLine = -1;
                 var startCode = startValues.Item1 ?? throw new Exception("You can't start a library-type namespace directly.");
 
 

@@ -21,7 +21,7 @@
             string commandText = string.Empty;
             bool lineCharMode = false;
             string lineCharLine = "";
-            Global.currentLine = 1;
+            Global.currentLine = currentLine;
             char lastChar = ' ';
 
             foreach (char c in line) //Thats some shit code and imma have to fix it some time, but it basically is the main syntax analysis method.

@@ -13,7 +13,7 @@
 
 
 
-            return calculation.CalculateValue(accessableObjects);
+            return calculation.CalculateValue(accessableObjects, command.commandLine);
         }
 
 
@@ -160,10 +160,10 @@
         }
 
 
-        public Var CalculateValue(AccessableObjects accessableObjects)
+        public Var CalculateValue(AccessableObjects accessableObjects, int commandLine = -1)
         {
             if (type != Type.calc && type != Type.syx) throw new Exception("Internal: Only numcalcs or syntax can return a Value.");
-            if (type == Type.syx) return Statement.ReturnStatement(StringProcess.ConvertLineToCommand(token.Remove(0, 1)), accessableObjects); // If its not a num calculation but a syntax/statement/(Everywhere I call shit differently), we can skip all this calculating, and 
+            if (type == Type.syx) return Statement.ReturnStatement(StringProcess.ConvertLineToCommand(token.Remove(0, 1), commandLine), accessableObjects); // If its not a num calculation but a syntax/statement/(Everywhere I call shit differently), we can skip all this calculating, and 
 
             CalculationType? calculationNext = null;
             CalculationType calculation;

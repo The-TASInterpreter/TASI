@@ -62,6 +62,7 @@ namespace TASI
                         {
                             foreach(Command overloadCode in methodCodeOverload)
                             {
+                                Global.currentLine = overloadCode.commandLine;
                                 if (overloadCode.commandType == Command.CommandTypes.MethodCall) overloadCode.methodCall.SearchCallMethod(namespaceInfo);
                             }
                         }
@@ -70,6 +71,7 @@ namespace TASI
                 }
                 foreach (Command command in startValues.Item1)
                 {
+                    Global.currentLine = command.commandLine;
                     if (command.commandType == Command.CommandTypes.MethodCall) command.methodCall.SearchCallMethod(startValues.Item2);
                 }
 

@@ -40,19 +40,17 @@ namespace TASI
             
 
             Stopwatch codeRuntime = new();
-            codeRuntime.Start();
-            Console.WriteLine("Comment-Removing and analysing tokens");
+           
+            
             //Remove comments 
             try
             {
-                
-                List<Command> commands = LoadFile.ByPath(Console.ReadLine() ?? throw new Exception("Code is null."));
-
-                Console.WriteLine($"Finished token analysis; Interpreting. It took {codeRuntime.ElapsedMilliseconds}ms");
+                string location = Console.ReadLine() ?? throw new Exception("Code is null.");
+                List<Command> commands = LoadFile.ByPath(location);
+                codeRuntime.Start();
 
                 
                 var startValues = InterpretMain.InterpretHeaders(commands);
-                Console.WriteLine($"{Global.Namespaces}{Global.allLoadedFiles}");
                 var startCode = startValues.Item1 ?? throw new Exception("You can't start a library-type namespace directly.");
 
 
@@ -82,7 +80,7 @@ namespace TASI
                 Console.ReadKey(false);
 
             }
-            catch (NotImplementedException e)
+            catch (Exception e)
             {
 
                 Console.Clear();

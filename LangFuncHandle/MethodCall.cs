@@ -143,8 +143,11 @@ namespace TASI
 
         public void SearchCallMethod(NamespaceInfo currentNamespace) //This is there, so header analysis can be done, without any errors.
         {
-            
+
             callMethod = FindMethodByPath(methodName.ToLower(), Global.Namespaces, true, currentNamespace);
+            foreach (CommandLine commandLine in argumentCommands)
+                foreach (Command command in commandLine.commands)
+                    if (command.commandType == Command.CommandTypes.MethodCall) command.methodCall.SearchCallMethod(currentNamespace);
         }
 
         public MethodCallInputHelp? CheckIfMethodCallHasValidArgTypesAndReturnCode(List<Var> inputVars)

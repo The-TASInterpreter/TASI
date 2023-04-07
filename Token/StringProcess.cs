@@ -3,7 +3,7 @@
     public class StringProcess
     {
         internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '{', '}', 'Ⅼ' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
-        public static List<Command> ConvertLineToCommand(string line)
+        public static List<Command> ConvertLineToCommand(string line, int currentLine = 1)
         {
             TASI_Main.interpretInitLog.Log($"Finding syntax of line text:\n{line}");
             List<Command> commands = new List<Command>();
@@ -21,7 +21,6 @@
             string commandText = string.Empty;
             bool lineCharMode = false;
             string lineCharLine = "";
-            int currentLine = 1;
             Global.currentLine = 1;
             char lastChar = ' ';
 

@@ -64,6 +64,7 @@ namespace TASI
                             {
                                 Global.currentLine = overloadCode.commandLine;
                                 if (overloadCode.commandType == Command.CommandTypes.MethodCall) overloadCode.methodCall.SearchCallMethod(namespaceInfo);
+
                             }
                         }
                     }

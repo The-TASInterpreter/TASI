@@ -208,6 +208,7 @@ namespace TASI
                 case VarDef.EvarType.@string:
                     correctVar.stringValue = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), correctVar.varDef.varType, accessableObjects).stringValue;
                     break;
+                
                 default: throw new Exception("Internal: Unimplemented VarType");
             }
         }

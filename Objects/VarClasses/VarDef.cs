@@ -18,7 +18,7 @@
         }
         public enum EvarType
         {
-            @num, @string, @bool, @void, @return
+            @num, @string, @bool, @void, @return, @all
         }
         public EvarType varType;
         public string varName;

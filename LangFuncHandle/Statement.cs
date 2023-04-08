@@ -91,10 +91,10 @@ namespace TASI
                     }
                     return new();
                 case "helpm":
-                    if (commandLine.commands.Count != 2) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
-                    if (commandLine.commands[1].commandType != Command.CommandTypes.MethodCall) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <method call>;");
-                    MethodCall helpCall = commandLine.commands[1].methodCall ?? throw new Exception("Internal: Method call was not converted to a method call.");
-                    Help.ListMethodArguments(helpCall.callMethod);
+                    if (commandLine.commands.Count != 2) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
+                    if (commandLine.commands[1].commandType != Command.CommandTypes.FunctionCall) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
+                    FunctionCall helpCall = commandLine.commands[1].functionCall ?? throw new Exception("Internal: function call was not converted to a function call.");
+                    Help.ListFunctionArguments(helpCall.callFunction);
                     return new();
                 case "listm":
                     if (commandLine.commands.Count != 2) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
@@ -118,19 +118,19 @@ namespace TASI
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
-                case Command.CommandTypes.MethodCall:
-                    MethodCall methodCall = commandLine.commands[0].methodCall ?? throw new Exception("Internal: Method call was not converted to a method call.");
-                    if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
-                    if (methodCall.callMethod.returnType != expectedType) //Find out if Method returns desired type
-                        throw new Exception($"The method {methodCall.callMethod.methodLocation} does not return the expected {expectedType} type.");
-                    return methodCall.DoMethodCall(accessableObjects);
+                case Command.CommandTypes.FunctionCall:
+                    FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new Exception("Internal: function call was not converted to a function call.");
+                    if (commandLine.commands.Count != 1) //There shouldnt be anything after a function call
+                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
+                    if (functionCall.callFunction.returnType != expectedType) //Find out if function returns desired type
+                        throw new Exception($"The function {functionCall.callFunction.functionLocation} does not return the expected {expectedType} type.");
+                    return functionCall.DoFunctionCall(accessableObjects);
 
-                case Command.CommandTypes.NumCalculation:
+                case Command.CommandTypes.Calculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
-                    Var numCalcRet = NumCalculation.DoNumCalculation(commandLine.commands[0], accessableObjects);
-                    if (numCalcRet.varDef.varType != expectedType) throw new Exception($"The num calculation does not return the expected {expectedType} type.");
+                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after alculation.");
+                    Var numCalcRet = Calculation.DoCalculation(commandLine.commands[0], accessableObjects);
+                    if (numCalcRet.varDef.varType != expectedType) throw new Exception($"The calculation does not return the expected {expectedType} type.");
                     return numCalcRet;
 
                 case Command.CommandTypes.Statement:
@@ -142,7 +142,7 @@ namespace TASI
                 case Command.CommandTypes.String:
                     if (expectedType != VarDef.EvarType.@string) throw new Exception($"String is not the expected {expectedType} type.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
+                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after calculation.");
                     return new Var(new(VarDef.EvarType.@string, "", false), true, commandLine.commands[0].commandText);
 
                 default:
@@ -154,17 +154,17 @@ namespace TASI
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
-                case Command.CommandTypes.MethodCall:
-                    MethodCall methodCall = commandLine.commands[0].methodCall ?? throw new Exception("Internal: Method call was not converted to a method call.");
-                    if (commandLine.commands.Count != 1) //There shouldnt be anything after a method call
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Methodcall.");
+                case Command.CommandTypes.FunctionCall:
+                    FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new Exception("Internal: function call was not converted to a function call.");
+                    if (commandLine.commands.Count != 1) //There shouldnt be anything after a function call
+                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
 
-                    return methodCall.DoMethodCall(accessableObjects);
+                    return functionCall.DoFunctionCall(accessableObjects);
 
-                case Command.CommandTypes.NumCalculation:
+                case Command.CommandTypes.Calculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
-                    Var numCalcRet = NumCalculation.DoNumCalculation(commandLine.commands[0], accessableObjects);
+                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after calculation.");
+                    Var numCalcRet = Calculation.DoCalculation(commandLine.commands[0], accessableObjects);
 
                     return numCalcRet;
 
@@ -174,7 +174,7 @@ namespace TASI
 
                 case Command.CommandTypes.String:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after Num calculation.");
+                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after calculation.");
                     return new Var(new(VarDef.EvarType.@string, "", false), true, commandLine.commands[0].commandText);
 
                 default:

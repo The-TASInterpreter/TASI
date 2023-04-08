@@ -9,14 +9,14 @@ namespace TASI
         public int commandLine;
         public string originalCommandText;
         public List<Command>? codeContainerCommands;
-        public MethodCall? methodCall;
+        public FunctionCall? functionCall;
 
-        public void initCodeContainerMethods(NamespaceInfo namespaceInfo)
+        public void initCodeContainerFunctions(NamespaceInfo namespaceInfo)
         {
             foreach(Command command in codeContainerCommands)
             {
-                if (command.commandType == CommandTypes.MethodCall) command.methodCall.SearchCallMethod(namespaceInfo);
-                if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerMethods(namespaceInfo);
+                if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(namespaceInfo);
+                if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(namespaceInfo);
             }
         }
         public Region Region
@@ -30,8 +30,8 @@ namespace TASI
                 if (codeContainerCommands != null)
                     foreach (Command c in codeContainerCommands)
                         result.SubRegions.Add(c.Region);
-                if (methodCall != null)
-                    result.SubRegions.Add(methodCall.Region);
+                if (functionCall != null)
+                    result.SubRegions.Add(functionCall.Region);
                 return result;
 
 
@@ -50,17 +50,17 @@ namespace TASI
                     codeContainerCommands.Add(new(region1));
 
             }
-            List<Region> methodCallRegionCheck = region.FindSubregionWithNameArray("MC").ToList();
-            if (methodCallRegionCheck.Any())
+            List<Region> functionCallRegionCheck = region.FindSubregionWithNameArray("MC").ToList();
+            if (functionCallRegionCheck.Any())
             {
-                methodCall = new(methodCallRegionCheck[0]);
+                functionCall = new(functionCallRegionCheck[0]);
             }
         }
 
         
         public enum CommandTypes
         {
-            MethodCall, Statement, NumCalculation, String, CodeContainer, EndCommand
+            FunctionCall, Statement, Calculation, String, CodeContainer, EndCommand
         }
         public Command(CommandTypes commandType, string commandText, int commandLine = -1)
         {
@@ -69,11 +69,11 @@ namespace TASI
             this.commandLine = commandLine;
             switch (commandType)
             {
-                case CommandTypes.MethodCall:
-                    this.methodCall = new(this);
+                case CommandTypes.FunctionCall:
+                    this.functionCall = new(this);
                     originalCommandText = $"[{commandText}]";
                     break;
-                case CommandTypes.NumCalculation:
+                case CommandTypes.Calculation:
                     originalCommandText = $"({commandText})";
                     break;
                 case CommandTypes.String:

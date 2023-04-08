@@ -13,7 +13,7 @@ namespace TASI
             library // An also normal program, which doesn't have a start and will throw an error if tried to excecute normally.
         }
         private string? name; 
-        public List<Method> namespaceMethods = new();
+        public List<Function> namespaceFuncitons = new();
         public List<VarDef.EvarType> namespaceVars = new();
         public List<Var> publicNamespaceVars = new();
         public List<NamespaceInfo> accessableNamespaces = new();

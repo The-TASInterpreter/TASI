@@ -1,6 +1,6 @@
 ﻿namespace TASI
 {
-    internal class InternalMethodHandle
+    internal class InternalFunctionHandle
     {
 
         public static Var HandleInternalFunc(string funcName, List<Var> input, AccessableObjects accessableObjects)
@@ -61,15 +61,15 @@
 
     internal class InternalFuncs
     {
-        public static void INF(MethodCall methodCall)
+        public static void INF(FunctionCall functionCall)
         {
-            switch (methodCall.callMethod.methodLocation)
+            switch (functionCall.callFunction.functionLocation)
             {
                 case "INF.DefFunc":
-                    if (InterpretMain.FindMethodUsingMethodPath(methodCall.inputVars[0].stringValue) == null)
-                        throw new Exception($"Can't define func {methodCall.inputVars[0].stringValue}, because it isn't declared anywhere. E.U 0010\nTry to add something like this:\nmethod {methodCall.inputVars[0].stringValue} {{\n/code here\n}}.");
-                    if (!Enum.TryParse<VarDef.EvarType>(methodCall.inputVars[1].stringValue, out VarDef.EvarType result))
-                        throw new Exception($"{methodCall.inputVars[1].stringValue} is an invalid variable type. E.U 0011\nValid types are:\nnum\nvoid\nbool\nstring");
+                    if (InterpretMain.FindFunctionUsingFunctionPath(functionCall.inputVars[0].stringValue) == null)
+                        throw new Exception($"Can't define func {functionCall.inputVars[0].stringValue}, because it isn't declared anywhere. E.U 0010\nTry to add something like this:\nfunction {functionCall.inputVars[0].stringValue} {{\n/code here\n}}.");
+                    if (!Enum.TryParse<VarDef.EvarType>(functionCall.inputVars[1].stringValue, out VarDef.EvarType result))
+                        throw new Exception($"{functionCall.inputVars[1].stringValue} is an invalid variable type. E.U 0011\nValid types are:\nnum\nvoid\nbool\nstring");
 
                     break;
 

@@ -4,18 +4,18 @@ namespace TASI
 {
     internal class Help
     {
-        public static void ListMethodArguments(Method method)
+        public static void ListFunctionArguments(Function function)
         {
-            Console.WriteLine($"Help for methd: {method.funcName}");
-            Console.WriteLine($"This method is part of the \"{method.parentNamespace.Name}\" parent. You can use the syntax \"Listm <method location string>;\". For this method it would be:\nListm \"{method.methodLocation}\";");
-            Console.WriteLine($"Accepted arguments for this method are: ");
-            foreach (List<VarDef> arguments in method.methodArguments)
+            Console.WriteLine($"Help for methd: {function.funcName}");
+            Console.WriteLine($"This function is part of the \"{function.parentNamespace.Name}\" parent. You can use the syntax \"Listm <function location string>;\". For this function it would be:\nListm \"{function.functionLocation}\";");
+            Console.WriteLine($"Accepted arguments for this function are: ");
+            foreach (List<VarDef> arguments in function.functionArguments)
             {
 
                 if (arguments.Count == 0)
-                    Console.WriteLine($"\t[{method.methodLocation}]");
+                    Console.WriteLine($"\t[{function.functionLocation}]");
                 else
-                    Console.Write($"\t[{method.methodLocation}:");
+                    Console.Write($"\t[{function.functionLocation}:");
                 for (int i = 0; i < arguments.Count; i++)
                 {
                     VarDef var = arguments[i];
@@ -28,10 +28,10 @@ namespace TASI
 
         }
 
-        public static void ListMethodsOfNamespace(string location)
+        public static void ListFunctionsOfNamespace(string location)
         {
-            Console.WriteLine($"Submethods of {location}:");
-            Console.WriteLine(ListMethods(MethodCall.FindNamespaceByName(location, Global.Namespaces, true).namespaceMethods));
+            Console.WriteLine($"Subfunctions of {location}:");
+            Console.WriteLine(ListFunctions(FunctionCall.FindNamespaceByName(location, Global.Namespaces, true).namespaceFuncitons));
 
 
         }
@@ -40,18 +40,18 @@ namespace TASI
         {
             if (location.Split('.').Length == 1)
             {
-                ListMethodsOfNamespace(location);
+                ListFunctionsOfNamespace(location);
             }
             else
             {
-                ListSubmethodsOfMethod(location);
+                ListSubfunctionsOfFunction(location);
             }
         }
 
-        public static void ListSubmethodsOfMethod(string location)
+        public static void ListSubfunctionsOfFunction(string location)
         {
-            Console.WriteLine($"Submethods of {location}:");
-            Console.WriteLine(ListMethods(MethodCall.FindMethodByPath(location, Global.Namespaces, true, null).subMethods));
+            Console.WriteLine($"Subfunctions of {location}:");
+            Console.WriteLine(ListFunctions(FunctionCall.FindFunctionByPath(location, Global.Namespaces, true, null).subFunctions));
         }
 
         public static void ListNamespaces(List<NamespaceInfo> namespaces)
@@ -63,13 +63,13 @@ namespace TASI
             
         }
 
-        public static string ListMethods(List<Method> methods)
+        public static string ListFunctions(List<Function> functions)
         {
-            if (methods.Count == 0) return "\t <There are none>";
+            if (functions.Count == 0) return "\t <There are none>";
             string result = "";
-            foreach (Method m in methods)
+            foreach (Function m in functions)
             {
-                result += "\t" + m.methodLocation + "\n";
+                result += "\t" + m.functionLocation + "\n";
             }
             return result;
         }

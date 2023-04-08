@@ -1,11 +1,11 @@
 ﻿//THIS INTERPRETER IS IN A VERY EARLY STATE!
 // E.U.0001: Still in string mode even at end of line (Try to add a "\"")
-// E.U.0002: Still in method mode even at end of line (Try to add a "]")
-// E.U.0003: Still in NumCalculation mode even at end of line (Try to add a ")")
-// E.U.0004: Invalid Command.CommandType at method Statement part 2
-// E.U.0005: Invalid Command.CommandType at method Statement part 3
-// E.U.0006: Invalid CodeContainer direction at method Statement part 3
-// E.U.0007: Still in method mode even at end of file/parent method (Try to add a "}")
+// E.U.0002: Still in function mode even at end of line (Try to add a "]")
+// E.U.0003: Still in Calculation mode even at end of line (Try to add a ")")
+// E.U.0004: Invalid Command.CommandType at function Statement part 2
+// E.U.0005: Invalid Command.CommandType at function Statement part 3
+// E.U.0006: Invalid CodeContainer direction at function Statement part 3
+// E.U.0007: Still in function mode even at end of file/parent function (Try to add a "}")
 // E.U.0008: Can't create a variable with the type void
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
 
@@ -56,17 +56,17 @@ namespace TASI
                 var startCode = startValues.Item1 ?? throw new Exception("You can't start a library-type namespace directly.");
 
 
-                foreach (NamespaceInfo namespaceInfo in Global.Namespaces) //Activate methodcalls after scanning headers to not cause any errors. BTW im sorry
+                foreach (NamespaceInfo namespaceInfo in Global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
                 {
-                    foreach(Method method in namespaceInfo.namespaceMethods)
+                    foreach(Function function in namespaceInfo.namespaceFuncitons)
                     {
-                        foreach (List<Command> methodCodeOverload in method.methodCode)
+                        foreach (List<Command> functionCodeOverload in function.functionCode)
                         {
-                            foreach(Command overloadCode in methodCodeOverload)
+                            foreach(Command overloadCode in functionCodeOverload)
                             {
                                 Global.currentLine = overloadCode.commandLine;
-                                if (overloadCode.commandType == Command.CommandTypes.MethodCall) overloadCode.methodCall.SearchCallMethod(namespaceInfo);
-                                if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerMethods(namespaceInfo);
+                                if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo);
+                                if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo);
                             }
                         }
                     }
@@ -75,7 +75,7 @@ namespace TASI
                 foreach (Command command in startValues.Item1)
                 {
                     Global.currentLine = command.commandLine;
-                    if (command.commandType == Command.CommandTypes.MethodCall) command.methodCall.SearchCallMethod(startValues.Item2);
+                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(startValues.Item2);
                 }
 
 

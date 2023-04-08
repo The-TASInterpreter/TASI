@@ -5,20 +5,20 @@
         public char letterChar;
         public enum LastLetterType
         {
-            @string, method, numCalc, statement
+            @string, function, numCalc, statement
         }
 
         public LastLetterType lastLetterType;
 
-        public int charInMethodDeph;
+        public int charInFunctionDeph;
         public int letterLine;
 
 
-        public LetterByLetterAnalysis(char letterChar, LastLetterType commandType, int charInMethodDeph, int letterLine)
+        public LetterByLetterAnalysis(char letterChar, LastLetterType commandType, int charInFunctionDeph, int letterLine)
         {
             this.letterChar = letterChar;
             this.lastLetterType = commandType;
-            this.charInMethodDeph = charInMethodDeph;
+            this.charInFunctionDeph = charInFunctionDeph;
             this.letterLine = letterLine;
         }
 
@@ -53,12 +53,12 @@
 
                     case '[':
                         squareDeph += 1;
-                        letterTypeStack.Add(LastLetterType.method);
+                        letterTypeStack.Add(LastLetterType.function);
                         break;
                     case ']':
-                        if (!letterTypeStack.Any()) throw new Exception("Can't end method, because no method was started");
+                        if (!letterTypeStack.Any()) throw new Exception("Can't end function, because no function was started");
                         squareDeph += -1;
-                        if (letterTypeStack.Last() != LastLetterType.method) throw new Exception($"Can't exit a method using a square bracket while base {letterTypeStack.Last()} is still active.");
+                        if (letterTypeStack.Last() != LastLetterType.function) throw new Exception($"Can't exit a function using a square bracket while base {letterTypeStack.Last()} is still active.");
                         letterTypeStack.RemoveAt(letterTypeStack.Count - 1);
                         break;
                     case '(':
@@ -72,7 +72,7 @@
                 }
 
                 if (letterTypeStack.Any())
-                    if (letterTypeStack.Last() == LastLetterType.method)
+                    if (letterTypeStack.Last() == LastLetterType.function)
                         result.Add(new(c, letterTypeStack.Last(), squareDeph, line));
                     else
                         result.Add(new(c, letterTypeStack.Last(), -1, line));

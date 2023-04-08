@@ -2,16 +2,16 @@
 
 namespace TASI
 {
-    public class MethodCall
+    public class FunctionCall
     {
-        public Method? callMethod;
+        public Function? callFunction;
         public List<Var> inputVars;
         public List<CommandLine> argumentCommands;
-        private string methodName;
+        private string functionName;
 
-        public MethodCall(Region region)
+        public FunctionCall(Region region)
         {
-            callMethod = FindMethodByPath(region.FindDirectValue("mL").value, Global.Namespaces, true, null);
+            callFunction = FindFunctionByPath(region.FindDirectValue("mL").value, Global.Namespaces, true, null);
             argumentCommands = new List<CommandLine>();
             foreach (Region region1 in region.FindSubregionWithNameArray("CmdL"))
             {
@@ -23,23 +23,23 @@ namespace TASI
             get
             {
                 Region result = new("MC", new List<Region>(), new());
-                result.directValues.Add(new("mL", callMethod.methodLocation, false));
+                result.directValues.Add(new("mL", callFunction.functionLocation, false));
                 foreach (var arg in argumentCommands)
                     result.SubRegions.Add(arg.Region);
                 return result;
 
             }
         }
-        public MethodCall(Method callMethod, List<Var> inputVars)
+        public FunctionCall(Function callFunction, List<Var> inputVars)
         {
-            this.callMethod = callMethod;
+            this.callFunction = callFunction;
             this.inputVars = new List<Var>(inputVars);
         }
 
-        public MethodCall(Command command)
+        public FunctionCall(Command command)
         {
-            methodName = "";
-            List<string> methodArguments = new();
+            functionName = "";
+            List<string> functionArguments = new();
             string currentArgument = "";
             bool doingName = true;
             int squareDeph = 0;
@@ -48,19 +48,19 @@ namespace TASI
             bool lastBackslash = false;
 
 
-            //split method name from arguments and arguments with comma
+            //split function name from arguments and arguments with comma
             foreach (char c in command.commandText)
             {
                 if (doingName)
                 {
                     if (c == ':')
                     {
-                        if (methodName == "")
-                            throw new Exception("Method call can't have an empty method path.");
+                        if (functionName == "")
+                            throw new Exception("Function call can't have an empty function path.");
                         doingName = false;
                         continue;
                     }
-                    methodName += c;
+                    functionName += c;
                 }
                 else
                 {
@@ -105,8 +105,8 @@ namespace TASI
                             if (braceDeph == 0 && squareDeph == 0 && !inString) // Only check for base layer commas
                             {
                                 if (currentArgument.Replace(" ", "") == "") // If argument minus Space is nothing
-                                    throw new Exception("Cant have an empty argument (Check for double commas like \"[Example.Method:test,,]\")");
-                                methodArguments.Add(currentArgument);
+                                    throw new Exception("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
+                                functionArguments.Add(currentArgument);
                                 currentArgument = "";
                                 continue;
                             }
@@ -124,14 +124,14 @@ namespace TASI
             if (squareDeph != 0)
                 throw new Exception("Expected ]");
 
-            if (currentArgument.Replace(" ", "") == "" && methodArguments.Count != 0) // If argument minus Space is nothing
-                throw new Exception("Cant have an empty argument (Check for double commas like \"[Example.Method:test,,]\")");
-            if (methodArguments.Count != 0 || (currentArgument.Replace(" ", "") != ""))
-                methodArguments.Add(currentArgument);
-            argumentCommands = new(methodArguments.Count);
-            foreach (string argument in methodArguments) //Convert string arguments to commands
+            if (currentArgument.Replace(" ", "") == "" && functionArguments.Count != 0) // If argument minus Space is nothing
+                throw new Exception("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
+            if (functionArguments.Count != 0 || (currentArgument.Replace(" ", "") != ""))
+                functionArguments.Add(currentArgument);
+            argumentCommands = new(functionArguments.Count);
+            foreach (string argument in functionArguments) //Convert string arguments to commands
                 argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument, command.commandLine), -1));
-            Global.allMethodCalls.Add(this);
+            Global.allFunctionCalls.Add(this);
 
 
 
@@ -141,27 +141,27 @@ namespace TASI
             return;
         }
 
-        public void SearchCallMethod(NamespaceInfo currentNamespace) //This is there, so header analysis can be done, without any errors.
+        public void SearchCallFunction(NamespaceInfo currentNamespace) //This is there, so header analysis can be done, without any errors.
         {
 
-            callMethod = FindMethodByPath(methodName.ToLower(), Global.Namespaces, true, currentNamespace);
+            callFunction = FindFunctionByPath(functionName.ToLower(), Global.Namespaces, true, currentNamespace);
             foreach (CommandLine commandLine in argumentCommands)
                 foreach (Command command in commandLine.commands)
-                    if (command.commandType == Command.CommandTypes.MethodCall) command.methodCall.SearchCallMethod(currentNamespace);
+                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace);
         }
 
-        public MethodCallInputHelp? CheckIfMethodCallHasValidArgTypesAndReturnCode(List<Var> inputVars)
+        public FunctionCallInputHelp? CheckIfFunctionCallHasValidArgTypesAndReturnCode(List<Var> inputVars)
         {
             bool matching;
-            for (int j = 0; j < callMethod.methodArguments.Count; j++)
+            for (int j = 0; j < callFunction.functionArguments.Count; j++)
             {
-                List<VarDef> methodInputType = callMethod.methodArguments[j];
-                if (methodInputType.Count == inputVars.Count)
+                List<VarDef> functionInputType = callFunction.functionArguments[j];
+                if (functionInputType.Count == inputVars.Count)
                 {
                     matching = true;
                     for (int i = 0; i < inputVars.Count; i++)
                     {
-                        if (methodInputType[i].varType != inputVars[i].varDef.varType)
+                        if (functionInputType[i].varType != inputVars[i].varDef.varType)
                         {
                             matching = false;
                             break;
@@ -169,9 +169,9 @@ namespace TASI
                     }
                     if (matching)
                     {
-                        if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
+                        if (callFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
                             return new(new(), new());
-                        return new(callMethod.methodCode[j], methodInputType);
+                        return new(callFunction.functionCode[j], functionInputType);
                     }
                 }
             }
@@ -192,33 +192,33 @@ namespace TASI
                 return null;
         }
 
-        public static Method? FindMethodByPath(string name, List<NamespaceInfo> parentNamespaces, bool exceptionAtNotFound, NamespaceInfo? currentNamespace)
+        public static Function? FindFunctionByPath(string name, List<NamespaceInfo> parentNamespaces, bool exceptionAtNotFound, NamespaceInfo? currentNamespace)
         {
 
             string[] nameSplit = name.Split('.');
             if (nameSplit.Length < 2)
-                throw new Exception($"Can't find method \"{name}\" because there is no method in the location.");
+                throw new Exception($"Can't find Function \"{name}\" because there is no Function in the location.");
             NamespaceInfo? parentNamespace = FindNamespaceByName(nameSplit[0], parentNamespaces, exceptionAtNotFound);
             if (parentNamespace == null)
                 return null;
-            List<Method> methods = parentNamespace.namespaceMethods;
-            Method? currentMethod = null;
+            List<Function> functions = parentNamespace.namespaceFuncitons;
+            Function? currentFunction = null;
             for (int i = 0; i < nameSplit.Length - 1; i++)
             {
-                currentMethod = null;
-                foreach (Method method in methods)
+                currentFunction = null;
+                foreach (Function function in functions)
                 {
-                    if (method.funcName == nameSplit[i + 1])
+                    if (function.funcName == nameSplit[i + 1])
                     {
-                        methods = method.subMethods;
-                        currentMethod = method;
+                        functions = function.subFunctions;
+                        currentFunction = function;
                         break;
                     }
                 }
-                if (currentMethod == null)
+                if (currentFunction == null)
                 {
                     if (exceptionAtNotFound)
-                        throw new Exception($"Could not find method \"{name}\".");
+                        throw new Exception($"Could not find function \"{name}\".");
                     else
                         return null;
                 }
@@ -226,13 +226,13 @@ namespace TASI
             }
 
             if (currentNamespace != null)
-                if (!currentNamespace.accessableNamespaces.Contains(currentMethod.parentNamespace)) throw new Exception($"The method \"{currentMethod.methodLocation}\" can't be accessed in the \"{currentNamespace.Name}\" namespace, because the \"{currentMethod.parentNamespace.Name}\" namespace wasn't imported. ");
+                if (!currentNamespace.accessableNamespaces.Contains(currentFunction.parentNamespace)) throw new Exception($"The function \"{currentFunction.functionLocation}\" can't be accessed in the \"{currentNamespace.Name}\" namespace, because the \"{currentFunction.parentNamespace.Name}\" namespace wasn't imported. ");
 
-            return currentMethod;
+            return currentFunction;
 
         }
 
-        public Var DoMethodCall(AccessableObjects accessableObjects)
+        public Var DoFunctionCall(AccessableObjects accessableObjects)
         {
             inputVars = new();
             foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
@@ -240,49 +240,49 @@ namespace TASI
                 inputVars.Add(Statement.GetVarOfCommandLine(commandLine, accessableObjects));
             }
 
-            MethodCallInputHelp? methodCallInputHelp = CheckIfMethodCallHasValidArgTypesAndReturnCode(inputVars);
+            FunctionCallInputHelp? functionCallInputHelp = CheckIfFunctionCallHasValidArgTypesAndReturnCode(inputVars);
 
-            if (methodCallInputHelp == null)
-                throw new Exception($"The method \"{callMethod.methodLocation}\" doesent support the provided input types. Use the syntax \"helpm <method call>;\"\nFor this method it would be: \"helpm [{callMethod.methodLocation}];\"");
+            if (functionCallInputHelp == null)
+                throw new Exception($"The function \"{callFunction.functionLocation}\" doesent support the provided input types. Use the syntax \"helpm <function call>;\"\nFor this function it would be: \"helpm [{callFunction.functionLocation}];\"");
 
 
-            if (callMethod.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
+            if (callFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
             {
-                Var returnValue = InternalMethodHandle.HandleInternalFunc(callMethod.methodLocation, inputVars, accessableObjects);
+                Var returnValue = InternalFunctionHandle.HandleInternalFunc(callFunction.functionLocation, inputVars, accessableObjects);
                 if (Global.debugMode)
                 {
-                    Console.WriteLine($"Did method call to {callMethod.parentNamespace.namespaceIntend}-intend {callMethod.methodLocation}.\nIt returns a {callMethod.returnType}.\nIt returned a {returnValue.varDef.varType}-type with a value of \"{returnValue.ObjectValue}\".");
+                    Console.WriteLine($"Did function call to {callFunction.parentNamespace.namespaceIntend}-intend {callFunction.functionLocation}.\nIt returns a {callFunction.returnType}.\nIt returned a {returnValue.varDef.varType}-type with a value of \"{returnValue.ObjectValue}\".");
                     Console.ReadKey();
                 }
                 return returnValue;
 
             }
             //return 
-            List<Var> methodCallInput = new();
+            List<Var> functionCallInput = new();
 
             for (int i = 0; i < inputVars.Count; i++)
             {
-                methodCallInput.Add(new(new VarDef(methodCallInputHelp.inputVarType[i].varType, methodCallInputHelp.inputVarType[i].varName), false, this.inputVars[i].ObjectValue));
+                functionCallInput.Add(new(new VarDef(functionCallInputHelp.inputVarType[i].varType, functionCallInputHelp.inputVarType[i].varName), false, this.inputVars[i].ObjectValue));
             }
 
-            Var methodReturnValue = InterpretMain.InterpretNormalMode(methodCallInputHelp.inputCode, new(methodCallInput, callMethod.parentNamespace));
+            Var functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, callFunction.parentNamespace));
 
 
 
-            if (methodReturnValue.varDef.varType != VarDef.EvarType.@return || methodReturnValue.returnStatementValue.varDef.varType != callMethod.returnType)
-                throw new Exception($"The method \"{callMethod.methodLocation}\" didn't return the expected {callMethod.returnType}-type.");
-            return methodReturnValue.returnStatementValue;
+            if (functionReturnValue.varDef.varType != VarDef.EvarType.@return || functionReturnValue.returnStatementValue.varDef.varType != callFunction.returnType)
+                throw new Exception($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
+            return functionReturnValue.returnStatementValue;
 
             //throw new Exception("Internal: Only internal functions are implemented");
         }
 
     }
 
-    public class MethodCallInputHelp
+    public class FunctionCallInputHelp
     {
         public List<Command> inputCode;
         public List<VarDef> inputVarType;
-        public MethodCallInputHelp(List<Command> inputCode, List<VarDef> inputVarType)
+        public FunctionCallInputHelp(List<Command> inputCode, List<VarDef> inputVarType)
         {
             this.inputCode = inputCode;
             this.inputVarType = inputVarType;

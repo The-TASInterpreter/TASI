@@ -1,12 +1,12 @@
 ﻿namespace TASI
 {
-    internal class NumCalculation
+    internal class Calculation
     {
 
 
-        public static Var DoNumCalculation(Command command, AccessableObjects accessableObjects)
+        public static Var DoCalculation(Command command, AccessableObjects accessableObjects)
         {
-            if (command.commandType != Command.CommandTypes.NumCalculation) throw new Exception("Internal: This method only deals with NumCalculations");
+            if (command.commandType != Command.CommandTypes.Calculation) throw new Exception("Internal: This function only deals with Calculations");
             //Grab tokens
 
             CalculationType calculation = new(command.commandText, false, true, false, accessableObjects);
@@ -154,7 +154,7 @@
             if (subTokens != null) return subTokens;
             subTokens = new List<CalculationType>();
             foreach (Command command in StringProcess.ConvertLineToCommand(token))
-                subTokens.Add(new(command.commandText, command.commandType == Command.CommandTypes.String, command.commandType == Command.CommandTypes.NumCalculation, command.commandType == Command.CommandTypes.MethodCall, accessableObjects));
+                subTokens.Add(new(command.commandText, command.commandType == Command.CommandTypes.String, command.commandType == Command.CommandTypes.Calculation, command.commandType == Command.CommandTypes.FunctionCall, accessableObjects));
             return subTokens;
 
         }
@@ -163,7 +163,7 @@
         public Var CalculateValue(AccessableObjects accessableObjects, int commandLine = -1)
         {
             if (type != Type.calc && type != Type.syx) throw new Exception("Internal: Only numcalcs or syntax can return a Value.");
-            if (type == Type.syx) return Statement.ReturnStatement(StringProcess.ConvertLineToCommand(token.Remove(0, 1), commandLine), accessableObjects); // If its not a num calculation but a syntax/statement/(Everywhere I call shit differently), we can skip all this calculating, and 
+            if (type == Type.syx) return Statement.ReturnStatement(StringProcess.ConvertLineToCommand(token.Remove(0, 1), commandLine), accessableObjects); // If its not a calculation but a syntax/statement/(Everywhere I call shit differently), we can skip all this calculating, and 
 
             CalculationType? calculationNext = null;
             CalculationType calculation;
@@ -225,7 +225,7 @@
                                 throw new Exception("The add operator doesnt support less or more than two values.");
                         }
 
-                        temp = NumCalculation.Add(values[0], values[1]);
+                        temp = Calculation.Add(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -240,7 +240,7 @@
                             else
                                 throw new Exception("The sub operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.Sub(values[0], values[1]);
+                        temp = Calculation.Sub(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -255,7 +255,7 @@
                             else
                                 throw new Exception("The mul operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.Mul(values[0], values[1]);
+                        temp = Calculation.Mul(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -270,7 +270,7 @@
                             else
                                 throw new Exception("The div operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.Div(values[0], values[1]);
+                        temp = Calculation.Div(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -285,7 +285,7 @@
                             else
                                 throw new Exception("The mod operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.Mod(values[0], values[1]);
+                        temp = Calculation.Mod(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -300,7 +300,7 @@
                             else
                                 throw new Exception("The root operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.Root(values[0], values[1]);
+                        temp = Calculation.Root(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -316,7 +316,7 @@
                             else
                                 throw new Exception("The equ operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.Equ(values[0], values[1]);
+                        temp = Calculation.Equ(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -331,7 +331,7 @@
                             else
                                 throw new Exception("The not operator doesnt support less or more than one value.");
                         }
-                        temp = NumCalculation.Not(values[0]);
+                        temp = Calculation.Not(values[0]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -346,7 +346,7 @@
                             else
                                 throw new Exception("The equ operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.Grt(values[0], values[1]);
+                        temp = Calculation.Grt(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -361,7 +361,7 @@
                             else
                                 throw new Exception("The equ operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.Sml(values[0], values[1]);
+                        temp = Calculation.Sml(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -376,7 +376,7 @@
                             else
                                 throw new Exception("The equ operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.And(values[0], values[1]);
+                        temp = Calculation.And(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -391,7 +391,7 @@
                             else
                                 throw new Exception("The equ operator doesnt support less or more than two values.");
                         }
-                        temp = NumCalculation.Or(values[0], values[1]);
+                        temp = Calculation.Or(values[0], values[1]);
                         values.Clear();
                         values.Add(temp);
                         break;
@@ -404,13 +404,13 @@
 
                 }
             }
-            if (values.Count != 1) throw new Exception("Invalid num calculation (Ended up with too many or few tokens)");
+            if (values.Count != 1) throw new Exception("Invalid calculation (Ended up with too many or few tokens)");
 
             return values[0];
 
         }
 
-        public CalculationType(string token, bool isString, bool isNumCalc, bool isMethod, AccessableObjects accessableObjects)
+        public CalculationType(string token, bool isString, bool isNumCalc, bool isFunction, AccessableObjects accessableObjects)
         {
             this.token = token;
             isValue = false;
@@ -429,24 +429,24 @@
                     type = Type.calc;
                 return;
             }
-            if (isMethod)
-            { //Methods will directly be calculated.
-                MethodCall methodCall = new(new Command(Command.CommandTypes.MethodCall, token));
+            if (isFunction)
+            { //functions will directly be calculated.
+                FunctionCall functionCall = new(new Command(Command.CommandTypes.FunctionCall, token));
                 isValue = true;
-                switch (methodCall.callMethod.returnType)
+                switch (functionCall.callFunction.returnType)
                 {
                     case VarDef.EvarType.@void:
-                        throw new Exception("A void type cant be used in a num calculation.");
+                        throw new Exception("A void type cant be used in a calculation.");
                     case VarDef.EvarType.num or VarDef.EvarType.@bool:
                         type = Type.num;
-                        value = methodCall.DoMethodCall(accessableObjects).numValue;
+                        value = functionCall.DoFunctionCall(accessableObjects).numValue;
                         break;
                     case VarDef.EvarType.@string:
                         type = Type.str;
-                        stringValue = methodCall.DoMethodCall(accessableObjects).stringValue;
+                        stringValue = functionCall.DoFunctionCall(accessableObjects).stringValue;
                         break;
                     default:
-                        throw new Exception("Internal: Unimplemented method return type.");
+                        throw new Exception("Internal: Unimplemented function return type.");
 
                 }
 
@@ -500,7 +500,7 @@
                     type = Type.or;
                     return;
                 default:
-                    throw new Exception($"\"{token}\" is neither a number nor an operator, a method or a string.\nIf you want to use syntax, put it in braces and put a $ in front e.g.:(5+($true))");
+                    throw new Exception($"\"{token}\" is neither a number nor an operator, a function or a string.\nIf you want to use syntax, put it in braces and put a $ in front e.g.:(5+($true))");
             }
 
         }

@@ -8,13 +8,13 @@
             TASI_Main.interpretInitLog.Log($"Finding syntax of line text:\n{line}");
             List<Command> commands = new List<Command>();
             bool stringMode = false;
-            bool methodMode = false;
+            bool functionMode = false;
             bool skipBecauseString = false;
 
             bool syntaxMode = false;
-            bool NumCalculationMode = false;
+            bool CalculationMode = false;
             bool commentMode = false;
-            int methodModeDeph = 0;
+            int functionModeDeph = 0;
             int codeContainerDeph = 0;
             bool codeContainerMode = false;
             bool stringModeBackslash = false;
@@ -24,7 +24,7 @@
             Global.currentLine = currentLine;
             char lastChar = ' ';
 
-            foreach (char c in line) //Thats some shit code and imma have to fix it some time, but it basically is the main syntax analysis method.
+            foreach (char c in line) //Thats some shit code and imma have to fix it some time, but it basically is the main syntax analysis function.
             {
 
 
@@ -126,7 +126,7 @@
                     }
                 }
 
-                if (methodMode)
+                if (functionMode)
                 {
                     if (skipBecauseString)
                     {
@@ -152,13 +152,13 @@
                     }
                     if (c == ']')
                     {
-                        methodModeDeph--;
+                        functionModeDeph--;
 
-                        if (methodModeDeph == 0)
+                        if (functionModeDeph == 0)
                         {
-                            TASI_Main.interpretInitLog.Log($"Unknown method found:\n{commandText}");
-                            methodMode = false;
-                            commands.Add(new Command(Command.CommandTypes.MethodCall, commandText, currentLine));
+                            TASI_Main.interpretInitLog.Log($"Unknown function found:\n{commandText}");
+                            functionMode = false;
+                            commands.Add(new Command(Command.CommandTypes.FunctionCall, commandText, currentLine));
                             commandText = string.Empty;
                             continue;
                         }
@@ -167,7 +167,7 @@
                     else if (c == '[')
                     {
                         commandText += c;
-                        methodModeDeph++;
+                        functionModeDeph++;
                     }
                     else
                     {
@@ -176,7 +176,7 @@
                     continue;
                 }
 
-                if (NumCalculationMode)
+                if (CalculationMode)
                 {
                     if (skipBecauseString)
                     {
@@ -202,13 +202,13 @@
                     }
                     if (c == ')')
                     {
-                        methodModeDeph--;
+                        functionModeDeph--;
 
-                        if (methodModeDeph == 0)
+                        if (functionModeDeph == 0)
                         {
                             TASI_Main.interpretInitLog.Log($"Num calc found:\n{commandText}");
-                            NumCalculationMode = false;
-                            commands.Add(new Command(Command.CommandTypes.NumCalculation, commandText, currentLine));
+                            CalculationMode = false;
+                            commands.Add(new Command(Command.CommandTypes.Calculation, commandText, currentLine));
                             commandText = string.Empty;
                             continue;
                         }
@@ -217,7 +217,7 @@
                     else if (c == '(')
                     {
                         commandText += c;
-                        methodModeDeph++;
+                        functionModeDeph++;
                     }
                     else
                     {
@@ -258,12 +258,12 @@
                         stringMode = true;
                         break;
                     case '[':
-                        methodModeDeph = 1;
-                        methodMode = true;
+                        functionModeDeph = 1;
+                        functionMode = true;
                         break;
                     case '(':
-                        methodModeDeph = 1;
-                        NumCalculationMode = true;
+                        functionModeDeph = 1;
+                        CalculationMode = true;
                         break;
                     case '{':
                         TASI_Main.interpretInitLog.Log($"CodeContainer found \"{c}\"");
@@ -304,12 +304,12 @@
                 throw new Exception("Invalid string formating. E.U.0001");
             if (codeContainerMode)
                 throw new Exception("Invalid code container formating.");
-            if (methodMode)
+            if (functionMode)
                 if (skipBecauseString)
-                    throw new Exception("Invalid method formating.\nYou probably just forgot to close an argument string. E.U.0002");
+                    throw new Exception("Invalid function formating.\nYou probably just forgot to close an argument string. E.U.0002");
                 else
-                    throw new Exception("Invalid method formating. E.U.0002");
-            if (NumCalculationMode)
+                    throw new Exception("Invalid function formating. E.U.0002");
+            if (CalculationMode)
                 throw new Exception("Invalid calculation formating. E.U.0003");
             return commands;
         }

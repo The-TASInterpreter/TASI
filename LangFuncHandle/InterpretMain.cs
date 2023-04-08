@@ -65,7 +65,7 @@
             return result;
         }
 
-        public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands) //This method will interpret the headers of the file and return the start code.
+        public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands) //This function will interpret the headers of the file and return the start code.
         {
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
@@ -106,41 +106,41 @@
                                 if (startCode != null) throw new Exception("Start can't be defined twice.");
                                 startCode = commandLine.commands[1].codeContainerCommands;
                                 break;
-                            case "method":
-                                if (commandLine.commands.Count != 5) throw new Exception("Invalid usage of method statement.\nCorrect usage: method <statement: return type> <statement: method name> <code container: semicolon seperated input values> <code container: method code>;\nExample:\nmethod num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of method statement.\nCorrect usage: method <statement: return type> <statement: method name> <code container: semicolon seperated input values> <code container: method code>;\nExample:\nmethod num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+                            case "function":
+                                if (commandLine.commands.Count != 5) throw new Exception("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
 
 
-                                if (!Enum.TryParse<VarDef.EvarType>(commandLine.commands[1].commandText.ToLower(), out VarDef.EvarType methodReturnType)) throw new Exception("Method return type is invalid.");
-                                Method thisMethod = null;
-                                foreach (Method method in thisNamespace.namespaceMethods) //Check if method with name already exist
+                                if (!Enum.TryParse<VarDef.EvarType>(commandLine.commands[1].commandText.ToLower(), out VarDef.EvarType functionReturnType)) throw new Exception("function return type is invalid.");
+                                Function thisFunction = null;
+                                foreach (Function function in thisNamespace.namespaceFuncitons) //Check if function with name already exist
                                 {
-                                    if (method.funcName == commandLine.commands[2].commandText.ToLower()) thisMethod = method;
+                                    if (function.funcName == commandLine.commands[2].commandText.ToLower()) thisFunction = function;
                                 }
-                                string methodName = commandLine.commands[2].commandText.ToLower();
-                                List<VarDef> methodInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
+                                string functionName = commandLine.commands[2].commandText.ToLower();
+                                List<VarDef> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
 
-                                if (thisMethod != null) //If method with name already exist, check if input combination already exist.
+                                if (thisFunction != null) //If function with name already exist, check if input combination already exist.
                                 {
-                                    foreach (List<VarDef> varDefs in thisMethod.methodArguments)
+                                    foreach (List<VarDef> varDefs in thisFunction.functionArguments)
                                     {
                                         bool isEqu = true;
-                                        if (methodInputVars.Count == varDefs.Count) continue;
+                                        if (functionInputVars.Count == varDefs.Count) continue;
                                         for (int i = 0; i < varDefs.Count; i++)
                                         {
                                             VarDef varDef = varDefs[i];
-                                            if (varDef.varType != methodInputVars[i].varType)
+                                            if (varDef.varType != functionInputVars[i].varType)
                                             {
                                                 isEqu = false;
                                                 continue;
                                             }
                                         }
-                                        if (isEqu) throw new Exception($"The method \"{thisMethod.methodLocation}\" with the exact same input-types has already been defined.");
+                                        if (isEqu) throw new Exception($"The function \"{thisFunction.functionLocation}\" with the exact same input-types has already been defined.");
                                     }
-                                    thisMethod.methodArguments.Add(methodInputVars);
+                                    thisFunction.functionArguments.Add(functionInputVars);
                                 }
                                 else
-                                    new Method(methodName, methodReturnType, thisNamespace, new() { methodInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
+                                    new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
                                 break;
                             case "import":
                                 if (commandLine.commands.Count != 2) throw new Exception("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
@@ -209,7 +209,7 @@
 
         public static Var InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
         {
-            //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal methods to the code.
+            //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal functions to the code.
             bool statementMode = false;
             Var returnValue;
             CommandLine? commandLine = new(new(), -1);
@@ -239,12 +239,12 @@
 
                 switch (command.commandType)
                 {
-                    case Command.CommandTypes.MethodCall:
+                    case Command.CommandTypes.FunctionCall:
                         Global.currentLine = command.commandLine;
-                        if (command.methodCall == null)
-                            throw new Exception("Internal: Method call was not converted to a method call.");
+                        if (command.functionCall == null)
+                            throw new Exception("Internal: function call was not converted to a function call.");
 
-                        returnValue = command.methodCall.DoMethodCall(accessableObjects);
+                        returnValue = command.functionCall.DoFunctionCall(accessableObjects);
                         if (returnValue.varDef.varType == VarDef.EvarType.@return)
                             return returnValue;
                         break;
@@ -259,11 +259,11 @@
             }
             return new();
         }
-        public static Method? FindMethodUsingMethodPath(string methodPath)
+        public static Function? FindFunctionUsingFunctionPath(string functionPath)
         {
-            foreach (Method method in Global.AllMethods)
-                if (method.methodLocation == methodPath)
-                    return method;
+            foreach (Function function in Global.AllFunctions)
+                if (function.functionLocation == functionPath)
+                    return function;
             return null;
         }
     }

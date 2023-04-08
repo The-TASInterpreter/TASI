@@ -20,14 +20,14 @@ Start { #Header - Set the start code for the project
     [Console.WriteLine:"Enter the text you want to display"] #Write to the console, so the user sees
     set printText [Console.ReadLine]; #set printText to a userinput
 
-    [Console.WriteLine:[ExampleProgram.DoWhileLoop:printText, times]] #Call the method and write the output to the console
+    [Console.WriteLine:[ExampleProgram.DoWhileLoop:printText, times]] #Call the function and write the output to the console
 
     [Program.Pause:true] #Pause after program is done.
     return;
 };
 
 
-method string DoWhileLoop {string printText; num repeatLoop} #Define a method, that returns a string, and takes 2 variables as input
+function string DoWhileLoop {string printText; num repeatLoop} #Define a function, that returns a string, and takes 2 variables as input
 {
     [Inf.DefVar:"Num","i"] #Create a var with the Num type called i (it will be 0 as default)
 

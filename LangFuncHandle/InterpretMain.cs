@@ -248,6 +248,9 @@
                         if (returnValue.varDef.varType == VarDef.EvarType.@return)
                             return returnValue;
                         break;
+                    case Command.CommandTypes.EndCommand:
+                        //Just ignore it
+                        break;
                     case Command.CommandTypes.Statement:
                         Global.currentLine = command.commandLine;
                         statementMode = true;

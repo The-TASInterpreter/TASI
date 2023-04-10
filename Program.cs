@@ -10,7 +10,6 @@
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
 
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using static TASI.Command;
 
 namespace TASI
@@ -38,11 +37,11 @@ namespace TASI
 
 
             Global.InitInternalNamespaces();
-            
+
 
             Stopwatch codeRuntime = new();
-           
-            
+
+
             //Remove comments 
             try
             {
@@ -50,32 +49,40 @@ namespace TASI
                 List<Command> commands = LoadFile.ByPath(location);
                 codeRuntime.Start();
 
-                
+
                 var startValues = InterpretMain.InterpretHeaders(commands);
                 Global.currentLine = -1;
-                var startCode = startValues.Item1 ?? throw new Exception("You can't start a library-type namespace directly.");
+                var startCode = startValues.Item1;
+                if (startCode == null)
+                    if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.library)
+                        throw new Exception("You can't start a library-type namespace directly.");
+                    else
+                        throw new Exception("You need to define a start. You can use the start statement to do so.");
 
 
                 foreach (NamespaceInfo namespaceInfo in Global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
                 {
-                    foreach(Function function in namespaceInfo.namespaceFuncitons)
+                    foreach (Function function in namespaceInfo.namespaceFuncitons)
                     {
                         foreach (List<Command> functionCodeOverload in function.functionCode)
                         {
-                            foreach(Command overloadCode in functionCodeOverload)
+                            foreach (Command overloadCode in functionCodeOverload)
                             {
                                 Global.currentLine = overloadCode.commandLine;
                                 if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo);
                                 if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo);
+                                if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo);
                             }
                         }
                     }
-                    
+
                 }
                 foreach (Command command in startValues.Item1)
                 {
                     Global.currentLine = command.commandLine;
                     if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(startValues.Item2);
+                    if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(startValues.Item2);
+                    if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(startValues.Item2);
                 }
 
 

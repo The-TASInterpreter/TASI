@@ -26,7 +26,7 @@
             {
                 if (expectedFail)
 
-                    Console.WriteLine($"NumCalcTest {testIdx}: Passed");
+                    Console.WriteLine($"NumCalcTest {testIdx}: Passed; Successfully failed with exeption:\n{ex.Message}\n(I always wanted to say that).");
                 else
                     Console.WriteLine($"NumCalcTest {testIdx}: Failed because of exception: {ex.Message}");
             }
@@ -42,12 +42,21 @@
                 new(4.5, "((4 + 6) * 2 - (3 - 2)) / (1 + 1) % 5", false),
                 new(0, "(4 + 6) * (3 - 2) / (1 + 1) % 5", false),
                 new(20, "4 + 6 * 2", false),
-                new(38, "10 30 + (5 7 - ) +", false),
+                new(42, "10 + 30 + ( - (5 - 7))", false),
                 new(1, "1", false),
                 new(1, "($true)", false),
                 new(0, "($false)", false),
                 new(0, "\"A\" - \"B\"", true),
-                new(1, "(3 > 2) and (4 < 5) or !(6 == 7)", true)
+                new(1, "(3 > 2) and (4 < 5) or (!(6 == 7))", false),
+                new(0, "\"4\" == 4 4", false),
+                new(1, "4 4 == 4 4", false),
+                new(1, "\"4\" \"4\" == \"4\" \"4\"", false),
+                new(0, "\"4\" \"1\" == \"4\" \"4\"", false),
+                new(1, "\"string\" 4 = \"4\" 4" , false),
+                new(0, "\"bool\" 4 = \"4\" 4" , false),
+                new(1, "\"num\" 4 = \"4\" 4" , false),
+                new(-21, "-21" , false),
+                new(-21, "- 21" , false) //Yes, there's a difference
             };
             for (int i = 0; i < tests.Length; i++)
             {

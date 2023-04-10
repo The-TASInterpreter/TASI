@@ -1,4 +1,5 @@
 ﻿using DataTypeStore;
+using static TASI.Command;
 
 namespace TASI
 {
@@ -147,7 +148,12 @@ namespace TASI
             callFunction = FindFunctionByPath(functionName.ToLower(), Global.Namespaces, true, currentNamespace);
             foreach (CommandLine commandLine in argumentCommands)
                 foreach (Command command in commandLine.commands)
+                {
                     if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace);
+                    if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace);
+                    if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace);
+
+                }
         }
 
         public FunctionCallInputHelp? CheckIfFunctionCallHasValidArgTypesAndReturnCode(List<Var> inputVars)

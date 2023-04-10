@@ -1,4 +1,6 @@
-﻿namespace TASI
+﻿using static TASI.Command;
+
+namespace TASI
 {
     public class Calculation
     {
@@ -23,6 +25,14 @@
                     foreach (CalculationType calculationType in subValues)
                     {
                         calculationType.InitFunctions(currentNamespace);
+                    }
+                    break;
+                case Type.returnStatement:
+                    foreach(Command command in returnStatement)
+                    {
+                        if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace);
+                        if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace);
+                        if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace);
                     }
                     break;
                 case Type.function:

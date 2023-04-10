@@ -143,20 +143,32 @@
                                     new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
                                 break;
                             case "import":
-                                if (commandLine.commands.Count != 2) throw new Exception("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid usage of import statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
-
-                                if (!Global.allLoadedFiles.Any(x => ComparePaths(x, commandLine.commands[1].commandText)))
+                                string pathLocation;
+                                switch (commandLine.commands.Count)
                                 {
-                                    var importNamespace = InterpretHeaders(LoadFile.ByPath(commandLine.commands[1].commandText.ToLower()));
-                                    alreadyImportedNamespaces.Add(commandLine.commands[1].commandText.ToLower());
+                                    case 2:
+                                        if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
+                                        pathLocation = commandLine.commands[1].commandText.ToLower();
+                                        break;
+                                    case 3:
+                                        if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandText.ToLower() != "base" || commandLine.commands[2].commandType != Command.CommandTypes.String) throw new Exception("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
+                                        pathLocation = Path.Combine(Global.mainFilePath, commandLine.commands[2].commandText.ToLower());
+                                        break;
+                                    default:
+                                        throw new Exception("Invalid usage of import statement.\nCorrect usage: import < string: path >;\nor\nimport base < string: path >;");
+                                }
+
+                                if (!Global.allLoadedFiles.Any(x => ComparePaths(x, pathLocation)))
+                                {
+                                    var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocation));
+                                    alreadyImportedNamespaces.Add(pathLocation);
                                     thisNamespace.accessableNamespaces.Add(importNamespace.Item2);
                                 }
                                 else
                                 {
-                                    if (alreadyImportedNamespaces.Any(a => ComparePaths(a, commandLine.commands[1].commandText))) throw new Exception($"The namespace \"{commandLine.commands[1].commandText.ToLower()} has already been imported.");
-                                    thisNamespace.accessableNamespaces.Add(Global.Namespaces[Global.allLoadedFiles.FindIndex(a => ComparePaths(a, commandLine.commands[1].commandText))]);
-                                    alreadyImportedNamespaces.Add(commandLine.commands[1].commandText.ToLower());
+                                    if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new Exception($"The namespace \"{pathLocation} has already been imported.");
+                                    thisNamespace.accessableNamespaces.Add(Global.Namespaces[Global.allLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
+                                    alreadyImportedNamespaces.Add(pathLocation);
                                 }
 
 

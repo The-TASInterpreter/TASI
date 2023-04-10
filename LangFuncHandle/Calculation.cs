@@ -91,7 +91,7 @@ namespace TASI
             {
                 case "+":
                     if (values.Count != 2) throw new Exception("You need 2 values for an addition operator.");
-                    if (values[0].varDef.varType == VarDef.EvarType.@string || values[1].varDef.varType == VarDef.EvarType.@string) return new(new(VarDef.EvarType.@string, ""), true, values[0].ToString() + values[1].ToString());
+                    if (values[0].varDef.varType == VarDef.EvarType.@string || values[1].varDef.varType == VarDef.EvarType.@string) return new(new(VarDef.EvarType.@string, ""), true, values[0].ObjectValue.ToString() + values[1].ObjectValue.ToString());
                     return new(new(VarDef.EvarType.num, ""), true, values[0].numValue + values[1].numValue);
                 case "-":
                     if (values.Count == 1)

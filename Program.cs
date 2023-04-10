@@ -46,6 +46,7 @@ namespace TASI
             try
             {
                 string location = Console.ReadLine() ?? throw new Exception("Code is null.");
+                Global.mainFilePath = Path.GetDirectoryName(location);
                 List<Command> commands = LoadFile.ByPath(location);
                 codeRuntime.Start();
 
@@ -92,7 +93,7 @@ namespace TASI
                 Console.ReadKey(false);
 
             }
-            catch (Exception e)
+            catch (NotImplementedException e)
             {
 
                 Console.Clear();

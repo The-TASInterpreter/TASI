@@ -9,7 +9,7 @@
         public static bool debugMode = false;
         public static int currentLine;
         public static List<FunctionCall> allFunctionCalls = new();
-
+        public static string mainFilePath;
         
         
         

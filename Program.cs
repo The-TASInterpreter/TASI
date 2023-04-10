@@ -93,7 +93,7 @@ namespace TASI
                 Console.ReadKey(false);
 
             }
-            catch (NotImplementedException e)
+            catch (Exception e)
             {
 
                 Console.Clear();

@@ -17,11 +17,6 @@ namespace TASI
 
             switch (commandLine.commands[0].commandText.ToLower())
             {
-                case "import":
-                    throw new NotImplementedException("imports are not implemented ):");
-                    break;
-
-
                 case "return":
                     if (commandLine.commands.Count == 1) return new(new Var());
                     if (commandLine.commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
@@ -256,7 +251,14 @@ namespace TASI
                         return returnVar.returnStatementValue ?? throw new Exception("Internal: return-var var is null");
                     else
                         throw new Exception("The return-type if statemtent didn't return anything");
-
+                case "do":
+                    if (commands.Count != 2 || commands[1].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of do return-statement. Correct usage:\ndo <code container>");
+                    returnVar = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
+                    if (returnVar.varDef.varType == VarDef.EvarType.@return)
+                        return returnVar.returnStatementValue ?? throw new Exception("Internal: return-var var is null");
+                    else
+                        throw new Exception("The return-type if statemtent didn't return anything");
+                    
 
                 default:
                     // Is probably var

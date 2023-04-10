@@ -10,6 +10,7 @@ namespace TASI
         public string originalCommandText;
         public List<Command>? codeContainerCommands;
         public FunctionCall? functionCall;
+        public CalculationType? calculation;
 
         public void initCodeContainerFunctions(NamespaceInfo namespaceInfo)
         {
@@ -17,6 +18,8 @@ namespace TASI
             {
                 if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(namespaceInfo);
                 if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(namespaceInfo);
+                if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(namespaceInfo);
+
             }
         }
         public Region Region
@@ -75,6 +78,7 @@ namespace TASI
                     break;
                 case CommandTypes.Calculation:
                     originalCommandText = $"({commandText})";
+                    this.calculation = new(this);
                     break;
                 case CommandTypes.String:
                     originalCommandText = $"\"{commandText}\"";

@@ -1,509 +1,252 @@
 ﻿namespace TASI
 {
-    internal class Calculation
+    public class Calculation
     {
-
-
         public static Var DoCalculation(Command command, AccessableObjects accessableObjects)
         {
-            if (command.commandType != Command.CommandTypes.Calculation) throw new Exception("Internal: This function only deals with Calculations");
-            //Grab tokens
-
-            CalculationType calculation = new(command.commandText, false, true, false, accessableObjects);
-
-
-
-            return calculation.CalculateValue(accessableObjects, command.commandLine);
+            if (command.commandType != Command.CommandTypes.Calculation) throw new Exception("Internal: Do calculation only works with num calculation tokens");
+            return (command.calculation ?? throw new Exception("Internal: Calculation was not parsed.")).GetValue(accessableObjects);
         }
 
-
-
-        public static Var Add(Var var0, Var var1)
-        {
-            if (var0.isNumeric && var1.isNumeric)
-                //If both are either num or bool (Its the same)
-                return new Var(new(VarDef.EvarType.num, ""), true, var0.numValue + var1.numValue);
-            if (var0.varDef.varType == VarDef.EvarType.@string || var1.varDef.varType == VarDef.EvarType.@string)
-                //Checking if either are string. (If one or both are, convert both to strings and attatch.
-                return new Var(new(VarDef.EvarType.@string, ""), true, Convert.ToString(var0.ObjectValue) + Convert.ToString(var1.ObjectValue));
-            throw new Exception($"Cant add {var0.varDef.varType} with {var1.varDef.varType}.");
-        }
-        public static Var Sub(Var var0, Var var1)
-        {
-            if (var0.isNumeric && var1.isNumeric)
-                return new Var(new(VarDef.EvarType.num, ""), true, var0.numValue - var1.numValue);
-            throw new Exception($"Can't sub {var0.varDef.varType} with {var1.varDef.varType}.");
-        }
-
-        public static Var Mul(Var var0, Var var1)
-        {
-            if (var0.isNumeric && var1.isNumeric)
-            {
-                return new Var(new(VarDef.EvarType.num, ""), true, var0.numValue * var1.numValue);
-            }
-            throw new Exception($"Cant mul {var0.varDef.varType} with {var1.varDef.varType}.");
-        }
-        public static Var Div(Var var0, Var var1)
-        {
-            if (var0.isNumeric && var1.isNumeric)
-            {
-                if (var1.numValue == 0) throw new Exception("Cant devide by 0");
-                return new Var(new(VarDef.EvarType.num, ""), true, var0.numValue / var1.numValue);
-            }
-            throw new Exception($"Cant div {var0.varDef.varType} with {var1.varDef.varType}.");
-        }
-        public static Var Mod(Var var0, Var var1)
-        {
-            if (var0.isNumeric && var1.isNumeric)
-            {
-                return new Var(new(VarDef.EvarType.num, ""), true, var0.numValue % var1.numValue);
-            }
-            throw new Exception($"Cant mod {var0.varDef.varType} with {var1.varDef.varType}.");
-        }
-
-        public static Var Root(Var var0, Var var1)
-        {
-            if (var0.isNumeric && var1.isNumeric)
-            {
-                return new Var(new(VarDef.EvarType.num, ""), true, Math.Pow(var0.numValue ?? throw new Exception("Internal: numValue of arg 0 is null"), 1 / var1.numValue ?? throw new Exception("Internal: numValue of arg 1 is null")));
-                // Math.Pow(X, (1 / N)) is the same as Nth root of X
-            }
-            throw new Exception($"Cant root {var0.varDef.varType} with {var1.varDef.varType}.");
-        }
-        public static Var Equ(Var var0, Var var1)
-        {
-            return new Var(new(VarDef.EvarType.@bool, ""), true, var0.ObjectValue.ToString() == var1.ObjectValue.ToString());
-        }
-        public static Var Not(Var var0)
-        {
-            return new Var(new(VarDef.EvarType.@bool, ""), true, !var0.GetBoolValue);
-        }
-        public static Var Grt(Var var0, Var var1)
-        {
-            if (var0.isNumeric && var1.isNumeric)
-            {
-                return new Var(new(VarDef.EvarType.@bool, ""), true, var0.numValue > var1.numValue);
-            }
-            throw new Exception($"Cant grt {var0.varDef.varType} with {var1.varDef.varType}.");
-
-        }
-        public static Var Sml(Var var0, Var var1)
-        {
-            if (var0.isNumeric && var1.isNumeric)
-            {
-                return new Var(new(VarDef.EvarType.@bool, ""), true, var0.numValue < var1.numValue);
-            }
-            throw new Exception($"Cant sml {var0.varDef.varType} with {var1.varDef.varType}.");
-
-        }
-
-        public static Var And(Var var0, Var var1)
-        {
-            return new Var(new(VarDef.EvarType.@bool, ""), true, var0.GetBoolValue && var1.GetBoolValue);
-        }
-
-        public static Var Or(Var var0, Var var1)
-        {
-            return new Var(new(VarDef.EvarType.@bool, ""), true, var0.GetBoolValue || var1.GetBoolValue);
-        }
 
 
     }
 
 
-    internal class CalculationType
+    public class CalculationType
     {
-        public enum Type
+        public void InitFunctions(NamespaceInfo currentNamespace)
         {
-            add, sub, mul, div, mod, root, num, calc, str, syx, equ, not, grt, sml, and, or
-        }
-        public Type type;
-        public double? value;
-        public string? stringValue;
-        public string token;
-        private List<CalculationType>? subTokens;
-        private Var? varReturn;
-        public bool isValue;
-        public bool isOperator = false;
-
-
-        public Var VarReturn
-        {
-            get
+            switch (type)
             {
-                if (varReturn != null) return varReturn;
-                switch (type)
-                {
-                    case Type.num:
-                        varReturn = new(new(VarDef.EvarType.num, ""), true, value);
-                        break;
-                    case Type.str:
-                        varReturn = new(new(VarDef.EvarType.@string, ""), true, stringValue);
-                        break;
-                    default:
-                        throw new Exception("Internal: Only values can have a var return.");
-                }
-                return varReturn;
-            }
-        }
-        public List<CalculationType> SubTokens(AccessableObjects accessableObjects)
-        {
-
-
-            if (type != Type.calc) throw new Exception("Internal: Only a numcalc can have subtokens.");
-            if (subTokens != null) return subTokens;
-            subTokens = new List<CalculationType>();
-            foreach (Command command in StringProcess.ConvertLineToCommand(token))
-                subTokens.Add(new(command.commandText, command.commandType == Command.CommandTypes.String, command.commandType == Command.CommandTypes.Calculation, command.commandType == Command.CommandTypes.FunctionCall, accessableObjects));
-            return subTokens;
-
-        }
-
-
-        public Var CalculateValue(AccessableObjects accessableObjects, int commandLine = -1)
-        {
-            if (type != Type.calc && type != Type.syx) throw new Exception("Internal: Only numcalcs or syntax can return a Value.");
-            if (type == Type.syx) return Statement.ReturnStatement(StringProcess.ConvertLineToCommand(token.Remove(0, 1), commandLine), accessableObjects); // If its not a calculation but a syntax/statement/(Everywhere I call shit differently), we can skip all this calculating, and 
-
-            CalculationType? calculationNext = null;
-            CalculationType calculation;
-            Var temp;
-            List<Var> values = new List<Var>();
-            int skip = 0;
-            for (int i = 0; i < SubTokens(accessableObjects).Count; i++)
-            {
-                if (skip > 0)
-                {
-                    calculationNext = null;
-                    skip--;
-                    continue;
-                }
-
-                if (calculationNext != null && calculationNext.type != SubTokens(accessableObjects)[i].type)
-                    //Calc has already been done last loop because of precalc.
-                    calculation = calculationNext;
-                else
-                    calculation = SubTokens(accessableObjects)[i];
-                if (i + 2 <= SubTokens(accessableObjects).Count)
-                {
-
-                    calculationNext = SubTokens(accessableObjects)[i + 1];
-                    if (calculationNext.type == Type.syx || calculationNext.type == Type.calc)
+                case Type.calculation or Type.returnStatement:
+                    foreach (CalculationType calculationType in subValues)
                     {
-                        temp = calculationNext.CalculateValue(accessableObjects);
-                        switch (temp.varDef.varType)
+                        calculationType.InitFunctions(currentNamespace);
+                    }
+                    break;
+                case Type.function:
+                    functionCall.SearchCallFunction(currentNamespace);
+                    break;
+
+
+
+
+
+            }
+            return;
+        }
+
+        public Var GetValue(AccessableObjects accessableObjects)
+        {
+            switch (type)
+            {
+                case Type.value: return value ?? throw new Exception("Internal: value is null.");
+                case Type.returnStatement: return Statement.ReturnStatement(returnStatement ?? throw new Exception("Internal: return statement list is null."), accessableObjects);
+                case Type.@operator: throw new Exception("Internal: Can't get the value of an operator.");
+                case Type.function: return (functionCall ?? throw new Exception("Internal: function call is null")).DoFunctionCall(accessableObjects);
+                case Type.calculation:
+                    List<Var> values = new List<Var>();
+                    string currentOperator = "";
+
+                    foreach (CalculationType calculationType in subValues ?? throw new Exception("Internal: sub values is null"))
+                    {
+                        switch (calculationType.type)
                         {
-                            case VarDef.EvarType.num or VarDef.EvarType.@bool:
-                                calculationNext = new CalculationType(temp.numValue.ToString(), false, false, false, accessableObjects);
-                                break;
-                            case VarDef.EvarType.@void:
-                                throw new Exception("Can't calculate with a void type.");
-                            case VarDef.EvarType.@string:
-                                calculationNext = new CalculationType(temp.stringValue, true, false, false, accessableObjects);
+                            case Type.@operator:
+                                if (currentOperator != "")
+                                {
+
+                                    values = new() { SimulateOperator(values, currentOperator) };
+                                }
+                                currentOperator = calculationType.@operator;
                                 break;
                             default:
-                                throw new Exception("Internal: Unimplemented var type.");
+                                values.Add(calculationType.GetValue(accessableObjects));
+                                break;
                         }
                     }
-                }
-                else
-                    calculationNext = null;
-                switch (calculation.type)
-                {
-                    case Type.num or Type.str:
-                        values.Add(calculation.VarReturn);
-                        break;
-                    case Type.add:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The add operator doesnt support less or more than two values.");
-                        }
-
-                        temp = Calculation.Add(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.sub:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The sub operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.Sub(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.mul:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The mul operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.Mul(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.div:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The div operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.Div(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.mod:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The mod operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.Mod(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.root:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The root operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.Root(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-
-                    case Type.equ:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The equ operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.Equ(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.not:
-                        if (values.Count != 1)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 0)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The not operator doesnt support less or more than one value.");
-                        }
-                        temp = Calculation.Not(values[0]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.grt:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The equ operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.Grt(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.sml:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The equ operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.Sml(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.and:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The equ operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.And(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-                    case Type.or:
-                        if (values.Count != 2)
-                        {
-                            if (calculationNext != null && calculationNext.isValue && values.Count == 1)
-                            {
-                                skip = 1;
-                                values.Add(calculationNext.VarReturn);
-                            }
-                            else
-                                throw new Exception("The equ operator doesnt support less or more than two values.");
-                        }
-                        temp = Calculation.Or(values[0], values[1]);
-                        values.Clear();
-                        values.Add(temp);
-                        break;
-
-
-                    case Type.calc or Type.syx:
-                        values.Clear();
-                        values.Add(calculation.CalculateValue(accessableObjects));
-                        break;
-
-                }
+                    if (currentOperator != "")
+                        values = new() { SimulateOperator(values, currentOperator) };
+                    if (values.Count == 1) return values[0];
+                    if (values.Count == 0) throw new Exception("You can't end up with 0 values at the end of a num calculation (I don't even know how you managed to do this, but it's 100% your fault).");
+                    throw new Exception("You can't end up with more than 1 value at the end of a num calculation.");
+                default: throw new Exception($"Internal: Unexpected \"{type}\" CalculationType.Type");
             }
-            if (values.Count != 1) throw new Exception("Invalid calculation (Ended up with too many or few tokens)");
-
-            return values[0];
-
         }
 
-        public CalculationType(string token, bool isString, bool isNumCalc, bool isFunction, AccessableObjects accessableObjects)
+        public static Var SimulateOperator(List<Var> values, string @operator)
         {
-            this.token = token;
-            isValue = false;
-            if (isString)
-            {
-                isValue = true;
-                type = Type.str;
-                stringValue = token;
-                return;
-            }
-            if (isNumCalc)
-            {
-                if (token.StartsWith("$"))
-                    type = Type.syx;
-                else
-                    type = Type.calc;
-                return;
-            }
-            if (isFunction)
-            { //functions will directly be calculated.
-                FunctionCall functionCall = new(new Command(Command.CommandTypes.FunctionCall, token));
-                isValue = true;
-                switch (functionCall.callFunction.returnType)
-                {
-                    case VarDef.EvarType.@void:
-                        throw new Exception("A void type cant be used in a calculation.");
-                    case VarDef.EvarType.num or VarDef.EvarType.@bool:
-                        type = Type.num;
-                        value = functionCall.DoFunctionCall(accessableObjects).numValue;
-                        break;
-                    case VarDef.EvarType.@string:
-                        type = Type.str;
-                        stringValue = functionCall.DoFunctionCall(accessableObjects).stringValue;
-                        break;
-                    default:
-                        throw new Exception("Internal: Unimplemented function return type.");
-
-                }
-
-                return;
-            }
-            if (double.TryParse(token, out double parsed))
-            {
-                isValue = true;
-                value = parsed;
-                type = Type.num;
-                return;
-            }
-
-            isOperator = true;
-            switch (token)
+            switch (@operator.ToLower())
             {
                 case "+":
-                    type = Type.add;
-                    return;
+                    if (values.Count != 2) throw new Exception("You need 2 values for an addition operator.");
+                    if (values[0].varDef.varType == VarDef.EvarType.@string || values[1].varDef.varType == VarDef.EvarType.@string) return new(new(VarDef.EvarType.@string, ""), true, values[0].ToString() + values[1].ToString());
+                    return new(new(VarDef.EvarType.num, ""), true, values[0].numValue + values[1].numValue);
                 case "-":
-                    type = Type.sub;
-                    return;
+                    if (values.Count == 1)
+                    {
+                        if (!values[0].isNumeric) throw new Exception($"You can't have a negative non-numeric {values[0].varDef.varType}-type.");
+                        return new(new(VarDef.EvarType.num, ""), true, -values[0].numValue);
+                    }
+                    else if (values.Count != 2) throw new Exception("You need 2 values for a subtraction operator.");
+                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't substract with a non-number type.");
+                    return new(new(VarDef.EvarType.num, ""), true, values[0].numValue - values[1].numValue);
                 case "*":
-                    type = Type.mul;
-                    return;
+                    if (values.Count != 2) throw new Exception("You need 2 values for a multiplication operator.");
+                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't multiply with a non-number type.");
+                    return new(new(VarDef.EvarType.num, ""), true, values[0].numValue * values[1].numValue);
                 case "/":
-                    type = Type.div;
-                    return;
-                case "%":
-                    type = Type.mod;
-                    return;
-                case "root":
-                    type = Type.root;
-                    return;
-                case "=":
-                    type = Type.equ;
-                    return;
-                case "!":
-                    type = Type.not;
-                    return;
-                case ">":
-                    type = Type.grt;
-                    return;
-                case "<":
-                    type = Type.sml;
-                    return;
+                    if (values.Count != 2) throw new Exception("You need 2 values for a division operator.");
+                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't devide with a non-number type.");
+                    return new(new(VarDef.EvarType.num, ""), true, values[0].numValue / values[1].numValue);
                 case "and":
-                    type = Type.and;
-                    return;
+                    if (values.Count != 2) throw new Exception("You need 2 values for an and operator.");
+                    return new(new(VarDef.EvarType.@bool, ""), true, values[0].GetBoolValue && values[1].GetBoolValue);
                 case "or":
-                    type = Type.or;
+                    if (values.Count != 2) throw new Exception("You need 2 values for an or operator.");
+                    return new(new(VarDef.EvarType.@bool, ""), true, values[0].GetBoolValue || values[1].GetBoolValue);
+                case "!" or "not":
+                    if (values.Count != 1) throw new Exception("You need 1 value for a not operator.");
+                    return new(new(VarDef.EvarType.@bool, ""), true, !values[0].GetBoolValue);
+                case "%":
+                    if (values.Count != 2) throw new Exception("You need 2 values for a modulus operator.");
+                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't mod with a non-number type.");
+                    return new(new(VarDef.EvarType.num, ""), true, values[0].numValue % values[1].numValue);
+                case "=": //Non strict equal
+                    if (values.Count < 3 || values[0].varDef.varType != VarDef.EvarType.@string) throw new Exception("You need at least 3 values for the non strict equal operator and the first value must be the comparison-type in a string form.");
+
+                    switch (values[0].stringValue.ToLower())
+                    {
+                        case "string":
+
+                            string? firstStringValue = values[1].ObjectValue.ToString();
+                            values.RemoveRange(0, 2);
+                            return new(new(VarDef.EvarType.@bool, ""), true, !values.Any(x => x.ObjectValue.ToString() != firstStringValue));
+                        case "bool":
+                            try
+                            {
+                                bool firstBoolValue = values[1].GetBoolValue;
+                                values.RemoveRange(0, 2);
+                                return new(new(VarDef.EvarType.@bool, ""), true, !values.Any(x => x.GetBoolValue != firstBoolValue));
+                            }
+                            catch (Exception ex)
+                            { //If one value couldn't be converted to a bool
+                                return new(new(VarDef.EvarType.@bool, ""), true, false);
+                            }
+                        case "num":
+                            try
+                            {
+                                double firstNumValue = double.Parse(values[1].ObjectValue.ToString());
+                                values.RemoveRange(0, 2);
+                                return new(new(VarDef.EvarType.@bool, ""), true, !values.Any(x => double.Parse(x.ObjectValue.ToString()) != firstNumValue));
+                            }
+                            catch (Exception ex)
+                            { //If one value couldn't be converted to a double
+                                return new(new(VarDef.EvarType.@bool, ""), true, false);
+                            }
+                        default:
+                            throw new Exception($"The \"{values[0].stringValue}\"-type either doesn't exist, or is not suitable for the non strinct equal operator. Suitable types are:\nstring, bool and num.");
+                    }
+
+                case "==": //Type strict equal
+                    if (values.Count < 2) throw new Exception("You need at least 2 values for the type strict equal operator.");
+
+                    VarDef.EvarType firstType = values[0].varDef.varType;
+                    if (values.Any(x => x.varDef.varType != firstType)) return new(new(VarDef.EvarType.@bool, ""), true, false);
+                    object firstValue = values[0].ObjectValue;
+                    values.RemoveAt(0);
+                    return new(new(VarDef.EvarType.@bool, ""), true, !values.Any(x => !x.ObjectValue.Equals(firstValue)));
+                case "<":
+                    if (values.Count != 2) throw new Exception("You need 2 values for a less than operator.");
+                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't use the less than operator with a non-number type.");
+                    return new(new(VarDef.EvarType.@bool, ""), true, values[0].numValue < values[1].numValue);
+                case ">":
+                    if (values.Count != 2) throw new Exception("You need 2 values for a greater than operator.");
+                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't use the greater than operator with a non-number type.");
+                    return new(new(VarDef.EvarType.@bool, ""), true, values[0].numValue > values[1].numValue);
+                default: throw new Exception($"Internal: \"{@operator.ToLower()}\" is not a valid operator and should have thrown an exeption already.");
+
+
+
+
+
+            }
+        }
+
+        public static readonly string[] operators = { "+", "-", "*", "/", "and", "or", "!", "not", "%", "=", "==", "<", ">" };
+        public enum Type
+        {
+            @operator, returnStatement, value, calculation, function
+        }
+        public static char[] number = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' };
+
+        public Type type;
+        public string? @operator;
+        public List<Command>? returnStatement;
+        public FunctionCall? functionCall;
+        public Var? value;
+        public List<CalculationType>? subValues;
+        public CalculationType(Command command)
+        {
+            switch (command.commandType)
+            {
+                case Command.CommandTypes.FunctionCall:
+                    this.functionCall = command.functionCall;
+                    type = Type.function;
                     return;
-                default:
-                    throw new Exception($"\"{token}\" is neither a number nor an operator, a function or a string.\nIf you want to use syntax, put it in braces and put a $ in front e.g.:(5+($true))");
+                case Command.CommandTypes.Statement:
+                    int foundAt = -1;
+                    if (operators.Any(x => { foundAt++; return x == command.commandText; }))
+                    {
+                        @operator = operators[foundAt];
+                        type = Type.@operator;
+                        return;
+                    }
+                    if (!double.TryParse(command.commandText, out double value)) throw new Exception($"\"{command.commandText}\" is neither an operator nor a number. If you want to use return statements like variables inside calculations, you need the statement calculation. E.g.:\n(($variable) + 15)");
+                    type = Type.value;
+                    this.value = new(new(VarDef.EvarType.num, ""), true, value);
+                    return;
+                case Command.CommandTypes.String:
+                    type = Type.value;
+                    this.value = new(new(VarDef.EvarType.@string, ""), true, command.commandText);
+                    return;
+                case Command.CommandTypes.Calculation:
+
+                    if (command.commandText.StartsWith('$'))
+                    {
+                        type = Type.returnStatement;
+                        returnStatement = StringProcess.ConvertLineToCommand(command.commandText.Substring(1, command.commandText.Count() - 1), command.commandLine);
+                        return;
+                    }
+                    else
+                    {
+                        type = Type.calculation;
+                        List<Command> subCalculationTypes = StringProcess.ConvertLineToCommand(command.commandText, command.commandLine);
+                        List<CalculationType> subCalculationTypesTokenSplit = new();
+                        bool isNumber = false;
+                        foreach (Command subCalculationType in subCalculationTypes)
+                        {
+                            subCalculationTypesTokenSplit.Add(new(subCalculationType));
+                        }
+
+
+                        subValues = subCalculationTypesTokenSplit;
+
+                    }
+                    return;
             }
 
+
+
+
+
         }
+
+
+
+
+
     }
 
 }

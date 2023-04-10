@@ -65,7 +65,7 @@
             return result;
         }
 
-        public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands) //This function will interpret the headers of the file and return the start code.
+        public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands, string currentFile) //This function will interpret the headers of the file and return the start code.
         {
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
@@ -160,7 +160,7 @@
 
                                 if (!Global.allLoadedFiles.Any(x => ComparePaths(x, pathLocation)))
                                 {
-                                    var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocation));
+                                    var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocation), pathLocation);
                                     alreadyImportedNamespaces.Add(pathLocation);
                                     thisNamespace.accessableNamespaces.Add(importNamespace.Item2);
                                 }

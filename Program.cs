@@ -51,7 +51,7 @@ namespace TASI
                 codeRuntime.Start();
 
 
-                var startValues = InterpretMain.InterpretHeaders(commands);
+                var startValues = InterpretMain.InterpretHeaders(commands, Global.mainFilePath);
                 Global.currentLine = -1;
                 var startCode = startValues.Item1;
                 if (startCode == null)

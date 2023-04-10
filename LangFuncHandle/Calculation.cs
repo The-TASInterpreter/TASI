@@ -19,7 +19,7 @@
         {
             switch (type)
             {
-                case Type.calculation or Type.returnStatement:
+                case Type.calculation:
                     foreach (CalculationType calculationType in subValues)
                     {
                         calculationType.InitFunctions(currentNamespace);

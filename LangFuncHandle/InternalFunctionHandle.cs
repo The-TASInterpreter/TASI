@@ -20,7 +20,7 @@
                     return new();
                 case "console.writeline":
 
-                    if (input[0].isNumeric)
+                    if (input[0].IsNumeric)
                         Console.WriteLine(input[0].numValue);
                     else
                         Console.WriteLine(input[0].stringValue);

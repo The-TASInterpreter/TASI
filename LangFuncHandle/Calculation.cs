@@ -96,19 +96,19 @@ namespace TASI
                 case "-":
                     if (values.Count == 1)
                     {
-                        if (!values[0].isNumeric) throw new Exception($"You can't have a negative non-numeric {values[0].varDef.varType}-type.");
+                        if (!values[0].IsNumeric) throw new Exception($"You can't have a negative non-numeric {values[0].varDef.varType}-type.");
                         return new(new(VarDef.EvarType.num, ""), true, -values[0].numValue);
                     }
                     else if (values.Count != 2) throw new Exception("You need 2 values for a subtraction operator.");
-                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't substract with a non-number type.");
+                    if (values.Any(x => !x.IsNumeric)) throw new Exception("You can't substract with a non-number type.");
                     return new(new(VarDef.EvarType.num, ""), true, values[0].numValue - values[1].numValue);
                 case "*":
                     if (values.Count != 2) throw new Exception("You need 2 values for a multiplication operator.");
-                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't multiply with a non-number type.");
+                    if (values.Any(x => !x.IsNumeric)) throw new Exception("You can't multiply with a non-number type.");
                     return new(new(VarDef.EvarType.num, ""), true, values[0].numValue * values[1].numValue);
                 case "/":
                     if (values.Count != 2) throw new Exception("You need 2 values for a division operator.");
-                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't devide with a non-number type.");
+                    if (values.Any(x => !x.IsNumeric)) throw new Exception("You can't devide with a non-number type.");
                     return new(new(VarDef.EvarType.num, ""), true, values[0].numValue / values[1].numValue);
                 case "and":
                     if (values.Count != 2) throw new Exception("You need 2 values for an and operator.");
@@ -121,7 +121,7 @@ namespace TASI
                     return new(new(VarDef.EvarType.@bool, ""), true, !values[0].GetBoolValue);
                 case "%":
                     if (values.Count != 2) throw new Exception("You need 2 values for a modulus operator.");
-                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't mod with a non-number type.");
+                    if (values.Any(x => !x.IsNumeric)) throw new Exception("You can't mod with a non-number type.");
                     return new(new(VarDef.EvarType.num, ""), true, values[0].numValue % values[1].numValue);
                 case "=": //Non strict equal
                     if (values.Count < 3 || values[0].varDef.varType != VarDef.EvarType.@string) throw new Exception("You need at least 3 values for the non strict equal operator and the first value must be the comparison-type in a string form.");
@@ -169,11 +169,11 @@ namespace TASI
                     return new(new(VarDef.EvarType.@bool, ""), true, !values.Any(x => !x.ObjectValue.Equals(firstValue)));
                 case "<":
                     if (values.Count != 2) throw new Exception("You need 2 values for a less than operator.");
-                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't use the less than operator with a non-number type.");
+                    if (values.Any(x => !x.IsNumeric)) throw new Exception("You can't use the less than operator with a non-number type.");
                     return new(new(VarDef.EvarType.@bool, ""), true, values[0].numValue < values[1].numValue);
                 case ">":
                     if (values.Count != 2) throw new Exception("You need 2 values for a greater than operator.");
-                    if (values.Any(x => !x.isNumeric)) throw new Exception("You can't use the greater than operator with a non-number type.");
+                    if (values.Any(x => !x.IsNumeric)) throw new Exception("You can't use the greater than operator with a non-number type.");
                     return new(new(VarDef.EvarType.@bool, ""), true, values[0].numValue > values[1].numValue);
                 default: throw new Exception($"Internal: \"{@operator.ToLower()}\" is not a valid operator and should have thrown an exeption already.");
 

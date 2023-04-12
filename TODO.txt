@@ -1,0 +1,13 @@
+Add pointers
+Public variables
+Add current context internal namespace which has current variables and methods for them like this:
+
+[Inf.DefVar:"string","Test"]
+set Test "1234Test";
+[CurrentContext.Test.GetLenght]
+
+Add Supervisor-Type namespaces
+Add Lists. Possible return type syntax:
+[Inf.DefList:"string", "TestList"]
+Add TestList "Hello World";
+[Console.WriteLine:TestList (0)]

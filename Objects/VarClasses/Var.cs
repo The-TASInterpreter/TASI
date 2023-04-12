@@ -12,6 +12,16 @@
         public Var? returnStatementValue;
         public bool isNumeric;
 
+        public bool IsNumeric
+        {
+            get
+            {
+                return varDef.varType switch
+                {
+                    VarDef.EvarType.num or VarDef.EvarType.@bool => true, _ => false,
+                };
+            }
+        }
 
         public bool GetBoolValue
         {
@@ -72,7 +82,7 @@
             switch (varDef.varType)
             {
                 case VarDef.EvarType.num:
-                    isNumeric = true;
+
                     value ??= 0.0;
                     if (varDef.isArray == true)
                         numArrayValue = (double[])value;
@@ -80,7 +90,7 @@
                         numValue = (double)value;
                     break;
                 case VarDef.EvarType.@bool: //Bool values are just num values *Shock*
-                    isNumeric = true;
+
                     if (varDef.isArray == true)
                         throw new Exception("Sorry, but there are no bool arrays rn. Gonna add them in later. I promise!");
                     value ??= 0.0;
@@ -90,7 +100,7 @@
                         numValue = 0;
                     break;
                 case VarDef.EvarType.@string:
-                    isNumeric = false;
+
                     value ??= "";
                     if (varDef.isArray == true)
                         stringArrayValue = (string[])value;
@@ -98,9 +108,9 @@
                         stringValue = (string)value;
                     break;
                 case VarDef.EvarType.@void:
-                    throw new Exception("Can't create a variable with the \"Void\" type. E.U.0008");
+                    break;
                 default:
-                    throw new Exception("Unknown variable type at NamespaceInfo.Var(Switch(vartype). E.Internal.0001");
+                    throw new Exception("Internal: Unknown variable type at NamespaceInfo.Var(Switch(vartype).");
             }
         }
 
@@ -115,7 +125,7 @@
         {
             tempVar = true;
             varDef = new(VarDef.EvarType.@void, "");
-            isNumeric = false;
+
 
 
         }

@@ -278,10 +278,10 @@ namespace TASI
 
 
 
-            if (functionReturnValue.varDef.varType != VarDef.EvarType.@return || functionReturnValue.returnStatementValue.varDef.varType != callFunction.returnType)
+            if (functionReturnValue.varDef.varType != VarDef.EvarType.@return || (functionReturnValue.returnStatementValue.varDef.varType != callFunction.returnType && callFunction.returnType != VarDef.EvarType.all))
                 throw new Exception($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
             return functionReturnValue.returnStatementValue;
-
+            
             //throw new Exception("Internal: Only internal functions are implemented");
         }
 

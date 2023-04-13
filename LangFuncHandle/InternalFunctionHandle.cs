@@ -32,7 +32,7 @@
                     return null;
                 case "inf.defvar":
 
-                    if (!Enum.TryParse<VarConstruct.EvarType>(input[0].stringValue, true, out VarConstruct.EvarType varType) || input[0].stringValue.ToLower() == VarConstruct.EvarType.@return.ToString()) throw new Exception($"The vartype \"{input[0].stringValue}\" doesn't exist.");
+                    if (!Enum.TryParse<Value.ValueType>(input[0].stringValue, true, out Value.ValueType varType)) throw new Exception($"The vartype \"{input[0].stringValue}\" doesn't exist.");
 
                     accessableObjects.accessableVars.Add(new(new(varType, input[1].stringValue), false, null));
                     return null;
@@ -59,21 +59,5 @@
 
     }
 
-    internal class InternalFuncs
-    {
-        public static void INF(FunctionCall functionCall)
-        {
-            switch (functionCall.callFunction.functionLocation)
-            {
-                case "INF.DefFunc":
-                    if (InterpretMain.FindFunctionUsingFunctionPath(functionCall.inputValues[0].stringValue) == null)
-                        throw new Exception($"Can't define func {functionCall.inputValues[0].stringValue}, because it isn't declared anywhere. E.U 0010\nTry to add something like this:\nfunction {functionCall.inputValues[0].stringValue} {{\n/code here\n}}.");
-                    if (!Enum.TryParse<VarConstruct.EvarType>(functionCall.inputValues[1].stringValue, out VarConstruct.EvarType result))
-                        throw new Exception($"{functionCall.inputValues[1].stringValue} is an invalid variable type. E.U 0011\nValid types are:\nnum\nvoid\nbool\nstring");
-
-                    break;
-
-            }
-        }
     }
 }

@@ -6,6 +6,7 @@
         public string? stringValue;
         public bool? boolValue;
         public ValueType valueType;
+        public bool isReturnValue;
 
         public string StringValue
         {
@@ -31,6 +32,15 @@
             }
         }
 
+        public Value(Value value)
+        {
+            valueType = value.valueType;
+            ObjectValue = value.ObjectValue;
+        }
+        public Value()
+        {
+            valueType = ValueType.@void;
+        }
         public Value(ValueType valueType, Object objectValue)
         {
             this.valueType = valueType;

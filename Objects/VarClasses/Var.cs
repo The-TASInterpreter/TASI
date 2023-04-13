@@ -6,6 +6,10 @@ namespace TASI
     {
         public VarConstruct varConstruct;
         private Value varValue;
+
+
+
+
         public Value VarValue
         {
             get

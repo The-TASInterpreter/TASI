@@ -21,7 +21,7 @@
                     {
                         if (commandLine.commands.Count != 2) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
                         if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                        if (!Enum.TryParse<VarConstruct.EvarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.EvarType varType) || commandLine.commands[0].commandText == "return") throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        if (!Enum.TryParse<Value.ValueType>(commandLine.commands[0].commandText.ToLower(), out Value.ValueType varType)) throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
                             if (x.varName == commandLine.commands[1].commandText.ToLower()) throw new Exception($"A variable with the name {commandLine.commands[1].commandText.ToLower()}. Keep in mind, that variable names are not case sensitive.");

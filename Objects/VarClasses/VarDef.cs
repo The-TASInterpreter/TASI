@@ -11,7 +11,7 @@
 
         public VarConstruct(VarType type, string name)
         {
-            this.name = name;
+            this.name = name.ToLower();
             this.type = type;
         }
     }

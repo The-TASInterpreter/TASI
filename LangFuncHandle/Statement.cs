@@ -9,21 +9,21 @@
 
         public static Value? StaticStatement(CommandLine commandLine, AccessableObjects accessableObjects)
         {
-            Var returnValue = new();
+            Value returnValue = new();
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
                 throw new Exception("Internal: StaticStatements must start with a Statement");
 
             switch (commandLine.commands[0].commandText.ToLower())
             {
                 case "return":
-                    if (commandLine.commands.Count == 1) return new(new Var());
+                    if (commandLine.commands.Count == 1) return new();
                     if (commandLine.commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
                     return new(GetVarOfCommandLine(new(commandLine.commands.GetRange(1, commandLine.commands.Count - 1), -1), accessableObjects));
 
                 case "set":
                     //Validate syntax
                     StaticStatementSet(commandLine, accessableObjects);
-                    return new();
+                    return null;
                 case "while":
                     CommandLine checkStatement = new(new(), -1);
                     for (int i = 1; i < commandLine.commands.Count; i++)
@@ -185,7 +185,7 @@
             commandLine.commands[1].commandText = commandLine.commands[1].commandText.ToLower();
             foreach (Var var in accessableObjects.accessableVars) //Search for variable
             {
-                if (var.varDef.varName == commandLine.commands[1].commandText)
+                if (var.varConstruct.name == commandLine.commands[1].commandText)
                 {
                     correctVar = var;
                     break;
@@ -216,7 +216,7 @@
                 default: throw new Exception("Internal: Unimplemented VarType");
             }
         }
-        public static Var ReturnStatement(List<Command> commands, AccessableObjects accessableObjects)
+        public static Value ReturnStatement(List<Command> commands, AccessableObjects accessableObjects)
         {
             if (commands[0].commandType != Command.CommandTypes.Statement)
                 throw new Exception("Internal: ReturnStatements must start with a Statement");
@@ -230,10 +230,10 @@
 
                 case "true":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
-                    return new Var(new(VarConstruct.EvarType.@bool, ""), true, true);
+                    return new(Value.ValueType.@bool, true);
                 case "false":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
-                    return new Var(new(VarConstruct.EvarType.@bool, ""), true, false);
+                    return new(Value.ValueType.@bool, false);
                 case "new":
                     if (commands[1].commandType != Command.CommandTypes.Statement)
                         throw new Exception($"Unexpected {commands[1].commandType} at argument 1 of new statement\nA statement would be expected at this point.");
@@ -243,9 +243,9 @@
                     return new();
 
                 case "nl":
-                    return new Var(new(VarConstruct.EvarType.@string, ""), true, "\n");
+                    return new (Value.ValueType.@string, "\n");
                 case "lineChar":
-                    return new Var(new(VarConstruct.EvarType.@string, ""), true, "Ⅼ");
+                    return new(Value.ValueType.@string, "Ⅼ");
 
                 case "if":
                     //Check if if statement usage is correct
@@ -275,8 +275,8 @@
                     if (commands.Count != 1) throw new Exception("Unexpected syntax after varname.");
                     commands[0].commandText = commands[0].commandText.ToLower();
                     foreach (Var var in accessableObjects.accessableVars)
-                        if (var.varDef.varName == commands[0].commandText)
-                            return var;
+                        if (var.varConstruct.name == commands[0].commandText)
+                            return new(var.VarValue);
                     //Var not found
 
 

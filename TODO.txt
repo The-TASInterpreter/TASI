@@ -1,4 +1,4 @@
-Add pointers
+Add value links: by setting the values of VAR to a different class.
 Public variables
 Add current context internal namespace which has current variables and methods for them like this:
 
@@ -11,3 +11,6 @@ Add Lists. Possible return type syntax:
 [Inf.DefList:"string", "TestList"]
 Add TestList "Hello World";
 [Console.WriteLine:TestList (0)]
+
+Hashmap for var name
+

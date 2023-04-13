@@ -7,7 +7,7 @@
     {
         public static string[] staticStatements = { "set" };
 
-        public static Var StaticStatement(CommandLine commandLine, AccessableObjects accessableObjects)
+        public static Value? StaticStatement(CommandLine commandLine, AccessableObjects accessableObjects)
         {
             Var returnValue = new();
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
@@ -44,7 +44,7 @@
                     while (GetVarOfCommandLine(checkStatement, accessableObjects).GetBoolValue)
                     {
                         returnValue = InterpretMain.InterpretNormalMode(code, accessableObjects);
-                        if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
+                        if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
                     }
 
 
@@ -59,7 +59,7 @@
                         if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
-                            if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
+                            if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
                         }
 
                     }
@@ -72,12 +72,12 @@
                         if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
-                            if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
+                            if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
                         }
                         else
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
-                            if (returnValue.varDef.varType == VarDef.EvarType.@return) return returnValue;
+                            if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
                         }
 
 
@@ -106,7 +106,7 @@
                     throw new Exception($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
             }
         }
-        public static Var GetVarOfCommandLine(CommandLine commandLine, VarDef.EvarType expectedType, AccessableObjects accessableObjects)
+        public static Var GetVarOfCommandLine(CommandLine commandLine, VarConstruct.EvarType expectedType, AccessableObjects accessableObjects)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -133,16 +133,16 @@
                     return returnStatementCall;
 
                 case Command.CommandTypes.String:
-                    if (expectedType != VarDef.EvarType.@string) throw new Exception($"String is not the expected {expectedType} type.");
+                    if (expectedType != VarConstruct.EvarType.@string) throw new Exception($"String is not the expected {expectedType} type.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after calculation.");
-                    return new Var(new(VarDef.EvarType.@string, ""), true, commandLine.commands[0].commandText);
+                    return new Var(new(VarConstruct.EvarType.@string, ""), true, commandLine.commands[0].commandText);
 
                 default:
                     throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
             }
         }
-        public static Var GetVarOfCommandLine(CommandLine commandLine, AccessableObjects accessableObjects)
+        public static Value GetVarOfCommandLine(CommandLine commandLine, AccessableObjects accessableObjects)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -168,7 +168,7 @@
                 case Command.CommandTypes.String:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after calculation.");
-                    return new Var(new(VarDef.EvarType.@string, ""), true, commandLine.commands[0].commandText);
+                    return new Var(new(VarConstruct.EvarType.@string, ""), true, commandLine.commands[0].commandText);
 
                 default:
                     throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
@@ -204,10 +204,10 @@
 
             switch (correctVar.varDef.varType) //Check var type thats needed
             {
-                case VarDef.EvarType.num or VarDef.EvarType.@bool:
+                case VarConstruct.EvarType.num or VarConstruct.EvarType.@bool:
                     correctVar.numValue = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), correctVar.varDef.varType, accessableObjects).numValue;
                     break;
-                case VarDef.EvarType.@string:
+                case VarConstruct.EvarType.@string:
                     correctVar.stringValue = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), correctVar.varDef.varType, accessableObjects).stringValue;
                     break;
 
@@ -230,10 +230,10 @@
 
                 case "true":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
-                    return new Var(new(VarDef.EvarType.@bool, ""), true, true);
+                    return new Var(new(VarConstruct.EvarType.@bool, ""), true, true);
                 case "false":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
-                    return new Var(new(VarDef.EvarType.@bool, ""), true, false);
+                    return new Var(new(VarConstruct.EvarType.@bool, ""), true, false);
                 case "new":
                     if (commands[1].commandType != Command.CommandTypes.Statement)
                         throw new Exception($"Unexpected {commands[1].commandType} at argument 1 of new statement\nA statement would be expected at this point.");
@@ -243,9 +243,9 @@
                     return new();
 
                 case "nl":
-                    return new Var(new(VarDef.EvarType.@string, ""), true, "\n");
+                    return new Var(new(VarConstruct.EvarType.@string, ""), true, "\n");
                 case "lineChar":
-                    return new Var(new(VarDef.EvarType.@string, ""), true, "Ⅼ");
+                    return new Var(new(VarConstruct.EvarType.@string, ""), true, "Ⅼ");
 
                 case "if":
                     //Check if if statement usage is correct
@@ -256,14 +256,14 @@
                         returnVar = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
                     else
                         returnVar = InterpretMain.InterpretNormalMode(commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
-                    if (returnVar.varDef.varType == VarDef.EvarType.@return)
+                    if (returnVar.varDef.varType == VarConstruct.EvarType.@return)
                         return returnVar.returnStatementValue ?? throw new Exception("Internal: return-var var is null");
                     else
                         throw new Exception("The return-type if statemtent didn't return anything");
                 case "do":
                     if (commands.Count != 2 || commands[1].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of do return-statement. Correct usage:\ndo <code container>");
                     returnVar = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
-                    if (returnVar.varDef.varType == VarDef.EvarType.@return)
+                    if (returnVar.varDef.varType == VarConstruct.EvarType.@return)
                         return returnVar.returnStatementValue ?? throw new Exception("Internal: return-var var is null");
                     else
                         throw new Exception("The return-type if statemtent didn't return anything");

@@ -14,7 +14,7 @@ namespace TASI
         }
         private string? name; 
         public List<Function> namespaceFuncitons = new();
-        public List<VarDef.EvarType> namespaceVars = new();
+        public List<VarConstruct.EvarType> namespaceVars = new();
         public List<Var> publicNamespaceVars = new();
         public List<NamespaceInfo> accessableNamespaces = new();
         public NamespaceIntend namespaceIntend;

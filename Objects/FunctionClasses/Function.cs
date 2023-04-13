@@ -7,14 +7,14 @@
         public string functionLocation;
         public bool isSubfunction;
         public Function? parentFunction;
-        public VarDef.EvarType? returnType;
+        public VarConstruct.VarType? returnType;
         public List<Function> subFunctions;
         public NamespaceInfo parentNamespace;
-        public List<List<VarDef>> functionArguments;
+        public List<List<VarConstruct>> functionArguments;
         public List<List<Command>> functionCode = new();
 
 
-        public Function(string funcName, Function parentFunction, VarDef.EvarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> functionArguments, List<Command> functionCode) // Has a variable return type and is not a void, but is a sub function
+        public Function(string funcName, Function parentFunction, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode) // Has a variable return type and is not a void, but is a sub function
         {
             this.funcName = funcName;
             this.parentFunction = parentFunction;
@@ -24,13 +24,13 @@
             this.parentNamespace = parentNamespace;
             parentNamespace.namespaceFuncitons.Add(this);
             functionLocation = GetFunctionLocationString();
-            this.functionArguments = new List<List<VarDef>>(functionArguments);
+            this.functionArguments = new List<List<VarConstruct>>(functionArguments);
             Global.AllFunctions.Add(this);
             this.functionCode.Add(functionCode);
 
         }
 
-        public Function(string funcName, VarDef.EvarType returnType, NamespaceInfo parentNamespace, List<List<VarDef>> functionArguments, List<Command> functionCode) // Is a Main function and is not a void
+        public Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode) // Is a Main function and is not a void
         {
             this.funcName = funcName.ToLower();
             this.parentFunction = null;
@@ -40,7 +40,7 @@
             this.parentNamespace = parentNamespace;
             parentNamespace.namespaceFuncitons.Add(this);
             functionLocation = GetFunctionLocationString();
-            this.functionArguments = new List<List<VarDef>>(functionArguments);
+            this.functionArguments = new List<List<VarConstruct>>(functionArguments);
             Global.AllFunctions.Add(this);
             this.functionCode.Add(functionCode);
 

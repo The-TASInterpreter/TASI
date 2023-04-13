@@ -7,11 +7,11 @@
 
 
 
-        public static List<VarDef> InterpretVarDef(List<Command> commands)
+        public static List<VarConstruct> InterpretVarDef(List<Command> commands)
         {
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
-            List<VarDef> result = new();
+            List<VarConstruct> result = new();
             foreach (Command command in commands)
             {
 
@@ -19,9 +19,9 @@
                 {
                     if (command.commandType == Command.CommandTypes.EndCommand)
                     {
-                        if (commandLine.commands.Count != 2) throw new Exception("Invalid VarDef statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid VarDef statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                        if (!Enum.TryParse<VarDef.EvarType>(commandLine.commands[0].commandText.ToLower(), out VarDef.EvarType varType) || commandLine.commands[0].commandText == "return") throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        if (commandLine.commands.Count != 2) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
+                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
+                        if (!Enum.TryParse<VarConstruct.EvarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.EvarType varType) || commandLine.commands[0].commandText == "return") throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
                             if (x.varName == commandLine.commands[1].commandText.ToLower()) throw new Exception($"A variable with the name {commandLine.commands[1].commandText.ToLower()}. Keep in mind, that variable names are not case sensitive.");
@@ -47,14 +47,14 @@
                         commandLine = new(new List<Command> { command }, 1);
                         break;
                     default:
-                        throw new NotImplementedException($"You can only use statements in VarDef-mode.");
+                        throw new NotImplementedException($"You can only use statements in VarConstruct-mode.");
                 }
             }
             if (statementMode)
             {
-                if (commandLine.commands.Count != 2) throw new Exception("Invalid VarDef statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid VarDef statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                if (!Enum.TryParse<VarDef.EvarType>(commandLine.commands[0].commandText.ToLower(), out VarDef.EvarType varType) || commandLine.commands[0].commandText == "return") throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                if (commandLine.commands.Count != 2) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
+                if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
+                if (!Enum.TryParse<VarConstruct.EvarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.EvarType varType) || commandLine.commands[0].commandText == "return") throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                 result.ForEach(x =>
                 {
                     if (x.varName == commandLine.commands[1].commandText.ToLower()) throw new Exception($"A variable with the name {commandLine.commands[1].commandText.ToLower()}. Keep in mind, that variable names are not case sensitive.");
@@ -111,24 +111,24 @@
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
 
 
-                                if (!Enum.TryParse<VarDef.EvarType>(commandLine.commands[1].commandText.ToLower(), out VarDef.EvarType functionReturnType)) throw new Exception("function return type is invalid.");
+                                if (!Enum.TryParse<VarConstruct.EvarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.EvarType functionReturnType)) throw new Exception("function return type is invalid.");
                                 Function thisFunction = null;
                                 foreach (Function function in thisNamespace.namespaceFuncitons) //Check if function with name already exist
                                 {
                                     if (function.funcName == commandLine.commands[2].commandText.ToLower()) thisFunction = function;
                                 }
                                 string functionName = commandLine.commands[2].commandText.ToLower();
-                                List<VarDef> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
+                                List<VarConstruct> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
 
                                 if (thisFunction != null) //If function with name already exist, check if input combination already exist.
                                 {
-                                    foreach (List<VarDef> varDefs in thisFunction.functionArguments)
+                                    foreach (List<VarConstruct> varDefs in thisFunction.functionArguments)
                                     {
                                         bool isEqu = true;
                                         if (functionInputVars.Count == varDefs.Count) continue;
                                         for (int i = 0; i < varDefs.Count; i++)
                                         {
-                                            VarDef varDef = varDefs[i];
+                                            VarConstruct varDef = varDefs[i];
                                             if (varDef.varType != functionInputVars[i].varType)
                                             {
                                                 isEqu = false;
@@ -219,11 +219,11 @@
 
 
 
-        public static Var InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
+        public static Value? InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
         {
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal functions to the code.
             bool statementMode = false;
-            Var returnValue;
+            Value returnValue;
             CommandLine? commandLine = new(new(), -1);
             foreach (Command command in commands)
             {
@@ -238,7 +238,7 @@
                         }
 
                         returnValue = Statement.StaticStatement(commandLine, accessableObjects);
-                        if (returnValue.varDef.varType == VarDef.EvarType.@return)
+                        if (returnValue.varDef.varType == VarConstruct.EvarType.@return)
                             return returnValue;
 
                         statementMode = false;
@@ -257,7 +257,7 @@
                             throw new Exception("Internal: function call was not converted to a function call.");
 
                         returnValue = command.functionCall.DoFunctionCall(accessableObjects);
-                        if (returnValue.varDef.varType == VarDef.EvarType.@return)
+                        if (returnValue.varDef.varType == VarConstruct.EvarType.@return)
                             return returnValue;
                         break;
                     case Command.CommandTypes.EndCommand:

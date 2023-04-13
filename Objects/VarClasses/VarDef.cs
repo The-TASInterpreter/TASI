@@ -1,30 +1,18 @@
 ﻿namespace TASI
 {
-    public class VarDef
+    public class VarConstruct
     {
-        public VarDef(EvarType evarType, string varName)
+        public enum VarType
         {
-            if (evarType == EvarType.all)
-            {
-                isAllType = true;
-                evarType = EvarType.@void;
-            }
-            varType = evarType;
-            this.varName = varName.ToLower();
-            this.isArray = false;
-
-
+            num, @string, @bool, @void, all
         }
+        public string name;
+        public VarType type;
 
-        public enum EvarType
+        public VarConstruct(VarType type, string name)
         {
-            @num, @string, @bool, @void, @return, @all
+            this.name = name;
+            this.type = type;
         }
-        public EvarType varType;
-        public string varName;
-        public bool isArray;
-        public bool isAllType;
     }
-
-
 }

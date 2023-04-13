@@ -6,7 +6,7 @@ namespace TASI
     public class FunctionCall
     {
         public Function? callFunction;
-        public List<Var> inputVars;
+        public List<Value> inputValues;
         public List<CommandLine> argumentCommands;
         private string functionName;
 
@@ -31,10 +31,10 @@ namespace TASI
 
             }
         }
-        public FunctionCall(Function callFunction, List<Var> inputVars)
+        public FunctionCall(Function callFunction, List<Value> inputVars)
         {
             this.callFunction = callFunction;
-            this.inputVars = new List<Var>(inputVars);
+            this.inputValues = new List<Value>(inputVars);
         }
 
         public FunctionCall(Command command)
@@ -161,7 +161,7 @@ namespace TASI
             bool matching;
             for (int j = 0; j < callFunction.functionArguments.Count; j++)
             {
-                List<VarDef> functionInputType = callFunction.functionArguments[j];
+                List<VarConstruct> functionInputType = callFunction.functionArguments[j];
                 if (functionInputType.Count == inputVars.Count)
                 {
                     matching = true;
@@ -238,15 +238,15 @@ namespace TASI
 
         }
 
-        public Var DoFunctionCall(AccessableObjects accessableObjects)
+        public Value DoFunctionCall(AccessableObjects accessableObjects)
         {
-            inputVars = new();
+            inputValues = new();
             foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
             {
-                inputVars.Add(Statement.GetVarOfCommandLine(commandLine, accessableObjects));
+                inputValues.Add(Statement.GetVarOfCommandLine(commandLine, accessableObjects));
             }
 
-            FunctionCallInputHelp? functionCallInputHelp = CheckIfFunctionCallHasValidArgTypesAndReturnCode(inputVars);
+            FunctionCallInputHelp? functionCallInputHelp = CheckIfFunctionCallHasValidArgTypesAndReturnCode(inputValues);
 
             if (functionCallInputHelp == null)
                 throw new Exception($"The function \"{callFunction.functionLocation}\" doesent support the provided input types. Use the syntax \"helpm <function call>;\"\nFor this function it would be: \"helpm [{callFunction.functionLocation}];\"");
@@ -254,7 +254,7 @@ namespace TASI
 
             if (callFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
             {
-                Var returnValue = InternalFunctionHandle.HandleInternalFunc(callFunction.functionLocation, inputVars, accessableObjects);
+                Value? returnValue = InternalFunctionHandle.HandleInternalFunc(callFunction.functionLocation, inputValues, accessableObjects);
                 if (Global.debugMode)
                 {
                     Console.WriteLine($"Did function call to {callFunction.parentNamespace.namespaceIntend}-intend {callFunction.functionLocation}.\nIt returns a {callFunction.returnType}.\nIt returned a {returnValue.varDef.varType}-type with a value of \"{returnValue.ObjectValue}\".");
@@ -266,19 +266,19 @@ namespace TASI
             //return 
             List<Var> functionCallInput = new();
 
-            for (int i = 0; i < inputVars.Count; i++)
+            for (int i = 0; i < inputValues.Count; i++)
             {
                 if (functionCallInputHelp.inputVarType[i].isAllType)
-                    functionCallInput.Add(new(new VarDef(inputVars[i].varDef.varType, functionCallInputHelp.inputVarType[i].varName), false, this.inputVars[i].ObjectValue));
+                    functionCallInput.Add(new(new VarDef(inputValues[i].varDef.varType, functionCallInputHelp.inputVarType[i].varName), false, this.inputValues[i].ObjectValue));
                 else
-                    functionCallInput.Add(new(new VarDef(functionCallInputHelp.inputVarType[i].varType, functionCallInputHelp.inputVarType[i].varName), false, this.inputVars[i].ObjectValue));
+                    functionCallInput.Add(new(new VarDef(functionCallInputHelp.inputVarType[i].varType, functionCallInputHelp.inputVarType[i].varName), false, this.inputValues[i].ObjectValue));
             }
 
-            Var functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, callFunction.parentNamespace));
+            Value functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, callFunction.parentNamespace));
 
 
 
-            if (functionReturnValue.varDef.varType != VarDef.EvarType.@return || (functionReturnValue.returnStatementValue.varDef.varType != callFunction.returnType && callFunction.returnType != VarDef.EvarType.all))
+            if (functionReturnValue.varDef.varType != VarConstruct.EvarType.@return || (functionReturnValue.returnStatementValue.varDef.varType != callFunction.returnType && callFunction.returnType != VarConstruct.EvarType.all))
                 throw new Exception($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
             return functionReturnValue.returnStatementValue;
             
@@ -290,8 +290,8 @@ namespace TASI
     public class FunctionCallInputHelp
     {
         public List<Command> inputCode;
-        public List<VarDef> inputVarType;
-        public FunctionCallInputHelp(List<Command> inputCode, List<VarDef> inputVarType)
+        public List<VarConstruct> inputVarType;
+        public FunctionCallInputHelp(List<Command> inputCode, List<VarConstruct> inputVarType)
         {
             this.inputCode = inputCode;
             this.inputVarType = inputVarType;

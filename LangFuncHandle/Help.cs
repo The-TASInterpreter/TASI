@@ -9,7 +9,7 @@ namespace TASI
             Console.WriteLine($"Help for methd: {function.funcName}");
             Console.WriteLine($"This function is part of the \"{function.parentNamespace.Name}\" parent. You can use the syntax \"Listm <function location string>;\". For this function it would be:\nListm \"{function.functionLocation}\";");
             Console.WriteLine($"Accepted arguments for this function are: ");
-            foreach (List<VarDef> arguments in function.functionArguments)
+            foreach (List<VarConstruct> arguments in function.functionArguments)
             {
 
                 if (arguments.Count == 0)
@@ -18,7 +18,7 @@ namespace TASI
                     Console.Write($"\t[{function.functionLocation}:");
                 for (int i = 0; i < arguments.Count; i++)
                 {
-                    VarDef var = arguments[i];
+                    VarConstruct var = arguments[i];
                     if (i + 1 == arguments.Count)
                         Console.WriteLine($"<{var.varType}> {var.varName}]");
                     else

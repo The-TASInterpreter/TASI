@@ -1,4 +1,4 @@
-﻿namespace TASI.Objects.VarClasses
+﻿namespace TASI
 {
     public class Value
     {
@@ -6,6 +6,36 @@
         public string? stringValue;
         public bool? boolValue;
         public ValueType valueType;
+
+        public string StringValue
+        {
+            get
+            {
+                return stringValue ?? throw new Exception("Internal: string value is null");
+            }
+        }
+
+        public double NumValue
+        {
+            get
+            {
+                switch (valueType)
+                {
+                    case ValueType.num:
+                        return numValue ?? throw new Exception("Internal: num value is null.");
+                    case ValueType.@bool:
+                        return Convert.ToDouble(boolValue ?? throw new Exception("Internal: bool value is null."));
+                    default: throw new Exception($"Internal: Can't convert a {valueType} to a numeric type.");
+
+                }
+            }
+        }
+
+        public Value(ValueType valueType, Object objectValue)
+        {
+            this.valueType = valueType;
+            ObjectValue = objectValue;
+        }
 
         public enum ValueType
         {

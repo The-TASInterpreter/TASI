@@ -18,44 +18,44 @@
             Namespaces = new();
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Test"));
             allLoadedFiles.Add("*internal");
-            new Function("HelloWorld", VarDef.EvarType.@void, Namespaces[0], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.EvarType.@bool, "display"), new(VarDef.EvarType.@string, "text")}
+            new Function("HelloWorld", VarConstruct.VarType.@void, Namespaces[0], new List<List<VarConstruct>> {
+                new List<VarConstruct> { new(VarConstruct.VarType.@bool, "display"), new(VarConstruct.VarType.@string, "text")}
             }, new());
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Console"));
             allLoadedFiles.Add("*internal");
-            new Function("WriteLine", VarDef.EvarType.@void, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.EvarType.@string, "text")},
-                new List<VarDef> { new(VarDef.EvarType.num, "num")},
-                new List<VarDef> { new(VarDef.EvarType.@bool, "bool")}
+            new Function("WriteLine", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
+                new List<VarConstruct> { new(VarConstruct.VarType.@string, "text")},
+                new List<VarConstruct> { new(VarConstruct.VarType.num, "num")},
+                new List<VarConstruct> { new(VarConstruct.VarType.@bool, "bool")}
             }, new());
-            new Function("Write", VarDef.EvarType.@void, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.EvarType.@string, "text")}
+            new Function("Write", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
+                new List<VarConstruct> { new(VarConstruct.VarType.@string, "text")}
             }, new());
-            new Function("ReadLine", VarDef.EvarType.@string, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> { new(VarDef.EvarType.@bool, "showTextWhenTyping")},
-                new List<VarDef> {}
+            new Function("ReadLine", VarConstruct.VarType.@string, Namespaces[1], new List<List<VarConstruct>> {
+                new List<VarConstruct> { new(VarConstruct.VarType.@bool, "showTextWhenTyping")},
+                new List<VarConstruct> {}
             }, new());
-            new Function("Clear", VarDef.EvarType.@void, Namespaces[1], new List<List<VarDef>> {
-                new List<VarDef> {}
+            new Function("Clear", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
+                new List<VarConstruct> {}
             }, new());
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Program"));
             allLoadedFiles.Add("*internal");
-            new Function("Pause", VarDef.EvarType.@void, Namespaces[2], new List<List<VarDef>> {
-                new List<VarDef> {},
-                new List<VarDef> {new(VarDef.EvarType.@bool, "showPausedMessage")}
+            new Function("Pause", VarConstruct.VarType.@void, Namespaces[2], new List<List<VarConstruct>> {
+                new List<VarConstruct> {},
+                new List<VarConstruct> {new(VarConstruct.VarType.@bool, "showPausedMessage")}
             }, new());
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Inf"));
             allLoadedFiles.Add("*internal");
-            new Function("DefVar", VarDef.EvarType.@void, Namespaces[3], new List<List<VarDef>> {
-                new List<VarDef> {new(VarDef.EvarType.@string, "VarType"), new(VarDef.EvarType.@string, "VarName")}
+            new Function("DefVar", VarConstruct.VarType.@void, Namespaces[3], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "VarType"), new(VarConstruct.VarType.@string, "VarName")}
             }, new());
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Convert"));
             allLoadedFiles.Add("*internal");
-            new Function("ToNum", VarDef.EvarType.num, Namespaces[4], new List<List<VarDef>> {
-                new List<VarDef> {new(VarDef.EvarType.@string, "ConvertFrom"), new(VarDef.EvarType.@bool, "errorOnParseFail")}
+            new Function("ToNum", VarConstruct.VarType.num, Namespaces[4], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "ConvertFrom"), new(VarConstruct.VarType.@bool, "errorOnParseFail")}
             }, new());
 
         }

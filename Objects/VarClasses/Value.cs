@@ -59,6 +59,24 @@
             valueType = value.valueType;
             ObjectValue = value.ObjectValue;
         }
+
+        public Value(ValueType valueType)
+        {
+            this.valueType = valueType;
+            switch (valueType)
+            {
+                case ValueType.num:
+                    ObjectValue = (double)0;
+                    break;
+                case ValueType.@bool:
+                    ObjectValue = false;
+                    break;
+                case ValueType.@string:
+                    ObjectValue = String.Empty;
+                    break;
+                
+            }
+        }
         public Value()
         {
             valueType = ValueType.@void;
@@ -68,6 +86,8 @@
             this.valueType = valueType;
             ObjectValue = objectValue;
         }
+
+
 
         public enum ValueType
         {

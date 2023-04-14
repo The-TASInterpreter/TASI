@@ -82,23 +82,23 @@
 
 
                     }
-                    return new();
+                    return null;
                 case "helpm":
                     if (commandLine.commands.Count != 2) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
                     if (commandLine.commands[1].commandType != Command.CommandTypes.FunctionCall) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
                     FunctionCall helpCall = commandLine.commands[1].functionCall ?? throw new Exception("Internal: function call was not converted to a function call.");
                     Help.ListFunctionArguments(helpCall.callFunction);
-                    return new();
+                    return null;
                 case "listm":
                     if (commandLine.commands.Count != 2) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
                     if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
                     Help.ListLocation(commandLine.commands[1].commandText);
-                    return new();
+                    return null;
                 case "rootm":
                     if (commandLine.commands.Count != 1) throw new Exception("Invalid rootm statement syntax. Example for right syntax:\nhelpm; (It's that simple)");
                     Console.WriteLine("All registered namespaces are:");
                     Help.ListNamespaces(Global.Namespaces);
-                    return new();
+                    return null;
 
 
 

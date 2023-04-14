@@ -270,7 +270,7 @@
                         throw new NotImplementedException($"You can't use a {command.commandType}-type directly.");
                 }
             }
-            return new();
+            return null;
         }
         public static Function? FindFunctionUsingFunctionPath(string functionPath)
         {

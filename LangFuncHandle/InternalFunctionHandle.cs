@@ -21,9 +21,9 @@
                 case "console.writeline":
 
                     if (input[0].IsNumeric)
-                        Console.WriteLine(input[0].numValue);
+                        Console.WriteLine(input[0].NumValue);
                     else
-                        Console.WriteLine(input[0].stringValue);
+                        Console.WriteLine(input[0].StringValue);
                     return null;
                 case "program.pause":
                     if (input.Count == 1 && input[0].numValue == 1)
@@ -32,12 +32,12 @@
                     return null;
                 case "inf.defvar":
 
-                    if (!Enum.TryParse<Value.ValueType>(input[0].stringValue, true, out Value.ValueType varType)) throw new Exception($"The vartype \"{input[0].stringValue}\" doesn't exist.");
+                    if (!Enum.TryParse<Value.ValueType>(input[0].StringValue, true, out Value.ValueType varType)) throw new Exception($"The vartype \"{input[0].StringValue}\" doesn't exist.");
 
-                    accessableObjects.accessableVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType, "")));
+                    accessableObjects.accessableVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType)));
                     return null;
                 case "convert.tonum":
-                    if (!double.TryParse(input[0].stringValue, out double result))
+                    if (!double.TryParse(input[0].StringValue, out double result))
                         if (input[1].GetBoolValue)
                             throw new Exception("Can't convert string in current format to double.");
                         else

@@ -156,7 +156,7 @@ namespace TASI
                 }
         }
 
-        public FunctionCallInputHelp? CheckIfFunctionCallHasValidArgTypesAndReturnCode(List<Var> inputVars)
+        public FunctionCallInputHelp? CheckIfFunctionCallHasValidArgTypesAndReturnCode(List<Value> inputVars)
         {
             bool matching;
             for (int j = 0; j < callFunction.functionArguments.Count; j++)
@@ -167,7 +167,7 @@ namespace TASI
                     matching = true;
                     for (int i = 0; i < inputVars.Count; i++)
                     {
-                        if (functionInputType[i].type != inputVars[i].varConstruct.type && functionInputType[i].type != VarConstruct.VarType.all)
+                        if (functionInputType[i].type != Value.ConvertValueTypeToVarType( inputVars[i].valueType) && functionInputType[i].type != VarConstruct.VarType.all)
                         {
                             matching = false;
                             break;
@@ -257,7 +257,7 @@ namespace TASI
                 Value? returnValue = InternalFunctionHandle.HandleInternalFunc(callFunction.functionLocation, inputValues, accessableObjects);
                 if (Global.debugMode)
                 {
-                    Console.WriteLine($"Did function call to {callFunction.parentNamespace.namespaceIntend}-intend {callFunction.functionLocation}.\nIt returns a {callFunction.returnType}.\nIt returned a {returnValue.varDef.varType}-type with a value of \"{returnValue.ObjectValue}\".");
+                    Console.WriteLine($"Did function call to {callFunction.parentNamespace.namespaceIntend}-intend {callFunction.functionLocation}.\nIt returns a {callFunction.returnType}.\nIt returned a {returnValue.valueType}-type with a value of \"{returnValue.ObjectValue}\".");
                     Console.ReadKey();
                 }
                 return returnValue;
@@ -268,20 +268,20 @@ namespace TASI
 
             for (int i = 0; i < inputValues.Count; i++)
             {
-                if (functionCallInputHelp.inputVarType[i].isAllType)
+                if (functionCallInputHelp.inputVarType[i].type == VarConstruct.VarType.all)
                     //new VarDef(inputValues[i].varDef.varType, functionCallInputHelp.inputVarType[i].varName), this.inputValues[i].ObjectValue
-                    functionCallInput.Add(new(new(inputValues[i].valueType, functionCallInputHelp.inputVarType[i].name), new()));
+                    functionCallInput.Add(new(new(VarConstruct.VarType.all, functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
                 else
-                    functionCallInput.Add(new(new VarDef(functionCallInputHelp.inputVarType[i].varType, functionCallInputHelp.inputVarType[i].varName), false, this.inputValues[i].ObjectValue));
+                    functionCallInput.Add(new(new(Value.ConvertValueTypeToVarType(inputValues[i].valueType), functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
             }
 
-            Value functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, callFunction.parentNamespace));
+            Value? functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, callFunction.parentNamespace));
 
 
 
-            if (functionReturnValue.varDef.varType != VarConstruct.EvarType.@return || (functionReturnValue.returnStatementValue.varDef.varType != callFunction.returnType && callFunction.returnType != VarConstruct.EvarType.all))
+            if (functionReturnValue == null || ((Value.ConvertValueTypeToVarType(functionReturnValue.valueType) != callFunction.returnType && callFunction.returnType != VarConstruct.VarType.all)))
                 throw new Exception($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
-            return functionReturnValue.returnStatementValue;
+            return functionReturnValue;
             
             //throw new Exception("Internal: Only internal functions are implemented");
         }

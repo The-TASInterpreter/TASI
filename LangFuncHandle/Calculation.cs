@@ -7,7 +7,8 @@ namespace TASI
         public static Value DoCalculation(Command command, AccessableObjects accessableObjects)
         {
             if (command.commandType != Command.CommandTypes.Calculation) throw new Exception("Internal: Do calculation only works with num calculation tokens");
-            return (command.calculation ?? throw new Exception("Internal: Calculation was not parsed.")).GetValue(accessableObjects);
+            Value returnValue = (command.calculation ?? throw new Exception("Internal: Calculation was not parsed.")).GetValue(accessableObjects);
+            return returnValue;
         }
 
 

@@ -25,7 +25,13 @@
                     case ValueType.num:
                         return numValue ?? throw new Exception("Internal: num value is null.");
                     case ValueType.@bool:
-                        return Convert.ToDouble(boolValue ?? throw new Exception("Internal: bool value is null."));
+                        switch (boolValue ?? throw new Exception("Internal: bool value is null."))
+                        {
+                            case true:
+                                return 1;
+                            case false:
+                                return 0;
+                        }
                     default: throw new Exception($"Internal: Can't convert a {valueType} to a numeric type.");
 
                 }
@@ -44,7 +50,7 @@
                     return VarConstruct.VarType.@string;
                 case ValueType.@void:
                     return VarConstruct.VarType.@void;
-                    default: throw new Exception("Internal: Unimplemented Value Type.");
+                default: throw new Exception("Internal: Unimplemented Value Type.");
             }
         }
 
@@ -86,15 +92,16 @@
             {
                 switch (valueType)
                 {
-                    case ValueType.num or ValueType.@bool:
+                    case ValueType.num:
                         if (numValue == null)
                             throw new Exception($"The value \"{valueType}\" can't be used, because it is not defined.");
                         if (numValue == 1) return true;
                         if (numValue == 0) return false;
-                        if (valueType == ValueType.@bool)
-                            throw new Exception("Internal: Bool is neither 0 or 1");
-
                         throw new Exception($"The num value \"{valueType}\" can't be converted to a bool, because it is neither 1 or 0.");
+                    case ValueType.@bool:
+                        return boolValue ?? throw new Exception("Internal: bool value is null.");
+
+
 
                     case ValueType.@string:
                         if (stringValue == null)

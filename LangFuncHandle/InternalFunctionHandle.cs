@@ -34,18 +34,18 @@
 
                     if (!Enum.TryParse<Value.ValueType>(input[0].stringValue, true, out Value.ValueType varType)) throw new Exception($"The vartype \"{input[0].stringValue}\" doesn't exist.");
 
-                    accessableObjects.accessableVars.Add(new(new(varType, input[1].stringValue), false, null));
+                    accessableObjects.accessableVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType, "")));
                     return null;
                 case "convert.tonum":
                     if (!double.TryParse(input[0].stringValue, out double result))
                         if (input[1].GetBoolValue)
                             throw new Exception("Can't convert string in current format to double.");
                         else
-                            return new Var(new(VarConstruct.EvarType.num, ""), true, double.NaN);
+                            return new(Value.ValueType.num, double.NaN);
 
 
 
-                    return new Var(new(VarConstruct.EvarType.num, ""), true, result);
+                    return new(Value.ValueType.num, result);
 
 
 
@@ -59,5 +59,5 @@
 
     }
 
-    }
 }
+

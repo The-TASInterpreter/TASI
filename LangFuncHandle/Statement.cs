@@ -204,6 +204,7 @@
 
                 case "true":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
+                    
                     return new(Value.ValueType.@bool, true);
                 case "false":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");

@@ -20,9 +20,9 @@ namespace TASI
                 {
                     VarConstruct var = arguments[i];
                     if (i + 1 == arguments.Count)
-                        Console.WriteLine($"<{var.varType}> {var.varName}]");
+                        Console.WriteLine($"<{VarConstruct.VarType.all}> {VarConstruct.VarType.all}]");
                     else
-                        Console.Write($"<{var.varType}> {var.varName},");
+                        Console.Write($"<{VarConstruct.VarType.all}> {VarConstruct.VarType.all},");
                 }
             }
 

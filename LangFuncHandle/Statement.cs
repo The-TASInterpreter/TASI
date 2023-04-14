@@ -99,6 +99,10 @@
                     Console.WriteLine("All registered namespaces are:");
                     Help.ListNamespaces(Global.Namespaces);
                     return null;
+                case "link":
+                    if (commandLine.commands.Count != 3 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid use of link return statement. Correct usage:\nlink <statement: variable>");
+                    FindVar(commandLine.commands[1].commandText, accessableObjects, true).varValueHolder = FindVar(commandLine.commands[2].commandText, accessableObjects, true).varValueHolder;
+                    return null;
 
 
 
@@ -194,6 +198,22 @@
             if (correctVar == null) throw new Exception($"The variable {commandLine.commands[1].commandText} cant be found.");
             correctVar.VarValue = GetValueOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), accessableObjects);
         }
+        public static Var? FindVar(string name,  AccessableObjects accessableObjects, bool failAtNotFind = false)
+        {
+            name = name.ToLower();
+            foreach (Var var in accessableObjects.accessableVars) //Search for variable
+            {
+                if (var.varConstruct.name == name)
+                {
+                    return var;
+                }
+            }
+            if (failAtNotFind)
+                throw new Exception($"The variable \"{name}\" wasn't found.");
+            else
+                return null;
+
+        }
         public static Value ReturnStatement(List<Command> commands, AccessableObjects accessableObjects)
         {
             if (commands[0].commandType != Command.CommandTypes.Statement)
@@ -242,6 +262,11 @@
                         return returnValue;
                     else
                         throw new Exception("The return-type if statemtent didn't return anything");
+                
+
+
+
+
 
 
                 default:

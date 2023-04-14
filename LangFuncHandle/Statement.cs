@@ -18,7 +18,7 @@
                 case "return":
                     if (commandLine.commands.Count == 1) return new();
                     if (commandLine.commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
-                    return new(GetVarOfCommandLine(new(commandLine.commands.GetRange(1, commandLine.commands.Count - 1), -1), accessableObjects));
+                    return new(GetValueOfCommandLine(new(commandLine.commands.GetRange(1, commandLine.commands.Count - 1), -1), accessableObjects));
 
                 case "set":
                     //Validate syntax
@@ -41,7 +41,7 @@
                         throw new Exception("Invalid stuff in while loop I hate writeing these messages pls kill me");
                     List<Command> code = commandLine.commands[checkStatement.commands.Count + 1].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list.");
 
-                    while (GetVarOfCommandLine(checkStatement, accessableObjects).GetBoolValue)
+                    while (GetValueOfCommandLine(checkStatement, accessableObjects).GetBoolValue)
                     {
                         returnValue = InterpretMain.InterpretNormalMode(code, accessableObjects);
                         if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
@@ -56,7 +56,7 @@
 
                     if (commandLine.commands.Count == 3)
                     {
-                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
+                        if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
@@ -69,7 +69,7 @@
                             throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                         if (commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer)
                             throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
-                        if (GetVarOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
+                        if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
@@ -142,7 +142,7 @@
                     throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
             }
         }
-        public static Value GetVarOfCommandLine(CommandLine commandLine, AccessableObjects accessableObjects)
+        public static Value GetValueOfCommandLine(CommandLine commandLine, AccessableObjects accessableObjects)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -195,7 +195,7 @@
 
             if (correctVar.varDef.isAllType)
             {
-                Var value = GetVarOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), accessableObjects);
+                Var value = GetValueOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), accessableObjects);
                 correctVar.varDef.varType = value.varDef.varType;
                 correctVar.ObjectValue = value.ObjectValue;
                 return;
@@ -226,7 +226,7 @@
                 case "return":
                     if (commands.Count == 1) return new(new Var());
                     if (commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
-                    return new(GetVarOfCommandLine(new(commands.GetRange(1, commands.Count - 1), -1), accessableObjects));
+                    return new(GetValueOfCommandLine(new(commands.GetRange(1, commands.Count - 1), -1), accessableObjects));
 
                 case "true":
                     if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
@@ -249,10 +249,10 @@
 
                 case "if":
                     //Check if if statement usage is correct
-                    Var? returnVar = null;
+                    Value? returnVar = null;
                     if (commands.Count != 5 || commands[2].commandType != Command.CommandTypes.CodeContainer || commands[3].commandType != Command.CommandTypes.Statement || commands[3].commandText.ToLower() != "else" || commands[4].commandType != Command.CommandTypes.CodeContainer)
                         throw new Exception("Invalid return-type if statement; Correct usage:\nif <code container> else <code container>");
-                    if (GetVarOfCommandLine(new(new List<Command> { commands[1] }, -1), accessableObjects).GetBoolValue)
+                    if (GetValueOfCommandLine(new(new List<Command> { commands[1] }, -1), accessableObjects).GetBoolValue)
                         returnVar = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
                     else
                         returnVar = InterpretMain.InterpretNormalMode(commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);

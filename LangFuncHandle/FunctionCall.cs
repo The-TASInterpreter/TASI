@@ -193,7 +193,7 @@ namespace TASI
                     return namespaceInfo;
 
             if (exceptionAtNotFound)
-                throw new Exception($"The namespace \"{name}\" was not found.");
+                throw new CodeSyntaxException($"The namespace \"{name}\" was not found.");
             else
                 return null;
         }
@@ -203,7 +203,7 @@ namespace TASI
 
             string[] nameSplit = name.Split('.');
             if (nameSplit.Length < 2)
-                throw new Exception($"Can't find Function \"{name}\" because there is no Function in the location.");
+                throw new CodeSyntaxException($"Can't find Function \"{name}\" because there is no Function in the location.");
             NamespaceInfo? parentNamespace = FindNamespaceByName(nameSplit[0], parentNamespaces, exceptionAtNotFound);
             if (parentNamespace == null)
                 return null;
@@ -224,7 +224,7 @@ namespace TASI
                 if (currentFunction == null)
                 {
                     if (exceptionAtNotFound)
-                        throw new Exception($"Could not find function \"{name}\".");
+                        throw new CodeSyntaxException($"Could not find function \"{name}\".");
                     else
                         return null;
                 }
@@ -232,7 +232,7 @@ namespace TASI
             }
 
             if (currentNamespace != null)
-                if (!currentNamespace.accessableNamespaces.Contains(currentFunction.parentNamespace)) throw new Exception($"The function \"{currentFunction.functionLocation}\" can't be accessed in the \"{currentNamespace.Name}\" namespace, because the \"{currentFunction.parentNamespace.Name}\" namespace wasn't imported. ");
+                if (!currentNamespace.accessableNamespaces.Contains(currentFunction.parentNamespace)) throw new CodeSyntaxException($"The function \"{currentFunction.functionLocation}\" can't be accessed in the \"{currentNamespace.Name}\" namespace, because the \"{currentFunction.parentNamespace.Name}\" namespace wasn't imported. ");
 
             return currentFunction;
 
@@ -249,7 +249,7 @@ namespace TASI
             FunctionCallInputHelp? functionCallInputHelp = CheckIfFunctionCallHasValidArgTypesAndReturnCode(inputValues);
 
             if (functionCallInputHelp == null)
-                throw new Exception($"The function \"{callFunction.functionLocation}\" doesent support the provided input types. Use the syntax \"helpm <function call>;\"\nFor this function it would be: \"helpm [{callFunction.functionLocation}];\"");
+                throw new CodeSyntaxException($"The function \"{callFunction.functionLocation}\" doesent support the provided input types. Use the syntax \"helpm <function call>;\"\nFor this function it would be: \"helpm [{callFunction.functionLocation}];\"");
 
 
             if (callFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
@@ -284,7 +284,7 @@ namespace TASI
 
 
             if (functionReturnValue == null || ((Value.ConvertValueTypeToVarType(functionReturnValue.valueType) != callFunction.returnType && callFunction.returnType != VarConstruct.VarType.all)))
-                throw new Exception($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
+                throw new CodeSyntaxException($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
             return functionReturnValue;
             
             //throw new InternalInterpreterException("Internal: Only internal functions are implemented");

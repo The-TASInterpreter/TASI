@@ -11,7 +11,7 @@ namespace TASI
         public static void HandleCommand(List<Command> commands)
         {
             if (commands[0].commandType != Command.CommandTypes.Statement)
-                throw new Exception($"Invalid command type: {commands[0].commandType}\nIt is unclear weather this is an internal or user error.");
+                throw new CodeSyntaxException($"Invalid command type: {commands[0].commandType}\nIt is unclear weather this is an internal or user error.");
 
             switch (commands[0].commandText)
             {

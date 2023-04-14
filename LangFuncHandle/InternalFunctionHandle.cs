@@ -32,7 +32,7 @@
                     return null;
                 case "inf.defvar":
 
-                    if (!Enum.TryParse<Value.ValueType>(input[0].StringValue, true, out Value.ValueType varType)) throw new Exception($"The vartype \"{input[0].StringValue}\" doesn't exist.");
+                    if (!Enum.TryParse<Value.ValueType>(input[0].StringValue, true, out Value.ValueType varType)) throw new CodeSyntaxException($"The vartype \"{input[0].StringValue}\" doesn't exist.");
 
                     accessableObjects.accessableVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType)));
                     return null;

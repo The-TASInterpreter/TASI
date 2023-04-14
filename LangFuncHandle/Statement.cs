@@ -119,32 +119,32 @@ namespace TASI
                 case Command.CommandTypes.FunctionCall:
                     FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a function call
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
+                        throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
                     if ( functionCall.callFunction.returnType != Value.ConvertValueTypeToVarType(expectedType)) //Find out if function returns desired type
-                        throw new Exception($"The function {functionCall.callFunction.functionLocation} does not return the expected {expectedType} type.");
+                        throw new CodeSyntaxException($"The function {functionCall.callFunction.functionLocation} does not return the expected {expectedType} type.");
                     return functionCall.DoFunctionCall(accessableObjects);
 
                 case Command.CommandTypes.Calculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after alculation.");
+                        throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after alculation.");
                     Value numCalcRet = Calculation.DoCalculation(commandLine.commands[0], accessableObjects);
-                    if (numCalcRet.valueType != expectedType) throw new Exception($"The calculation does not return the expected {expectedType} type.");
+                    if (numCalcRet.valueType != expectedType) throw new CodeSyntaxException($"The calculation does not return the expected {expectedType} type.");
                     return numCalcRet;
 
                 case Command.CommandTypes.Statement:
                     Value returnStatementCall = ReturnStatement(commandLine.commands, accessableObjects);
                     if (returnStatementCall.valueType != expectedType)
-                        throw new Exception($"The ReturnStatement \"{commandLine.commands[0].commandText}\" does not return the expected {expectedType} value at all or in the given configuation.");
+                        throw new CodeSyntaxException($"The ReturnStatement \"{commandLine.commands[0].commandText}\" does not return the expected {expectedType} value at all or in the given configuation.");
                     return returnStatementCall;
 
                 case Command.CommandTypes.String:
-                    if (expectedType != Value.ValueType.@string) throw new Exception($"String is not the expected {expectedType} type.");
+                    if (expectedType != Value.ValueType.@string) throw new CodeSyntaxException($"String is not the expected {expectedType} type.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after calculation.");
+                        throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after calculation.");
                     return new(Value.ValueType.@string, commandLine.commands[0].commandText);
 
                 default:
-                    throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
+                    throw new CodeSyntaxException($"Unexpected type ({commandLine.commands[0].commandType})");
             }
         }
         public static Value GetValueOfCommandLine(CommandLine commandLine, AccessableObjects accessableObjects)
@@ -155,13 +155,13 @@ namespace TASI
                 case Command.CommandTypes.FunctionCall:
                     FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a function call
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
+                        throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
 
                     return functionCall.DoFunctionCall(accessableObjects);
 
                 case Command.CommandTypes.Calculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after calculation.");
+                        throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after calculation.");
                     Value numCalcRet = Calculation.DoCalculation(commandLine.commands[0], accessableObjects);
 
                     return numCalcRet;
@@ -172,11 +172,11 @@ namespace TASI
 
                 case Command.CommandTypes.String:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a string
-                        throw new Exception($"Unexpected {commandLine.commands[1].commandType} after calculation.");
+                        throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after calculation.");
                     return new(Value.ValueType.@string, commandLine.commands[0].commandText);
 
                 default:
-                    throw new Exception($"Unexpected type ({commandLine.commands[0].commandType})");
+                    throw new CodeSyntaxException($"Unexpected type ({commandLine.commands[0].commandType})");
             }
         }
 
@@ -196,7 +196,7 @@ namespace TASI
                     break;
                 }
             }
-            if (correctVar == null) throw new Exception($"The variable {commandLine.commands[1].commandText} cant be found.");
+            if (correctVar == null) throw new CodeSyntaxException($"The variable {commandLine.commands[1].commandText} cant be found.");
             correctVar.VarValue = GetValueOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), accessableObjects);
         }
         public static Var? FindVar(string name,  AccessableObjects accessableObjects, bool failAtNotFind = false)
@@ -210,7 +210,7 @@ namespace TASI
                 }
             }
             if (failAtNotFind)
-                throw new Exception($"The variable \"{name}\" wasn't found.");
+                throw new CodeSyntaxException($"The variable \"{name}\" wasn't found.");
             else
                 return null;
 
@@ -225,18 +225,18 @@ namespace TASI
             {
 
                 case "true":
-                    if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
+                    if (commands.Count != 1) throw new CodeSyntaxException($"Unexpected {commands[1].commandType}");
                     
                     return new(Value.ValueType.@bool, true);
                 case "false":
-                    if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
+                    if (commands.Count != 1) throw new CodeSyntaxException($"Unexpected {commands[1].commandType}");
                     return new(Value.ValueType.@bool, false);
                 case "new":
                     if (commands[1].commandType != Command.CommandTypes.Statement)
-                        throw new Exception($"Unexpected {commands[1].commandType} at argument 1 of new statement\nA statement would be expected at this point.");
+                        throw new CodeSyntaxException($"Unexpected {commands[1].commandType} at argument 1 of new statement\nA statement would be expected at this point.");
                     throw new NotImplementedException("Internal: New statement is not fully implemented yet");
                 case "void":
-                    if (commands.Count != 1) throw new Exception($"Unexpected {commands[1].commandType}");
+                    if (commands.Count != 1) throw new CodeSyntaxException($"Unexpected {commands[1].commandType}");
                     return new();
 
                 case "nl":
@@ -265,7 +265,7 @@ namespace TASI
                     else
                         throw new CodeSyntaxException("The return-type if statemtent didn't return anything");
                 case "linkable":
-                    if (commands.Count != 2 || commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("");
+                    if (commands.Count != 2 || commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("");
                     Var foundLinkableVar = FindVar(commands[1].commandText, accessableObjects, true) ?? throw new InternalInterpreterException("Found variable is null");
                     returnValueFromVar = new(foundLinkableVar.VarValue);
                     returnValueFromVar.comesFromVarValue = foundLinkableVar;
@@ -292,7 +292,7 @@ namespace TASI
                     //Var not found
 
 
-                    throw new Exception($"Unknown return statement \"{commands[0].commandText}\"");
+                    throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"");
             }
 
         }

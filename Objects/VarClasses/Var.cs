@@ -32,19 +32,19 @@ namespace TASI
                 switch (value.valueType)
                 {
                     case Value.ValueType.num:
-                        if (varConstruct.type != VarConstruct.VarType.num) throw new Exception($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
+                        if (varConstruct.type != VarConstruct.VarType.num) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
                         varValueHolder.value = value;
                         break;
                     case Value.ValueType.@bool:
-                        if (varConstruct.type != VarConstruct.VarType.@bool) throw new Exception($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
+                        if (varConstruct.type != VarConstruct.VarType.@bool) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
                         varValueHolder.value = value;
                         break;
                     case Value.ValueType.@string:
-                        if (varConstruct.type != VarConstruct.VarType.@string) throw new Exception($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
+                        if (varConstruct.type != VarConstruct.VarType.@string) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
                         varValueHolder.value = value;
                         break;
                     default:
-                        throw new Exception($"Internal: The {value.valueType}-type is not implemented.");
+                        throw new InternalInterpreterException($"Internal: The {value.valueType}-type is not implemented.");
                 }
             }
 

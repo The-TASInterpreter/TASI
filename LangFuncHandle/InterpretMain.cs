@@ -27,20 +27,20 @@
                     if (commandLine.commands.Count == 3) // Is link
                     {
                         if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
-                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
-                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new Exception($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
                         });
                         result.Add(new(varType, commandLine.commands[1].commandText.ToLower(), true));
                     }
                     else
                     {
                         if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
-                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
-                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new Exception($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
                         });
 
                         result.Add(new(varType, commandLine.commands[1].commandText.ToLower()));
@@ -66,10 +66,10 @@
             {
                 if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
                 if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                 result.ForEach(x =>
                 {
-                    if (x.name == commandLine.commands[1].commandText.ToLower()) throw new Exception($"A variable with the name {commandLine.commands[1].commandText.ToLower()}. Keep in mind, that variable names are not case sensitive.");
+                    if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()}. Keep in mind, that variable names are not case sensitive.");
                 });
 
                 result.Add(new(varType, commandLine.commands[1].commandText.ToLower()));
@@ -147,7 +147,7 @@
                                                 continue;
                                             }
                                         }
-                                        if (isEqu) throw new Exception($"The function \"{thisFunction.functionLocation}\" with the exact same input-types has already been defined.");
+                                        if (isEqu) throw new CodeSyntaxException($"The function \"{thisFunction.functionLocation}\" with the exact same input-types has already been defined.");
                                     }
                                     thisFunction.functionArguments.Add(functionInputVars);
                                 }
@@ -178,7 +178,7 @@
                                 }
                                 else
                                 {
-                                    if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new Exception($"The namespace \"{pathLocation} has already been imported.");
+                                    if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new CodeSyntaxException($"The namespace \"{pathLocation} has already been imported.");
                                     thisNamespace.accessableNamespaces.Add(Global.Namespaces[Global.allLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
                                     alreadyImportedNamespaces.Add(pathLocation);
                                 }
@@ -187,7 +187,7 @@
 
                                 break;
 
-                            default: throw new Exception($"\"{commandLine.commands[0].commandText}\" isn't a recognized statement in header interpret mode.");
+                            default: throw new CodeSyntaxException($"\"{commandLine.commands[0].commandText}\" isn't a recognized statement in header interpret mode.");
 
                         }
 

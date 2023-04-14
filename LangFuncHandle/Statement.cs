@@ -9,7 +9,7 @@
 
         public static Value? StaticStatement(CommandLine commandLine, AccessableObjects accessableObjects)
         {
-            Value returnValue = new();
+            Value? returnValue = new();
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
                 throw new Exception("Internal: StaticStatements must start with a Statement");
 
@@ -44,11 +44,11 @@
                     while (GetValueOfCommandLine(checkStatement, accessableObjects).GetBoolValue)
                     {
                         returnValue = InterpretMain.InterpretNormalMode(code, accessableObjects);
-                        if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
+                        if (returnValue != null) return returnValue;
                     }
 
 
-                    return new();
+                    return null;
                 case "if":
                     if (commandLine.commands.Count < 3) throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                     if (commandLine.commands[2].commandType != Command.CommandTypes.CodeContainer)
@@ -59,7 +59,7 @@
                         if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
-                            if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
+                            if (returnValue != null) return returnValue;
                         }
 
                     }
@@ -72,12 +72,12 @@
                         if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
-                            if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
+                            if (returnValue != null) return returnValue;
                         }
                         else
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
-                            if (returnValue.varDef.varType == VarConstruct.EvarType.@return) return returnValue;
+                            if (returnValue != null) return returnValue;
                         }
 
 
@@ -106,7 +106,7 @@
                     throw new Exception($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
             }
         }
-        public static Var GetVarOfCommandLine(CommandLine commandLine, VarConstruct.EvarType expectedType, AccessableObjects accessableObjects)
+        public static Value GetValueOfCommandLine(CommandLine commandLine, VarConstruct.EvarType expectedType, AccessableObjects accessableObjects)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided

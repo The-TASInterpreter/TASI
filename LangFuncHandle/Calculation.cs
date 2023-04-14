@@ -1,11 +1,10 @@
-﻿using TASI.Objects.VarClasses;
-using static TASI.Command;
+﻿using static TASI.Command;
 
 namespace TASI
 {
     public class Calculation
     {
-        public static Var DoCalculation(Command command, AccessableObjects accessableObjects)
+        public static Value DoCalculation(Command command, AccessableObjects accessableObjects)
         {
             if (command.commandType != Command.CommandTypes.Calculation) throw new Exception("Internal: Do calculation only works with num calculation tokens");
             return (command.calculation ?? throw new Exception("Internal: Calculation was not parsed.")).GetValue(accessableObjects);
@@ -48,7 +47,7 @@ namespace TASI
             return;
         }
 
-        public Var GetValue(AccessableObjects accessableObjects)
+        public Value GetValue(AccessableObjects accessableObjects)
         {
             switch (type)
             {
@@ -57,7 +56,7 @@ namespace TASI
                 case Type.@operator: throw new Exception("Internal: Can't get the value of an operator.");
                 case Type.function: return (functionCall ?? throw new Exception("Internal: function call is null")).DoFunctionCall(accessableObjects);
                 case Type.calculation:
-                    List<Var> values = new List<Var>();
+                    List<Value> values = new();
                     string currentOperator = "";
 
                     foreach (CalculationType calculationType in subValues ?? throw new Exception("Internal: sub values is null"))

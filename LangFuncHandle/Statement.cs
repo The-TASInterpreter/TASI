@@ -16,6 +16,8 @@ namespace TASI
 
             switch (commandLine.commands[0].commandText.ToLower())
             {
+
+
                 case "return":
                     if (commandLine.commands.Count == 1) return new();
                     if (commandLine.commands.Count < 2) throw new CodeSyntaxException("Invalid return statement usage; Right usage: return <value>;");
@@ -101,8 +103,13 @@ namespace TASI
                     Help.ListNamespaces(Global.Namespaces);
                     return null;
                 case "link":
-                    if (commandLine.commands.Count != 3 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of link return statement. Correct usage:\nlink <statement: variable>");
+                    if (commandLine.commands.Count != 3 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of link return statement. Correct usage:\nlink <statement: variable> <statement: variable linking to>;");
                     FindVar(commandLine.commands[1].commandText, accessableObjects, true).varValueHolder = FindVar(commandLine.commands[2].commandText, accessableObjects, true).varValueHolder;
+                    return null;
+                case "unlink":
+                    if (commandLine.commands.Count != 2 || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of unlink return statement. Correct usage:\nlink <statement: variable to unlink>");
+                    Var foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
+                    foundVar.varValueHolder = new(new(foundVar.varValueHolder.value.valueType, foundVar.varValueHolder.value.ObjectValue));
                     return null;
 
 

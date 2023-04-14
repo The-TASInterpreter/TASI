@@ -32,7 +32,7 @@
                         {
                             if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
                         });
-                        result.Add(new(varType, commandLine.commands[1].commandText.ToLower(), true));
+                        result.Add(new(varType, commandLine.commands[2].commandText.ToLower(), true));
                     }
                     else
                     {

@@ -8,7 +8,7 @@ namespace TASI
         public bool? boolValue;
         public ValueType valueType;
         public bool isReturnValue;
-
+        public Var? comesFromVarValue = null;
 
         public string StringValue
         {

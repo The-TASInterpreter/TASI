@@ -17,25 +17,37 @@
 
                 if (statementMode)
                 {
-                    if (command.commandType == Command.CommandTypes.EndCommand)
-                    {
-                        if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
-                        result.ForEach(x =>
-                        {
-                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new Exception($"A variable with the name {commandLine.commands[1].commandText.ToLower()}. Keep in mind, that variable names are not case sensitive.");
-                        });
-
-                        result.Add(new(varType, commandLine.commands[1].commandText.ToLower()));
-                        statementMode = false;
-                        continue;
-                    }
-                    else
+                    if (command.commandType != Command.CommandTypes.EndCommand)
                     {
                         commandLine.commands.Add(command);
                         continue;
                     }
+                    //Statenent is complete
+                    if (commandLine.commands.Count != 2 && (commandLine.commands.Count != 3 && commandLine.commands[0].commandType == Command.CommandTypes.Statement && commandLine.commands[0].commandText == "link")) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
+                    if (commandLine.commands.Count == 3) // Is link
+                    {
+                        if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
+                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        result.ForEach(x =>
+                        {
+                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new Exception($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                        });
+                        result.Add(new(varType, commandLine.commands[1].commandText.ToLower(), true));
+                    }
+                    else
+                    {
+                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
+                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        result.ForEach(x =>
+                        {
+                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new Exception($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                        });
+
+                        result.Add(new(varType, commandLine.commands[1].commandText.ToLower()));
+                        
+                    }
+                    statementMode = false;
+                    continue;
                 }
 
 

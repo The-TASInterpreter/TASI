@@ -1,13 +1,5 @@
 ﻿//THIS INTERPRETER IS IN A VERY EARLY STATE!
-// E.U.0001: Still in string mode even at end of line (Try to add a "\"")
-// E.U.0002: Still in function mode even at end of line (Try to add a "]")
-// E.U.0003: Still in Calculation mode even at end of line (Try to add a ")")
-// E.U.0004: Invalid Command.CommandType at function Statement part 2
-// E.U.0005: Invalid Command.CommandType at function Statement part 3
-// E.U.0006: Invalid CodeContainer direction at function Statement part 3
-// E.U.0007: Still in function mode even at end of file/parent function (Try to add a "}")
-// E.U.0008: Can't create a variable with the type void
-// E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
+
 
 using System.Diagnostics;
 using static TASI.Command;

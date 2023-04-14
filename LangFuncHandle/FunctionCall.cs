@@ -167,7 +167,7 @@ namespace TASI
                     matching = true;
                     for (int i = 0; i < inputVars.Count; i++)
                     {
-                        if (functionInputType[i].type != Value.ConvertValueTypeToVarType( inputVars[i].valueType) && functionInputType[i].type != VarConstruct.VarType.all)
+                        if ((functionInputType[i].type != Value.ConvertValueTypeToVarType( inputVars[i].valueType) && functionInputType[i].type != VarConstruct.VarType.all) || (inputVars[i].comesFromVarValue == null && functionInputType[i].isLink))
                         {
                             matching = false;
                             break;
@@ -273,6 +273,10 @@ namespace TASI
                     functionCallInput.Add(new(new(VarConstruct.VarType.all, functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
                 else
                     functionCallInput.Add(new(new(Value.ConvertValueTypeToVarType(inputValues[i].valueType), functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
+                if (inputValues[i].comesFromVarValue != null)
+                {
+                    functionCallInput.Last().varValueHolder = inputValues[i].comesFromVarValue.varValueHolder;
+                }
             }
 
             Value? functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, callFunction.parentNamespace));

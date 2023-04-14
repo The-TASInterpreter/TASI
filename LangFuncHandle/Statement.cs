@@ -217,6 +217,7 @@ namespace TASI
         }
         public static Value ReturnStatement(List<Command> commands, AccessableObjects accessableObjects)
         {
+            Value returnValueFromVar;
             if (commands[0].commandType != Command.CommandTypes.Statement)
                 throw new InternalInterpreterException("Internal: ReturnStatements must start with a Statement");
 
@@ -263,7 +264,13 @@ namespace TASI
                         return returnValue;
                     else
                         throw new CodeSyntaxException("The return-type if statemtent didn't return anything");
-                
+                case "linkable":
+                    if (commands.Count != 2 || commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("");
+                    Var foundLinkableVar = FindVar(commands[1].commandText, accessableObjects, true) ?? throw new InternalInterpreterException("Found variable is null");
+                    returnValueFromVar = new(foundLinkableVar.VarValue);
+                    returnValueFromVar.comesFromVarValue = foundLinkableVar;
+                    return returnValueFromVar;
+                        
 
 
 
@@ -272,12 +279,16 @@ namespace TASI
 
                 default:
                     // Is probably var
-
+                    
                     if (commands.Count != 1) throw new CodeSyntaxException("Unexpected syntax after varname.");
                     commands[0].commandText = commands[0].commandText.ToLower();
                     foreach (Var var in accessableObjects.accessableVars)
                         if (var.varConstruct.name == commands[0].commandText)
+                        {
+
                             return new(var.VarValue);
+                        }
+                            
                     //Var not found
 
 

@@ -82,7 +82,7 @@ Here is a list of all statements in the normal interpret mode:
 
 - set:
 	With this statement you can set a variable to a value. There is one type of the using for the set statement:
-	1. ```set <statement: variable name> <value>;```
+	- ```set <statement: variable name> <value>;```
 	Example:
 ```
 set variable "string value";
@@ -92,7 +92,7 @@ set toastAmount "None, cause I ate it all";
 ```
 - while:
 	The while statement can repeat the code inside a code container (executed in normal mode), while a specific condition is true. If you use the return statement inside a while loop, it will return, what the return statement returned. Here is the usage for this statement:
-	1. ```while <bool: condition> {<code to execute>};```
+	- ```while <bool: condition> {<code to execute>};```
 	Note that the while loop is a statement like any other, therefore it needs an end command at the end.
 	Example:
 ```
@@ -103,11 +103,26 @@ while true
 ```
 - if:
 	The if statement is meant to execute a code container (in normal mode), if some condition is true, if this condition is false, it can otherwhise execute another code container, but this is optional. If you use the return statement inside an if statement, it will return, what the return statement returned. The if statement has two different types of usage:
-		1. ```if <bool: value> <code container>; # Will execute code container only, if value is true```
-		2. ```if <bool: value> <code container1> else <code container2>; # Will execute code container 1 if value is true, otherwise it will execute code container 2```
+		- ```if <bool: value> <code container>; # Will execute code container only, if value is true```
+		- ```if <bool: value> <code container1> else <code container2>; # Will execute code container 1 if value is true, otherwise it will execute code container 2```
 
 These were all meaningfull normal statements (till now) there are still some more statements for helping with methods and namespaces: helpm, listm and rootm. But instead of explaining them, I encourage you to try them out yourself and let TASI tell you more about them. Just don't forget the end command!
 Most statements will, when they need a value, only accept single-line return-statements. You can use the following to get aroung that limitation: ```($ <multi line return statement>)```
+
+- link
+	The link statement is used to link the value of a variable to the value of another one. You can also link multible variables to the same value. Here's the usage:
+		- ```link <statement: variable1> <statement: variable2>; ```
+	Example:
+```
+[Inf.DefVar:"string","stringValue1"]
+[Inf.DefVar:"string","StringValue2"] #Create both variables.
+link stringValue1 stringValue2; #Link the value of both variables (the value of the first one will be discarded.)
+set stringValue2 "Hello World!"; #Set both variables to "Hello World!"
+[Console.WriteLine:stringValue1] #This should now write Hello World! to the console.
+```
+- unlink
+	The unlink statement can unlink two previusly linked variables. Both will keep their previusly shared value, but it will be uncoppled. Here's the usage:
+		- ```unlink <statement: variable to unlink>;```
 
 ### Return statements:
 
@@ -143,6 +158,15 @@ set variable ($
 		Example:
 ``` 
 set variable ($ do { set variable "value"; return "Different and final value";}); 
+```
+
+- linkable:
+	The linkable return-statement is a weird one. Basically, it just makes a variable usable with function calls, that accept links as input.
+	Example:
+```
+[Inf.DefVar:"num","numVal"]
+[Example.SetValueTo5:linkable numVal] #Pass numVal as a link to the function, so that any change that happens to the value, that the function is using, is also happening to the numVal variable.
+[Console.WriteLine:numVal] #This should display 5
 ```
 
 **VARIABLES ARE RETURN-STATEMENTS TOO!!! It's very important to keep that in mind!**
@@ -283,6 +307,10 @@ set seed [HeaderExampleLibrary.ReturnRandomValue:seed];
 This is just another interpreter mode just like header mode, just with some different rules. Its only purpose is to define a list of variables and it only has one statement type. The statement is built up like this:
 ```
 <statement var-type> <var name>;
+```
+or like this:
+```
+link <statement var-type> <var name>; #This will require, that the input is a link.
 ```
 Here are some examples:
 ```

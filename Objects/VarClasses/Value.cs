@@ -32,6 +32,22 @@
             }
         }
 
+        public static VarConstruct.VarType ConvertValueTypeToVarType(ValueType valueType)
+        {
+            switch (valueType)
+            {
+                case ValueType.num:
+                    return VarConstruct.VarType.num;
+                case ValueType.@bool:
+                    return VarConstruct.VarType.@bool;
+                case ValueType.@string:
+                    return VarConstruct.VarType.@string;
+                case ValueType.@void:
+                    return VarConstruct.VarType.@void;
+                    default: throw new Exception("Internal: Unimplemented Value Type.");
+            }
+        }
+
         public Value(Value value)
         {
             valueType = value.valueType;

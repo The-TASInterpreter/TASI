@@ -167,7 +167,7 @@ namespace TASI
                     matching = true;
                     for (int i = 0; i < inputVars.Count; i++)
                     {
-                        if (functionInputType[i].varType != inputVars[i].varDef.varType && !functionInputType[i].isAllType)
+                        if (functionInputType[i].type != inputVars[i].varConstruct.type && functionInputType[i].type != VarConstruct.VarType.all)
                         {
                             matching = false;
                             break;
@@ -269,7 +269,8 @@ namespace TASI
             for (int i = 0; i < inputValues.Count; i++)
             {
                 if (functionCallInputHelp.inputVarType[i].isAllType)
-                    functionCallInput.Add(new(new VarDef(inputValues[i].varDef.varType, functionCallInputHelp.inputVarType[i].varName), false, this.inputValues[i].ObjectValue));
+                    //new VarDef(inputValues[i].varDef.varType, functionCallInputHelp.inputVarType[i].varName), this.inputValues[i].ObjectValue
+                    functionCallInput.Add(new(new(inputValues[i].valueType, functionCallInputHelp.inputVarType[i].name), new()));
                 else
                     functionCallInput.Add(new(new VarDef(functionCallInputHelp.inputVarType[i].varType, functionCallInputHelp.inputVarType[i].varName), false, this.inputValues[i].ObjectValue));
             }

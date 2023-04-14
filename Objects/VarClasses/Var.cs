@@ -7,8 +7,11 @@ namespace TASI
         public VarConstruct varConstruct;
         private Value varValue;
 
-
-
+        public Var(VarConstruct varConstruct, Value varValue)
+        {
+            this.varConstruct = varConstruct;
+            VarValue = varValue;
+        }
 
         public Value VarValue
         {

@@ -10,6 +10,7 @@
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
 
 using System.Diagnostics;
+using TASI.Exceptions;
 using static TASI.Command;
 
 namespace TASI
@@ -93,14 +94,44 @@ namespace TASI
                 Console.ReadKey(false);
 
             }
-            catch (NotImplementedException e)
+            catch (Exception ex)
             {
 
                 Console.Clear();
-                Console.WriteLine("There was an error interpreting your code:\n");
-                Console.WriteLine(e.Message);
-                if (Global.currentLine != -1)
-                    Console.WriteLine($"\nThe error happened on line: {Global.currentLine + 1}");
+
+                switch (ex)
+                {
+                    case CodeSyntaxException:
+                        if (DateTime.Now.Month == 4 && DateTime.Now.Day == 1 && new Random().Next(0, 20) == 1) //April fools
+                        {
+                            Console.WriteLine("There was a syntathical error in your code. But it can't be your fault, it's probably just an interpreter error.");
+                            Console.WriteLine("April fools, it's your fault :P");
+                            Console.WriteLine("--------------");
+                        }
+                        Console.WriteLine("There was a syntathical error in your code.");
+                        if (Global.currentLine != -1)
+                            Console.WriteLine($"\nThe error happened on line: {Global.currentLine + 1}");
+                        Console.WriteLine("The error message is:");
+                        Console.WriteLine(ex.Message);
+                        break;
+                    case InternalInterpreterException:
+                        Console.WriteLine("There was an internal error in the compiler.");
+                        Console.WriteLine("Please report this error on github and please include the code and this error message and (if available) you inputs, that lead to this error. You can create a new issue, reporting the error here:\nhttps://github.com/Ekischleki/TASI/issues/new");
+                        if (Global.currentLine != -1)
+                            Console.WriteLine($"\nThe error happened on line: {Global.currentLine + 1}");
+                        Console.WriteLine("The error message is:");
+                        Console.WriteLine(ex.Message);
+                        Console.WriteLine("Here is the stack trace:");
+                        Console.WriteLine(ex.StackTrace);
+                        break;
+                    case RuntimeCodeExecutionFailException runtimeException:
+                        Console.WriteLine("The code threw a fail, because it couldn't take it anymore or smt...");
+                        Console.WriteLine($"The fail type is:\n{runtimeException.exceptionType}");
+                        Console.WriteLine($"The fail message is:\n{runtimeException.Message}");
+                        break;
+                }
+
+
                 Console.ReadKey();
 
 

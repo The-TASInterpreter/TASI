@@ -39,7 +39,7 @@
                 case "convert.tonum":
                     if (!double.TryParse(input[0].StringValue, out double result))
                         if (input[1].GetBoolValue)
-                            throw new Exception("Can't convert string in current format to double.");
+                            throw new CodeSyntaxException("Can't convert string in current format to double.");
                         else
                             return new(Value.ValueType.num, double.NaN);
 
@@ -49,7 +49,7 @@
 
 
 
-                default: throw new Exception("Internal: No definition for " + funcName);
+                default: throw new InternalInterpreterException("Internal: No definition for " + funcName);
             }
 
         }

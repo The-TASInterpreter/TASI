@@ -1,4 +1,5 @@
-﻿namespace TASI
+﻿
+namespace TASI
 {
     public class Value
     {
@@ -13,7 +14,7 @@
         {
             get
             {
-                return stringValue ?? throw new Exception("Internal: string value is null");
+                return stringValue ?? throw new InternalInterpreterException("Internal: string value is null");
             }
         }
 
@@ -24,16 +25,16 @@
                 switch (valueType)
                 {
                     case ValueType.num:
-                        return numValue ?? throw new Exception("Internal: num value is null.");
+                        return numValue ?? throw new InternalInterpreterException("Internal: num value is null.");
                     case ValueType.@bool:
-                        switch (boolValue ?? throw new Exception("Internal: bool value is null."))
+                        switch (boolValue ?? throw new InternalInterpreterException("Internal: bool value is null."))
                         {
                             case true:
                                 return 1;
                             case false:
                                 return 0;
                         }
-                    default: throw new Exception($"Internal: Can't convert a {valueType} to a numeric type.");
+                    default: throw new InternalInterpreterException($"Internal: Can't convert a {valueType} to a numeric type.");
 
                 }
             }
@@ -51,7 +52,7 @@
                     return VarConstruct.VarType.@string;
                 case ValueType.@void:
                     return VarConstruct.VarType.@void;
-                default: throw new Exception("Internal: Unimplemented Value Type.");
+                default: throw new InternalInterpreterException("Internal: Unimplemented Value Type.");
             }
         }
 
@@ -115,24 +116,24 @@
                 {
                     case ValueType.num:
                         if (numValue == null)
-                            throw new Exception($"The value \"{valueType}\" can't be used, because it is not defined.");
+                            throw new CodeSyntaxException($"The value \"{valueType}\" can't be used, because it is not defined.");
                         if (numValue == 1) return true;
                         if (numValue == 0) return false;
-                        throw new Exception($"The num value \"{valueType}\" can't be converted to a bool, because it is neither 1 or 0.");
+                        throw new CodeSyntaxException($"The num value \"{valueType}\" can't be converted to a bool, because it is neither 1 or 0.");
                     case ValueType.@bool:
-                        return boolValue ?? throw new Exception("Internal: bool value is null.");
+                        return boolValue ?? throw new InternalInterpreterException("Internal: bool value is null.");
 
 
 
                     case ValueType.@string:
                         if (stringValue == null)
-                            throw new Exception($"The value \"{valueType}\" can't be used, because it is not defined.");
+                            throw new CodeSyntaxException($"The value \"{valueType}\" can't be used, because it is not defined.");
                         if (stringValue == "1" || stringValue == "true") return true;
                         if (stringValue == "0" || stringValue == "false") return false;
-                        throw new Exception($"The string value \"{valueType}\" can't be converted to a bool, because it is neither 1, 0, true or false.");
+                        throw new CodeSyntaxException($"The string value \"{valueType}\" can't be converted to a bool, because it is neither 1, 0, true or false.");
 
                     default:
-                        throw new Exception($"The value type {valueType} can't be converted to a bool.");
+                        throw new CodeSyntaxException($"The value type {valueType} can't be converted to a bool.");
 
 
                 }
@@ -147,15 +148,15 @@
                 switch (valueType)
                 {
                     case ValueType.num:
-                        return numValue ?? throw new Exception("Internal: num value of num-type value was null.");
+                        return numValue ?? throw new InternalInterpreterException("Internal: num value of num-type value was null.");
                     case ValueType.@string:
-                        return stringValue ?? throw new Exception("Internal: string value of string-type value was null.");
+                        return stringValue ?? throw new InternalInterpreterException("Internal: string value of string-type value was null.");
                     case ValueType.@bool:
-                        return boolValue ?? throw new Exception("Internal: bool value of bool-type value was null.");
+                        return boolValue ?? throw new InternalInterpreterException("Internal: bool value of bool-type value was null.");
                     case ValueType.@void:
                         return "void";
                     default:
-                        throw new Exception("Internal: Unimplemented value type.");
+                        throw new InternalInterpreterException("Internal: Unimplemented value type.");
 
                 }
             }
@@ -173,7 +174,7 @@
                         boolValue = (bool)value;
                         break;
                     default:
-                        throw new Exception("Internal: Unimplemented value type.");
+                        throw new InternalInterpreterException("Internal: Unimplemented value type.");
                 }
             }
         }

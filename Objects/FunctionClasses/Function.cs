@@ -59,9 +59,9 @@
                 if (!checkSubPath.isSubfunction)
                     return parentNamespace.Name + "." + result;
 
-                checkSubPath = checkSubPath.parentFunction ?? throw new Exception("Internal: Parent function of current function is null for some reason.");
+                checkSubPath = checkSubPath.parentFunction ?? throw new InternalInterpreterException("Internal: Parent function of current function is null for some reason.");
             } while (result.Length < 1024);
-            throw new Exception("To large subfunction-function name lenght. I could easily make the max lenght bigger, but I won't. Haha!");
+            throw new CodeSyntaxException("To large subfunction-function name lenght. I could easily make the max lenght bigger, but I won't. Haha!");
         }
 
 

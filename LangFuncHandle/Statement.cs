@@ -1,4 +1,5 @@
-﻿namespace TASI
+﻿
+namespace TASI
 {
 
 
@@ -11,13 +12,13 @@
         {
             Value? returnValue = new();
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
-                throw new Exception("Internal: StaticStatements must start with a Statement");
+                throw new InternalInterpreterException("Internal: StaticStatements must start with a Statement");
 
             switch (commandLine.commands[0].commandText.ToLower())
             {
                 case "return":
                     if (commandLine.commands.Count == 1) return new();
-                    if (commandLine.commands.Count < 2) throw new Exception("Invalid return statement usage; Right usage: return <value>;");
+                    if (commandLine.commands.Count < 2) throw new CodeSyntaxException("Invalid return statement usage; Right usage: return <value>;");
                     return new(GetValueOfCommandLine(new(commandLine.commands.GetRange(1, commandLine.commands.Count - 1), -1), accessableObjects));
 
                 case "set":
@@ -34,12 +35,12 @@
                     }
                     if (commandLine.commands.Count != checkStatement.commands.Count + 2)
                         if (commandLine.commands.Count > checkStatement.commands.Count + 2)
-                            throw new Exception("Missing statement (code container)");
+                            throw new CodeSyntaxException("Missing statement (code container)");
                         else
-                            throw new Exception($"Unexpected {commandLine.commands[checkStatement.commands.Count + 1].commandType} in while loop.");
+                            throw new CodeSyntaxException($"Unexpected {commandLine.commands[checkStatement.commands.Count + 1].commandType} in while loop.");
                     if (commandLine.commands[checkStatement.commands.Count + 1].commandType != Command.CommandTypes.CodeContainer)
-                        throw new Exception("Invalid stuff in while loop I hate writeing these messages pls kill me");
-                    List<Command> code = commandLine.commands[checkStatement.commands.Count + 1].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list.");
+                        throw new CodeSyntaxException("Invalid stuff in while loop I hate writeing these messages pls kill me");
+                    List<Command> code = commandLine.commands[checkStatement.commands.Count + 1].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list.");
 
                     while (GetValueOfCommandLine(checkStatement, accessableObjects).GetBoolValue)
                     {
@@ -50,15 +51,15 @@
 
                     return null;
                 case "if":
-                    if (commandLine.commands.Count < 3) throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
+                    if (commandLine.commands.Count < 3) throw new CodeSyntaxException("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                     if (commandLine.commands[2].commandType != Command.CommandTypes.CodeContainer)
-                        throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
+                        throw new CodeSyntaxException("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
 
                     if (commandLine.commands.Count == 3)
                     {
                         if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
                         {
-                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
+                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue != null) return returnValue;
                         }
 
@@ -66,17 +67,17 @@
                     else if (commandLine.commands.Count == 5)
                     {
                         if (commandLine.commands[3].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandText != "else")
-                            throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
+                            throw new CodeSyntaxException("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                         if (commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer)
-                            throw new Exception("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
+                            throw new CodeSyntaxException("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                         if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
                         {
-                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
+                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue != null) return returnValue;
                         }
                         else
                         {
-                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
+                            returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue != null) return returnValue;
                         }
 
@@ -84,30 +85,30 @@
                     }
                     return null;
                 case "helpm":
-                    if (commandLine.commands.Count != 2) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
-                    if (commandLine.commands[1].commandType != Command.CommandTypes.FunctionCall) throw new Exception("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
-                    FunctionCall helpCall = commandLine.commands[1].functionCall ?? throw new Exception("Internal: function call was not converted to a function call.");
+                    if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
+                    if (commandLine.commands[1].commandType != Command.CommandTypes.FunctionCall) throw new CodeSyntaxException("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
+                    FunctionCall helpCall = commandLine.commands[1].functionCall ?? throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
                     Help.ListFunctionArguments(helpCall.callFunction);
                     return null;
                 case "listm":
-                    if (commandLine.commands.Count != 2) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
-                    if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
+                    if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
+                    if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
                     Help.ListLocation(commandLine.commands[1].commandText);
                     return null;
                 case "rootm":
-                    if (commandLine.commands.Count != 1) throw new Exception("Invalid rootm statement syntax. Example for right syntax:\nhelpm; (It's that simple)");
+                    if (commandLine.commands.Count != 1) throw new CodeSyntaxException("Invalid rootm statement syntax. Example for right syntax:\nhelpm; (It's that simple)");
                     Console.WriteLine("All registered namespaces are:");
                     Help.ListNamespaces(Global.Namespaces);
                     return null;
                 case "link":
-                    if (commandLine.commands.Count != 3 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid use of link return statement. Correct usage:\nlink <statement: variable>");
+                    if (commandLine.commands.Count != 3 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of link return statement. Correct usage:\nlink <statement: variable>");
                     FindVar(commandLine.commands[1].commandText, accessableObjects, true).varValueHolder = FindVar(commandLine.commands[2].commandText, accessableObjects, true).varValueHolder;
                     return null;
 
 
 
                 default:
-                    throw new Exception($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
+                    throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
             }
         }
         public static Value GetValueOfCommandLine(CommandLine commandLine, Value.ValueType expectedType, AccessableObjects accessableObjects)
@@ -116,7 +117,7 @@
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
                 case Command.CommandTypes.FunctionCall:
-                    FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new Exception("Internal: function call was not converted to a function call.");
+                    FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a function call
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
                     if ( functionCall.callFunction.returnType != Value.ConvertValueTypeToVarType(expectedType)) //Find out if function returns desired type
@@ -152,7 +153,7 @@
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
                 case Command.CommandTypes.FunctionCall:
-                    FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new Exception("Internal: function call was not converted to a function call.");
+                    FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a function call
                         throw new Exception($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
 
@@ -182,8 +183,8 @@
 
         private static void StaticStatementSet(CommandLine commandLine, AccessableObjects accessableObjects)
         {
-            if (commandLine.commands.Count < 3) throw new Exception("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
-            if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
+            if (commandLine.commands.Count < 3) throw new CodeSyntaxException("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
+            if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
 
             Var? correctVar = null;
             commandLine.commands[1].commandText = commandLine.commands[1].commandText.ToLower();
@@ -217,7 +218,7 @@
         public static Value ReturnStatement(List<Command> commands, AccessableObjects accessableObjects)
         {
             if (commands[0].commandType != Command.CommandTypes.Statement)
-                throw new Exception("Internal: ReturnStatements must start with a Statement");
+                throw new InternalInterpreterException("Internal: ReturnStatements must start with a Statement");
 
             switch (commands[0].commandText)
             {
@@ -246,22 +247,22 @@
                     //Check if if statement usage is correct
                     Value? returnValue = null;
                     if (commands.Count != 5 || commands[2].commandType != Command.CommandTypes.CodeContainer || commands[3].commandType != Command.CommandTypes.Statement || commands[3].commandText.ToLower() != "else" || commands[4].commandType != Command.CommandTypes.CodeContainer)
-                        throw new Exception("Invalid return-type if statement; Correct usage:\nif <code container> else <code container>");
+                        throw new CodeSyntaxException("Invalid return-type if statement; Correct usage:\nif <code container> else <code container>");
                     if (GetValueOfCommandLine(new(new List<Command> { commands[1] }, -1), accessableObjects).GetBoolValue)
-                        returnValue = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
+                        returnValue = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                     else
-                        returnValue = InterpretMain.InterpretNormalMode(commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
+                        returnValue = InterpretMain.InterpretNormalMode(commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                     if (returnValue != null)
                         return returnValue;
                     else
-                        throw new Exception("The return-type if statemtent didn't return anything");
+                        throw new CodeSyntaxException("The return-type if statemtent didn't return anything");
                 case "do":
-                    if (commands.Count != 2 || commands[1].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of do return-statement. Correct usage:\ndo <code container>");
-                    returnValue = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new Exception("Internal: Code container was not converted to a command list."), accessableObjects);
+                    if (commands.Count != 2 || commands[1].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of do return-statement. Correct usage:\ndo <code container>");
+                    returnValue = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                     if (returnValue != null)
                         return returnValue;
                     else
-                        throw new Exception("The return-type if statemtent didn't return anything");
+                        throw new CodeSyntaxException("The return-type if statemtent didn't return anything");
                 
 
 
@@ -272,7 +273,7 @@
                 default:
                     // Is probably var
 
-                    if (commands.Count != 1) throw new Exception("Unexpected syntax after varname.");
+                    if (commands.Count != 1) throw new CodeSyntaxException("Unexpected syntax after varname.");
                     commands[0].commandText = commands[0].commandText.ToLower();
                     foreach (Var var in accessableObjects.accessableVars)
                         if (var.varConstruct.name == commands[0].commandText)

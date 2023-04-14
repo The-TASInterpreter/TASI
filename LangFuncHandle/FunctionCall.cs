@@ -57,7 +57,7 @@ namespace TASI
                     if (c == ':')
                     {
                         if (functionName == "")
-                            throw new Exception("Function call can't have an empty function path.");
+                            throw new CodeSyntaxException("Function call can't have an empty function path.");
                         doingName = false;
                         continue;
                     }
@@ -92,7 +92,7 @@ namespace TASI
                         case ']':
                             squareDeph -= 1;
                             if (squareDeph < 0)
-                                throw new Exception("Unexpected ']'");
+                                throw new CodeSyntaxException("Unexpected ']'");
                             break;
                         case '{':
                             braceDeph += 1;
@@ -100,13 +100,13 @@ namespace TASI
                         case '}':
                             braceDeph -= 1;
                             if (braceDeph < 0)
-                                throw new Exception("Unexpected '}'");
+                                throw new CodeSyntaxException("Unexpected '}'");
                             break;
                         case ',':
                             if (braceDeph == 0 && squareDeph == 0 && !inString) // Only check for base layer commas
                             {
                                 if (currentArgument.Replace(" ", "") == "") // If argument minus Space is nothing
-                                    throw new Exception("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
+                                    throw new CodeSyntaxException("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
                                 functionArguments.Add(currentArgument);
                                 currentArgument = "";
                                 continue;
@@ -119,14 +119,14 @@ namespace TASI
             }
             //Check if syntax are valid
             if (inString)
-                throw new Exception("Expected \"");
+                throw new CodeSyntaxException("Expected \"");
             if (braceDeph != 0)
-                throw new Exception("Expected }");
+                throw new CodeSyntaxException("Expected }");
             if (squareDeph != 0)
-                throw new Exception("Expected ]");
+                throw new CodeSyntaxException("Expected ]");
 
             if (currentArgument.Replace(" ", "") == "" && functionArguments.Count != 0) // If argument minus Space is nothing
-                throw new Exception("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
+                throw new CodeSyntaxException("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
             if (functionArguments.Count != 0 || (currentArgument.Replace(" ", "") != ""))
                 functionArguments.Add(currentArgument);
             argumentCommands = new(functionArguments.Count);
@@ -283,7 +283,7 @@ namespace TASI
                 throw new Exception($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
             return functionReturnValue;
             
-            //throw new Exception("Internal: Only internal functions are implemented");
+            //throw new InternalInterpreterException("Internal: Only internal functions are implemented");
         }
 
     }

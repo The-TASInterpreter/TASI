@@ -10,7 +10,6 @@
 // E.U 0009: Can't create an array with the variable type "Void". Will that even be possible? Idk!
 
 using System.Diagnostics;
-using TASI.Exceptions;
 using static TASI.Command;
 
 namespace TASI
@@ -46,7 +45,7 @@ namespace TASI
             //Remove comments 
             try
             {
-                string location = Console.ReadLine() ?? throw new Exception("Code is null.");
+                string location = Console.ReadLine() ?? throw new CodeSyntaxException("Code is null.");
                 Global.mainFilePath = Path.GetDirectoryName(location);
                 List<Command> commands = LoadFile.ByPath(location);
                 codeRuntime.Start();
@@ -57,9 +56,9 @@ namespace TASI
                 var startCode = startValues.Item1;
                 if (startCode == null)
                     if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.library)
-                        throw new Exception("You can't start a library-type namespace directly.");
+                        throw new CodeSyntaxException("You can't start a library-type namespace directly.");
                     else
-                        throw new Exception("You need to define a start. You can use the start statement to do so.");
+                        throw new CodeSyntaxException("You need to define a start. You can use the start statement to do so.");
 
 
                 foreach (NamespaceInfo namespaceInfo in Global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry

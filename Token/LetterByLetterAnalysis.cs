@@ -56,7 +56,7 @@
                         letterTypeStack.Add(LastLetterType.function);
                         break;
                     case ']':
-                        if (!letterTypeStack.Any()) throw new Exception("Can't end function, because no function was started");
+                        if (!letterTypeStack.Any()) throw new CodeSyntaxException("Can't end function, because no function was started");
                         squareDeph += -1;
                         if (letterTypeStack.Last() != LastLetterType.function) throw new Exception($"Can't exit a function using a square bracket while base {letterTypeStack.Last()} is still active.");
                         letterTypeStack.RemoveAt(letterTypeStack.Count - 1);
@@ -65,7 +65,7 @@
                         letterTypeStack.Add(LastLetterType.numCalc);
                         break;
                     case ')':
-                        if (!letterTypeStack.Any()) throw new Exception("Can't end num calc, because no num calc was started");
+                        if (!letterTypeStack.Any()) throw new CodeSyntaxException("Can't end num calc, because no num calc was started");
                         if (letterTypeStack.Last() != LastLetterType.numCalc) throw new Exception($"Can't exit a num calc using a bracket while base {letterTypeStack.Last()} is still active.");
                         letterTypeStack.RemoveAt(letterTypeStack.Count - 1);
                         break;

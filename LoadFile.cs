@@ -5,7 +5,7 @@
         public static List<Command> ByPath(string location)
         {
             location = location.Trim('"');
-            if (!File.Exists(location)) throw new Exception("The entered file doesn't exist.");
+            if (!File.Exists(location)) throw new CodeSyntaxException("The entered file doesn't exist.");
             List<string> codeFile = File.ReadAllLines(location).ToList();
             for (int i = 0; i < codeFile.Count; i++)
             {

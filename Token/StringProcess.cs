@@ -301,16 +301,16 @@
 
 
             if (stringMode)
-                throw new Exception("Invalid string formating. E.U.0001");
+                throw new CodeSyntaxException("Invalid string formating. E.U.0001");
             if (codeContainerMode)
-                throw new Exception("Invalid code container formating.");
+                throw new CodeSyntaxException("Invalid code container formating.");
             if (functionMode)
                 if (skipBecauseString)
-                    throw new Exception("Invalid function formating.\nYou probably just forgot to close an argument string. E.U.0002");
+                    throw new CodeSyntaxException("Invalid function formating.\nYou probably just forgot to close an argument string. E.U.0002");
                 else
-                    throw new Exception("Invalid function formating. E.U.0002");
+                    throw new CodeSyntaxException("Invalid function formating. E.U.0002");
             if (CalculationMode)
-                throw new Exception("Invalid calculation formating. E.U.0003");
+                throw new CodeSyntaxException("Invalid calculation formating. E.U.0003");
             return commands;
         }
 

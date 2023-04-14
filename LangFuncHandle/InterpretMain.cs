@@ -19,8 +19,8 @@
                 {
                     if (command.commandType == Command.CommandTypes.EndCommand)
                     {
-                        if (commandLine.commands.Count != 2) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
+                        if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
+                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
                         if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
@@ -52,8 +52,8 @@
             }
             if (statementMode)
             {
-                if (commandLine.commands.Count != 2) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
+                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
+                if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
                 if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new Exception($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                 result.ForEach(x =>
                 {
@@ -84,41 +84,41 @@
                         switch (commandLine.commands[0].commandText.ToLower())
                         {
                             case "name":
-                                if (commandLine.commands.Count != 2) throw new Exception("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
-                                if (thisNamespace.Name != null) throw new Exception("Name can't be defined twice.");
+                                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
+                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
+                                if (thisNamespace.Name != null) throw new CodeSyntaxException("Name can't be defined twice.");
                                 thisNamespace.Name = commandLine.commands[1].commandText;
                                 break;
 
                             case "type":
-                                if (commandLine.commands.Count != 2) throw new Exception("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new Exception("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
-                                if (thisNamespace.namespaceIntend != NamespaceInfo.NamespaceIntend.nonedef) throw new Exception("Type can't be defined twice.");
-                                if (!Enum.TryParse<NamespaceInfo.NamespaceIntend>(commandLine.commands[1].commandText.ToLower(), out NamespaceInfo.NamespaceIntend result)) throw new Exception("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
+                                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
+                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
+                                if (thisNamespace.namespaceIntend != NamespaceInfo.NamespaceIntend.nonedef) throw new CodeSyntaxException("Type can't be defined twice.");
+                                if (!Enum.TryParse<NamespaceInfo.NamespaceIntend>(commandLine.commands[1].commandText.ToLower(), out NamespaceInfo.NamespaceIntend result)) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 thisNamespace.namespaceIntend = result;
                                 break;
                             case "start":
-                                if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new Exception("You can't start while not having defined namespace name and type.\nYou can use the name and type statement to do this.");
-                                if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.library) throw new Exception("Library type namespaces can't have a start.");
+                                if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new CodeSyntaxException("You can't start while not having defined namespace name and type.\nYou can use the name and type statement to do this.");
+                                if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.library) throw new CodeSyntaxException("Library type namespaces can't have a start.");
 
-                                if (commandLine.commands.Count != 2) throw new Exception("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
-                                if (startCode != null) throw new Exception("Start can't be defined twice.");
+                                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
+                                if (commandLine.commands[1].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
+                                if (startCode != null) throw new CodeSyntaxException("Start can't be defined twice.");
                                 startCode = commandLine.commands[1].codeContainerCommands;
                                 break;
                             case "function":
-                                if (commandLine.commands.Count != 5) throw new Exception("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+                                if (commandLine.commands.Count != 5) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
 
 
-                                if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType functionReturnType)) throw new Exception("function return type is invalid.");
+                                if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType functionReturnType)) throw new CodeSyntaxException("function return type is invalid.");
                                 Function? thisFunction = null;
                                 foreach (Function function in thisNamespace.namespaceFuncitons) //Check if function with name already exist
                                 {
                                     if (function.funcName == commandLine.commands[2].commandText.ToLower()) thisFunction = function;
                                 }
                                 string functionName = commandLine.commands[2].commandText.ToLower();
-                                List<VarConstruct> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
+                                List<VarConstruct> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."));
 
                                 if (thisFunction != null) //If function with name already exist, check if input combination already exist.
                                 {
@@ -140,22 +140,22 @@
                                     thisFunction.functionArguments.Add(functionInputVars);
                                 }
                                 else
-                                    new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new Exception("Internal: Code container tokens were not generated."));
+                                    new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."));
                                 break;
                             case "import":
                                 string pathLocation;
                                 switch (commandLine.commands.Count)
                                 {
                                     case 2:
-                                        if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new Exception("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
+                                        if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
                                         pathLocation = commandLine.commands[1].commandText.ToLower();
                                         break;
                                     case 3:
-                                        if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandText.ToLower() != "base" || commandLine.commands[2].commandType != Command.CommandTypes.String) throw new Exception("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
+                                        if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandText.ToLower() != "base" || commandLine.commands[2].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
                                         pathLocation = Path.Combine(Global.mainFilePath, commandLine.commands[2].commandText.ToLower());
                                         break;
                                     default:
-                                        throw new Exception("Invalid usage of import statement.\nCorrect usage: import < string: path >;\nor\nimport base < string: path >;");
+                                        throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import < string: path >;\nor\nimport base < string: path >;");
                                 }
 
                                 if (!Global.allLoadedFiles.Any(x => ComparePaths(x, pathLocation)))
@@ -201,7 +201,7 @@
                 }
             }
 
-            if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new Exception("You need to enter name and type for this namespace. You can do that using the name and type statements.");
+            if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new CodeSyntaxException("You need to enter name and type for this namespace. You can do that using the name and type statements.");
 
 
 
@@ -254,7 +254,7 @@
                     case Command.CommandTypes.FunctionCall:
                         Global.currentLine = command.commandLine;
                         if (command.functionCall == null)
-                            throw new Exception("Internal: function call was not converted to a function call.");
+                            throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
 
                         command.functionCall.DoFunctionCall(accessableObjects);
                         break;

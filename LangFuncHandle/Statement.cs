@@ -287,7 +287,7 @@ namespace TASI
                 default:
                     // Is probably var
                     
-                    if (commands.Count != 1) throw new CodeSyntaxException("Unexpected syntax after varname.");
+                    if (commands.Count != 1) throw new CodeSyntaxException($"Unexpected syntax after varname \"{commands[0].commandText}\".");
                     commands[0].commandText = commands[0].commandText.ToLower();
                     foreach (Var var in accessableObjects.accessableVars)
                         if (var.varConstruct.name == commands[0].commandText)

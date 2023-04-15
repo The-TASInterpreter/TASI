@@ -123,6 +123,9 @@ set stringValue2 "Hello World!"; #Set both variables to "Hello World!"
 - unlink
 	The unlink statement can unlink two previusly linked variables. Both will keep their previusly shared value, but it will be uncoppled. Here's the usage:
 		- ```unlink <statement: variable to unlink>;```
+- makevar
+	The makevar statement can create a variable. It's used like this:
+	 - ```makeVar <statement: var type> <statement: var name>;```
 
 ### Return statements:
 
@@ -302,6 +305,10 @@ set seed [HeaderExampleLibrary.ReturnRandomValue:seed];
 };
 };
 ```
+- makeglobalvar:
+	This statement will create a global variable, that can be used everywehere in your project (So you don't need to inport a namespace, to access its global variable (I still gotta implement that)). 
+	Here is how you build the statement: ```makeGlobalVar <statement: var type> <statement: var name>;``` or ```makeGlobalVar <statement: var type> <statement: var name> <static value: initialize value>;```
+		
 
 ## var def interpreter mode
 This is just another interpreter mode just like header mode, just with some different rules. Its only purpose is to define a list of variables and it only has one statement type. The statement is built up like this:

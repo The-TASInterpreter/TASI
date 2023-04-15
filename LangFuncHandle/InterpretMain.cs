@@ -23,7 +23,7 @@
                         continue;
                     }
                     //Statenent is complete
-                    if (commandLine.commands.Count != 2 && (commandLine.commands.Count != 3 && commandLine.commands[0].commandType == Command.CommandTypes.Statement && commandLine.commands[0].commandText == "link")) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
+                    if (commandLine.commands.Count != 2 && commandLine.commands.Count != 3 && commandLine.commands[0].commandType == Command.CommandTypes.Statement && commandLine.commands[0].commandText == "link") throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
                     if (commandLine.commands.Count == 3) // Is link
                     {
                         if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
@@ -44,7 +44,7 @@
                         });
 
                         result.Add(new(varType, commandLine.commands[1].commandText.ToLower()));
-                        
+
                     }
                     statementMode = false;
                     continue;
@@ -182,9 +182,24 @@
                                     thisNamespace.accessableNamespaces.Add(Global.Namespaces[Global.allLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
                                     alreadyImportedNamespaces.Add(pathLocation);
                                 }
+                                break;
+                            case "makeglobalvar":
+                                if ((commandLine.commands.Count != 3 && commandLine.commands.Count != 4) || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var name>;");
 
 
 
+                                if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
+                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "")), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                Value? setToValue = null;
+                                if (commandLine.commands.Count == 4)
+                                {
+                                    setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "")));
+                                }
+
+                                if (commandLine.commands[1].commandText == "all")
+                                    thisNamespace.publicNamespaceVars.Add(new(new(VarConstruct.VarType.all, commandLine.commands[2].commandText), setToValue ?? new(varType)));
+                                else
+                                    thisNamespace.publicNamespaceVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), setToValue ?? new(varType)));
                                 break;
 
                             default: throw new CodeSyntaxException($"\"{commandLine.commands[0].commandText}\" isn't a recognized statement in header interpret mode.");
@@ -233,6 +248,15 @@
 
         public static Value? InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
         {
+            foreach (NamespaceInfo namespaceInfo in accessableObjects.currentNamespace.accessableNamespaces)
+            {
+                foreach (Var var in namespaceInfo.publicNamespaceVars)
+                {
+                    if (accessableObjects.accessableVars.Contains(var)) continue;
+                    if (accessableObjects.accessableVars.Any(x => x.varConstruct.name == var.varConstruct.name)) throw new CodeSyntaxException($"A global variable with the name \"{var.varConstruct.name}\" already exists. So you can't use this name again.");
+                    accessableObjects.accessableVars.Add(var);
+                }
+            }
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal functions to the code.
             bool statementMode = false;
             Value? returnValue;

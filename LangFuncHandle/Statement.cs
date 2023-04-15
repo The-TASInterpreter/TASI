@@ -111,6 +111,23 @@ namespace TASI
                     Var foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
                     foundVar.varValueHolder = new(new(foundVar.varValueHolder.value.valueType, foundVar.varValueHolder.value.ObjectValue));
                     return null;
+                case "makevar":
+
+                    if (commandLine.commands.Count != 3 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var name>;");
+
+
+
+                    if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
+                    if (FindVar(commandLine.commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                    if (commandLine.commands[1].commandText == "all")
+                    {
+                        accessableObjects.accessableVars.Add(new(new(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(varType)));
+                        return null;
+                    }
+                    accessableObjects.accessableVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
+                    return null;
+                
+
 
 
 
@@ -127,7 +144,7 @@ namespace TASI
                     FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a function call
                         throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
-                    if ( functionCall.callFunction.returnType != Value.ConvertValueTypeToVarType(expectedType)) //Find out if function returns desired type
+                    if (functionCall.callFunction.returnType != Value.ConvertValueTypeToVarType(expectedType)) //Find out if function returns desired type
                         throw new CodeSyntaxException($"The function {functionCall.callFunction.functionLocation} does not return the expected {expectedType} type.");
                     return functionCall.DoFunctionCall(accessableObjects);
 
@@ -206,7 +223,7 @@ namespace TASI
             if (correctVar == null) throw new CodeSyntaxException($"The variable {commandLine.commands[1].commandText} cant be found.");
             correctVar.VarValue = GetValueOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), accessableObjects);
         }
-        public static Var? FindVar(string name,  AccessableObjects accessableObjects, bool failAtNotFind = false)
+        public static Var? FindVar(string name, AccessableObjects accessableObjects, bool failAtNotFind = false)
         {
             name = name.ToLower();
             foreach (Var var in accessableObjects.accessableVars) //Search for variable
@@ -233,7 +250,7 @@ namespace TASI
 
                 case "true":
                     if (commands.Count != 1) throw new CodeSyntaxException($"Unexpected {commands[1].commandType}");
-                    
+
                     return new(Value.ValueType.@bool, true);
                 case "false":
                     if (commands.Count != 1) throw new CodeSyntaxException($"Unexpected {commands[1].commandType}");
@@ -247,7 +264,7 @@ namespace TASI
                     return new();
 
                 case "nl":
-                    return new (Value.ValueType.@string, "\n");
+                    return new(Value.ValueType.@string, "\n");
                 case "lineChar":
                     return new(Value.ValueType.@string, "Ⅼ");
 
@@ -277,7 +294,8 @@ namespace TASI
                     returnValueFromVar = new(foundLinkableVar.VarValue);
                     returnValueFromVar.comesFromVarValue = foundLinkableVar;
                     return returnValueFromVar;
-                        
+
+
 
 
 
@@ -286,7 +304,7 @@ namespace TASI
 
                 default:
                     // Is probably var
-                    
+
                     if (commands.Count != 1) throw new CodeSyntaxException($"Unexpected syntax after varname \"{commands[0].commandText}\".");
                     commands[0].commandText = commands[0].commandText.ToLower();
                     foreach (Var var in accessableObjects.accessableVars)
@@ -295,7 +313,7 @@ namespace TASI
 
                             return new(var.VarValue);
                         }
-                            
+
                     //Var not found
 
 

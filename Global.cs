@@ -5,7 +5,9 @@
         public static List<NamespaceInfo> Namespaces = new List<NamespaceInfo>();
         public static List<string> allLoadedFiles = new(); //It is important, that allLoadedFiles and Namespaces corrospond
         public static List<Function> AllFunctions = new List<Function>();
-        public static List<Var> CurrentlyAccessableVars = new();
+        
+        public static List<Var> globalVars = new List<Var>();
+
         public static bool debugMode = false;
         public static int currentLine;
         public static List<FunctionCall> allFunctionCalls = new();

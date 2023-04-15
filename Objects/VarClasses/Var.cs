@@ -12,7 +12,12 @@ namespace TASI
         public Var(VarConstruct varConstruct, Value varValue)
         {
             this.varConstruct = varConstruct;
+
+            
+
             this.varValueHolder = new(varValue);
+
+            if (Value.ConvertValueTypeToVarType(VarValue.valueType) != varConstruct.type && varConstruct.type != VarConstruct.VarType.all) throw new CodeSyntaxException($"The variable \"{varConstruct.name}\" can't be initialized with a {varValue.valueType}-type value, because it's a {varConstruct.type}-type variable.");
 
         }
 

@@ -17,15 +17,23 @@ namespace TASI
         public static Logger interpretInitLog = new();
         public static void Main(string[] args)
         {
-            Global.currentLine = -1;
-            Console.WriteLine("Doing tests...");
-            Tests.NumCalcTests();
-            //SyntaxAnalysis.AnalyseSyntax(StringProcess.ConvertLineToCommand("set helloWorld [Console.ReadLine];"));
-            Console.ReadKey(false);
-            Console.Clear();
+            string? location = null;
+            if (args.Length == 1)
+            {
+                location = args[0];
+            }
 
-            Console.WriteLine("Enter file location with code:");
+            if (location == null)
+            {
+                Global.currentLine = -1;
+                Console.WriteLine("Doing tests...");
+                Tests.NumCalcTests();
+                //SyntaxAnalysis.AnalyseSyntax(StringProcess.ConvertLineToCommand("set helloWorld [Console.ReadLine];"));
+                Console.ReadKey(false);
+                Console.Clear();
 
+                Console.WriteLine("Enter file location with code:");
+            }
 
 
             Global.InitInternalNamespaces();
@@ -37,7 +45,8 @@ namespace TASI
             //Remove comments 
             try
             {
-                string location = Console.ReadLine() ?? throw new CodeSyntaxException("Code is null.");
+                if (location == null)
+                    location = Console.ReadLine() ?? throw new CodeSyntaxException("Code is null.");
                 Global.mainFilePath = Path.GetDirectoryName(location);
                 List<Command> commands = LoadFile.ByPath(location);
                 codeRuntime.Start();

@@ -1,10 +1,20 @@
-Add value links: by setting the values of VAR to a different class.
-Public variables
-Add current context internal namespace which has current variables and methods for them like this:
+Add value links: by setting the values of VAR to a different class. | done
+Public variables | done
+Make new exception classes for internal and user exceptions | done
+Revise errors to make them more descriptive => Endgoal: Be able to write low level code from some languages, and help the user to translate it to TASI
 
-[Inf.DefVar:"string","Test"]
-set Test "1234Test";
-[CurrentContext.Test.GetLenght]
+
+Add more methods.
+
+Add custom operators
+
+Add interpreter extentions
+
+Add argument API
+
+Add More general tests
+
+Add ways to obscure code and compile it into an intermediate language
 
 Add Supervisor-Type namespaces
 Add Lists. Possible return type syntax:
@@ -14,4 +24,4 @@ Add TestList "Hello World";
 
 Hashmap for var name
 
-Make new exception classes for internal and user exceptions
+BETTER SYNTAX

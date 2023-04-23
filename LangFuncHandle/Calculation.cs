@@ -191,7 +191,6 @@ namespace TASI
         {
             @operator, returnStatement, value, calculation, function
         }
-        public static char[] number = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' };
 
         public Type type;
         public string? @operator;
@@ -215,7 +214,12 @@ namespace TASI
                         type = Type.@operator;
                         return;
                     }
-                    if (!double.TryParse(command.commandText, out double value)) throw new CodeSyntaxException($"\"{command.commandText}\" is neither an operator nor a number. If you want to use return statements like variables inside calculations, you need the statement calculation. E.g.:\n(($variable) + 15)");
+                    if (!double.TryParse(command.commandText, out double value))
+                    {
+                        type = Type.returnStatement;
+                        returnStatement = new List<Command>() { command };
+                        return;
+                    }
                     type = Type.value;
                     this.value = new(Value.ValueType.num, value);
                     return;

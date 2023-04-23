@@ -126,7 +126,7 @@ namespace TASI
                     }
                     accessableObjects.accessableVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
                     return null;
-                
+
 
 
 
@@ -306,6 +306,10 @@ namespace TASI
                     // Is probably var
 
                     if (commands.Count != 1) throw new CodeSyntaxException($"Unexpected syntax after varname \"{commands[0].commandText}\".");
+                    if (double.TryParse(commands[0].commandText, out double result))
+                    {
+                        return new(Value.ValueType.num, result);
+                    }
                     commands[0].commandText = commands[0].commandText.ToLower();
                     foreach (Var var in accessableObjects.accessableVars)
                         if (var.varConstruct.name == commands[0].commandText)

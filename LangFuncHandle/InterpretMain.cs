@@ -1,4 +1,6 @@
-﻿namespace TASI
+﻿using TASI.Objects.Tree;
+
+namespace TASI
 {
     internal class InterpretMain
     {
@@ -77,6 +79,9 @@
             return result;
         }
 
+
+
+
         public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands, string currentFile) //This function will interpret the headers of the file and return the start code.
         {
             bool statementMode = false;
@@ -95,6 +100,11 @@
                     {
                         switch (commandLine.commands[0].commandText.ToLower())
                         {
+                            case "statement":
+                                if (commandLine.commands.Count != 2 || commandLine.commands[1].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of tree statement. Correct usage:\ntree {};");
+                                InterpretMainBranches(commandLine.commands[1].codeContainerCommands ?? throw new InternalInterpreterException("codeContainer is null"));
+                                break;
+
                             case "name":
                                 if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
@@ -242,18 +252,196 @@
 
 
 
+        public static void InterpretMainBranches(List<Command> commands)
+        {
 
+            List<Command> currentStatement = new();
+            for (int i = 0; i < commands.Count; i++)
+            {
+                Command command = commands[i];
+                if (command.commandType != Command.CommandTypes.EndCommand)
+                {
+                    currentStatement.Add(command);
+                    continue;
+                }
+                if (currentStatement.Count == 0)
+                {
+                    throw new CodeSyntaxException("Seems like you had one too many semicolon.");
+                }
+                if (currentStatement[0].commandType != Command.CommandTypes.Statement || currentStatement[0].commandText != "branch") throw new CodeSyntaxException("You can only use the \"branch\" statement in this mode.");
+                if (currentStatement.Count != 3 || currentStatement[1].commandType != Command.CommandTypes.Statement || currentStatement[2].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid use of branch statement. Correct use:\nbranch <statement method name> {};");
+                InterpretCustomStatements(currentStatement[2].codeContainerCommands);
+
+
+
+
+                currentStatement = new();
+
+            }
+        }
         private static bool ComparePaths(string path1, string path2)
         {
             return Path.GetFullPath(path1).Replace('\\', '/').ToLower() == Path.GetFullPath(path2).Replace('\\', '/').ToLower();
         }
+
+        public static CustomStatement InterpretCustomStatementInit(List<Command> commands)
+        {
+            CustomStatement.StatementType statement;
+            if (commands.Count == 2)
+            {
+                if (commands[0].commandType != Command.CommandTypes.Statement || commands[1].commandType != Command.CommandTypes.Statement)
+                    throw new CodeSyntaxException("Invalid use of tree Custom statement initialiser. Correct use:\n<statement: statement type> <statement: statement name>;\nor\n<statement: statement type> <statement: statement name> : <value: provide with value>;\nCorrect statement types are:\nreturnStatement\nstatement");
+                if (!Enum.TryParse(commands[0].commandText.ToLower(), out statement)) throw new CodeSyntaxException($"The statement-type \"{commands[0].commandText}\" doesn't exist.");
+                return new(statement, new(TreeElement.ElementType.Always, null, null, true));
+            }
+            if (commands.Count < 4 || commands[2].commandType != Command.CommandTypes.Statement || commands[2].commandText != ":")
+                throw new CodeSyntaxException("Invalid use of tree Custom statement initialiser. Correct use:\n<statement: statement type> <statement: statement name>;\nor\n<statement: statement type> <statement: statement name> : <value: provide with value>;\nCorrect statement types are:\nreturnStatement\nstatement");
+            if (!Enum.TryParse(commands[0].commandText.ToLower(), out statement)) throw new CodeSyntaxException($"The statement-type \"{commands[0].commandText}\" doesn't exist.");
+
+            return new(statement, new(TreeElement.ElementType.Always, new(commands.GetRange(3, commands.Count - 3), -1), null, true));
+
+        }
+
+        public static List<TreeElement> InterpretTreeElement(List<Command> commands, out int endedAt)
+        {
+            List<TreeElement> result = new();
+            List<Command> currentStatement = new();
+            List<Command> input;
+            TreeElement? currentElement = null;
+            for (int j = 0; j < commands.Count; j++)
+            {
+                Command command = commands[j];
+                if (command.commandType != Command.CommandTypes.EndCommand)
+                {
+                    currentStatement.Add(command);
+                    continue;
+                }
+                if (currentStatement.Count == 0)
+                {
+                    throw new CodeSyntaxException("Seems like you had one too many semicolon.");
+                }
+
+
+                switch (currentStatement[0].commandText)
+                {
+                    case "|§>":
+                        currentElement = new(TreeElement.ElementType.Check, new(new(), -1), null, true);
+                        break;
+                    case "|=>":
+                        currentElement = new(TreeElement.ElementType.Else, new(new(), -1), null, false);
+                        break;
+                    case "|>":
+                        currentElement = new(TreeElement.ElementType.Compare, new(new(), -1), null, true);
+                        break;
+                    case "|":
+                        currentElement = new(TreeElement.ElementType.Always, new(new(), -1), null, false);
+                        break;
+                    case "-":
+                        currentElement = new(TreeElement.ElementType.Break, null, null, false);
+                        break;
+                    default:
+                        throw new CodeSyntaxException($"\"{command.commandText}\" is not a recognices tree statement.");
+
+                }
+                result.Add(currentElement);
+
+
+                input = new();
+                int? foundAt = null;
+                if (currentElement.elementType != TreeElement.ElementType.Else && currentElement.elementType != TreeElement.ElementType.Always)
+                {
+                    for (int i = 1; i < currentStatement.Count; i++)
+                    {
+                        Command command1 = currentStatement[i];
+                        if (command1.commandType == Command.CommandTypes.Statement && (command1.commandText == "=>" || command1.commandText == ":"))
+                        {
+                            foundAt = i;
+                            if (command1.commandText == "=>")
+                            {
+                                currentElement.isBranch = false;
+                            }
+                            currentElement.checkLine = new(input, -1);
+                            break;
+                        }
+                        input.Add(command1);
+                    }
+                    
+                }
+                if (!currentElement.isBranch)
+                {
+                    currentElement.doCode = new(new(), -1);
+                    for (int i = (foundAt ?? 0) + 1; i < currentStatement.Count; i++)
+                    {
+                        currentElement.doCode.commands.Add(currentStatement[i]);
+                    }
+                    goto endofLoop;
+                }
+                if (foundAt != null)
+                {
+                    currentElement.provide = new(new(), -1);
+                    for (int i = (foundAt ?? throw new InternalInterpreterException("Internal: foundAt was null even though it can't be.")) + 1; i < currentStatement.Count; i++)
+                    {
+                        currentElement.provide.commands.Add(currentStatement[i]);
+                    }
+                }
+
+
+                currentElement.subBranch = InterpretTreeElement(commands.GetRange(j + 1, commands.Count - (j + 1)), out int ended);
+                j += ended + 1;
+
+
+            endofLoop:
+                if (currentElement.elementType == TreeElement.ElementType.Else)
+                {
+                    endedAt = j;
+                    return result;
+                }
+                currentStatement = new();
+
+            }
+            throw new CodeSyntaxException("You didn't return from that tree. You can return with a \"|=>\" branch.");
+        }
+
+
+        public static List<CustomStatement> InterpretCustomStatements(List<Command> commands)
+        {
+            List<CustomStatement> result = new();
+            CustomStatement? currentCreatingCustomStatement = null;
+            List<Command> currentStatement = new();
+            for (int i = 0; i < commands.Count; i++)
+            {
+                Command command = commands[i];
+                if (command.commandType != Command.CommandTypes.EndCommand)
+                {
+                    currentStatement.Add(command);
+                    continue;
+                }
+                if (currentStatement.Count == 0)
+                {
+                    throw new CodeSyntaxException("Seems like you had one too many semicolon.");
+                }
+
+               
+                    currentCreatingCustomStatement = InterpretCustomStatementInit(currentStatement);
+                    currentCreatingCustomStatement.treeElement.subBranch = InterpretTreeElement(commands.GetRange(i + 1, commands.Count - (1 + i)), out int ended);
+                    i += ended + 1;
+                    result.Add(currentCreatingCustomStatement);
+                
+
+
+                currentStatement = new();
+
+            }
+            return result;
+        }
+
 
 
 
         public static Value? InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
         {
             foreach (NamespaceInfo namespaceInfo in accessableObjects.currentNamespace.accessableNamespaces)
-              {
+            {
                 foreach (Var var in namespaceInfo.publicNamespaceVars)
                 {
                     if (accessableObjects.accessableVars.Contains(var)) continue;

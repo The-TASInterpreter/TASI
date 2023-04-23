@@ -42,6 +42,8 @@ namespace TASI
             Stopwatch codeRuntime = new();
 
 
+
+
             //Remove comments 
             try
             {
@@ -94,9 +96,9 @@ namespace TASI
                 Console.ReadKey(false);
 
             }
-            catch (Exception ex)
+            catch (NotImplementedException ex)
             {
-
+                /*
                 Console.Clear();
 
                 switch (ex)
@@ -114,7 +116,7 @@ namespace TASI
                         Console.WriteLine("The error message is:");
                         Console.WriteLine(ex.Message);
                         break;
-                    case InternalInterpreterException:
+                    default:
                         Console.WriteLine("There was an internal error in the compiler.");
                         Console.WriteLine("Please report this error on github and please include the code and this error message and (if available) you inputs, that lead to this error. You can create a new issue, reporting the error here:\nhttps://github.com/Ekischleki/TASI/issues/new");
                         if (Global.currentLine != -1)
@@ -133,12 +135,13 @@ namespace TASI
 
 
                 Console.ReadKey();
+                */
 
             }
 
 
             return;
-
+                
 
         }
     }

@@ -12,13 +12,50 @@ namespace TASI
         public FunctionCall? functionCall;
         public CalculationType? calculation;
 
+        public FunctionCall FunctionCall
+        {
+            get
+            {
+                if (functionCall == null)
+                {
+                    if (commandType == CommandTypes.FunctionCall)
+                    {
+                        throw new InternalInterpreterException("Function call of function token was null.");
+                    }
+                    else
+                    {
+                        throw new InternalInterpreterException("Trying to access a function call of a non function-token");
+                    }
+                }
+                return functionCall;
+            }
+        }
+        public CalculationType Calculation
+        {
+            get
+            {
+                if (calculation == null)
+                {
+                    if (commandType == CommandTypes.Calculation)
+                    {
+                        throw new InternalInterpreterException("Calculation of calculation token was null.");
+                    }
+                    else
+                    {
+                        throw new InternalInterpreterException("Trying to access a calculation of a non calculation token");
+                    }
+                }
+                return calculation;
+            }
+        }
+
         public void initCodeContainerFunctions(NamespaceInfo namespaceInfo)
         {
-            foreach(Command command in codeContainerCommands)
+            foreach (Command command in codeContainerCommands)
             {
-                if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(namespaceInfo);
+                if (command.commandType == CommandTypes.FunctionCall) command.FunctionCall.SearchCallFunction(namespaceInfo);
                 if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(namespaceInfo);
-                if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(namespaceInfo);
+                if (command.commandType == CommandTypes.Calculation) command.Calculation.InitFunctions(namespaceInfo);
 
             }
         }
@@ -60,7 +97,7 @@ namespace TASI
             }
         }
 
-        
+
         public enum CommandTypes
         {
             FunctionCall, Statement, Calculation, String, CodeContainer, EndCommand

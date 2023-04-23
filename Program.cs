@@ -73,9 +73,9 @@ namespace TASI
                             foreach (Command overloadCode in functionCodeOverload)
                             {
                                 Global.currentLine = overloadCode.commandLine;
-                                if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo);
+                                if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.FunctionCall.SearchCallFunction(namespaceInfo);
                                 if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo);
-                                if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo);
+                                if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.Calculation.InitFunctions(namespaceInfo);
                             }
                         }
                     }
@@ -84,8 +84,8 @@ namespace TASI
                 foreach (Command command in startValues.Item1)
                 {
                     Global.currentLine = command.commandLine;
-                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(startValues.Item2);
-                    if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(startValues.Item2);
+                    if (command.commandType == Command.CommandTypes.FunctionCall) command.FunctionCall.SearchCallFunction(startValues.Item2);
+                    if (command.commandType == CommandTypes.Calculation) command.Calculation.InitFunctions(startValues.Item2);
                     if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(startValues.Item2);
                 }
 
@@ -96,9 +96,9 @@ namespace TASI
                 Console.ReadKey(false);
 
             }
-            catch (NotImplementedException ex)
+            catch (Exception ex)
             {
-                /*
+                
                 Console.Clear();
 
                 switch (ex)
@@ -135,7 +135,7 @@ namespace TASI
 
 
                 Console.ReadKey();
-                */
+                
 
             }
 

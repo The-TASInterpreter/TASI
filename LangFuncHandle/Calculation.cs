@@ -23,17 +23,17 @@ namespace TASI
             switch (type)
             {
                 case Type.calculation:
-                    foreach (CalculationType calculationType in subValues)
+                    foreach (CalculationType calculationType in subValues ?? throw new InternalInterpreterException("sub values was null"))
                     {
                         calculationType.InitFunctions(currentNamespace);
                     }
                     break;
                 case Type.returnStatement:
-                    foreach (Command command in returnStatement)
+                    foreach (Command command in returnStatement ?? throw new InternalInterpreterException("return statement was null"))
                     {
-                        if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace);
+                        if (command.commandType == Command.CommandTypes.FunctionCall) command.FunctionCall.SearchCallFunction(currentNamespace);
                         if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace);
-                        if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace);
+                        if (command.commandType == CommandTypes.Calculation) command.Calculation.InitFunctions(currentNamespace);
                     }
                     break;
                 case Type.function:
@@ -142,7 +142,7 @@ namespace TASI
                                 values.RemoveRange(0, 2);
                                 return new(Value.ValueType.@bool, !values.Any(x => x.GetBoolValue != firstBoolValue));
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             { //If one value couldn't be converted to a bool
                                 return new(Value.ValueType.@bool, false);
                             }

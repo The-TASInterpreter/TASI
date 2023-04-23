@@ -1,6 +1,6 @@
-﻿namespace TASI.Objects.Tree
+﻿namespace TASI
 {
-    internal class TreeElement
+    public class TreeElement
     {
         public enum ElementType
         {

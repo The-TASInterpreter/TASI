@@ -1,4 +1,6 @@
-﻿using TASI.Objects.Tree;
+﻿
+
+using System.Runtime.CompilerServices;
 
 namespace TASI
 {
@@ -90,7 +92,7 @@ namespace TASI
             NamespaceInfo thisNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, null);
             List<string> alreadyImportedNamespaces = new();
             Global.Namespaces.Add(thisNamespace);
-
+            Command? statement = null;
             foreach (Command command in commands)
             {
 
@@ -102,7 +104,8 @@ namespace TASI
                         {
                             case "statement":
                                 if (commandLine.commands.Count != 2 || commandLine.commands[1].commandType != Command.CommandTypes.CodeContainer) throw new Exception("Invalid usage of tree statement. Correct usage:\ntree {};");
-                                InterpretMainBranches(commandLine.commands[1].codeContainerCommands ?? throw new InternalInterpreterException("codeContainer is null"));
+                                if (statement != null) throw new CodeSyntaxException("You can only define statement once.");
+                                statement = commandLine.commands[1];
                                 break;
 
                             case "name":
@@ -244,7 +247,14 @@ namespace TASI
 
             if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new CodeSyntaxException("You need to enter name and type for this namespace. You can do that using the name and type statements.");
             if (Global.Namespaces.Any(x => x != thisNamespace && x.Name == thisNamespace.Name)) throw new CodeSyntaxException($"A namespace with the name \"{thisNamespace.Name}\" has already been defined.");
-
+            if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.story)
+            {
+                if (statement != null)
+                {
+                    InterpretMainBranches(statement.codeContainerCommands, thisNamespace);
+                } 
+            }
+            else if (statement != null) throw new CodeSyntaxException("You can only use the statement statement with story namespace types.");
 
 
             return new(startCode, thisNamespace);
@@ -252,7 +262,7 @@ namespace TASI
 
 
 
-        public static void InterpretMainBranches(List<Command> commands)
+        public static void InterpretMainBranches(List<Command> commands, NamespaceInfo thisNamespace)
         {
 
             List<Command> currentStatement = new();
@@ -270,7 +280,13 @@ namespace TASI
                 }
                 if (currentStatement[0].commandType != Command.CommandTypes.Statement || currentStatement[0].commandText != "branch") throw new CodeSyntaxException("You can only use the \"branch\" statement in this mode.");
                 if (currentStatement.Count != 3 || currentStatement[1].commandType != Command.CommandTypes.Statement || currentStatement[2].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid use of branch statement. Correct use:\nbranch <statement method name> {};");
-                InterpretCustomStatements(currentStatement[2].codeContainerCommands);
+                Function? accessFunction = thisNamespace.namespaceFuncitons.FirstOrDefault(x => x.funcName == currentStatement[1].commandText, null);
+                if (accessFunction == null)
+                {
+                    thisNamespace.namespaceFuncitons.Add(new(currentStatement[1].commandText, VarConstruct.VarType.@void, thisNamespace, new List<List<VarConstruct>>() {new List<VarConstruct>()}, StringProcess.ConvertLineToCommand("ask; return;", -1))); //Generate default function if function wasn't defined.
+                    accessFunction = thisNamespace.namespaceFuncitons.Last();
+                }
+                accessFunction.customStatements = InterpretCustomStatements(currentStatement[2].codeContainerCommands);
 
 
 

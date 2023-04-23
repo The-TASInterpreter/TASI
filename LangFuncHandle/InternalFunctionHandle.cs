@@ -14,7 +14,7 @@
                         Console.WriteLine("No text pritable.");
                     return null;
                 case "console.readline":
-                    return new(Value.ValueType.@string, Console.ReadLine());
+                    return new(Value.ValueType.@string, Console.ReadLine() ?? throw new RuntimeCodeExecutionFailException("Console.ReadLine Returned null.", "InternalMethodException"));
                 case "console.clear":
                     Console.Clear();
                     return null;

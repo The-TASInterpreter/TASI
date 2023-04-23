@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TASI.Objects.Tree
+namespace TASI
 {
-    internal class CustomStatement
+    public class CustomStatement
     {
         public enum StatementType
         {

@@ -1,4 +1,6 @@
-﻿namespace TASI
+﻿
+
+namespace TASI
 {
     // [TASI.DecFunc "Main","void",[SArray.DecArray "array cum, string cool"]];
     public class Function
@@ -12,6 +14,7 @@
         public NamespaceInfo parentNamespace;
         public List<List<VarConstruct>> functionArguments;
         public List<List<Command>> functionCode = new();
+        public List<CustomStatement> customStatements = new();
 
 
         public Function(string funcName, Function parentFunction, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode) // Has a variable return type and is not a void, but is a sub function

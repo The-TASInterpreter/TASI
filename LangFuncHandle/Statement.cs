@@ -132,7 +132,14 @@ namespace TASI
 
 
                 default:
-                    throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
+                    if (commandLine.commands.Count != 1)
+                        throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
+                    var checkIfExist = accessableObjects.customStatements.FirstOrDefault(x => x.statementType == CustomStatement.StatementType.statement && x.statementName == commandLine.commands[0].commandText, null);
+                    if (checkIfExist != null)
+                        Console.WriteLine();
+                    else
+                        throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
+                    return null;
             }
         }
         public static Value GetValueOfCommandLine(CommandLine commandLine, Value.ValueType expectedType, AccessableObjects accessableObjects)
@@ -310,6 +317,12 @@ namespace TASI
                     {
                         return new(Value.ValueType.num, result);
                     }
+
+
+                    var checkIfExist = accessableObjects.customStatements.FirstOrDefault(x => x.statementType == CustomStatement.StatementType.returnstatement && x.statementName == commands[0].commandText, null);
+                    if (checkIfExist != null)
+                        Console.WriteLine();
+
                     commands[0].commandText = commands[0].commandText.ToLower();
                     foreach (Var var in accessableObjects.accessableVars)
                         if (var.varConstruct.name == commands[0].commandText)

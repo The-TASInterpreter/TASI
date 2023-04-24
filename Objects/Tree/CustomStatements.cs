@@ -14,13 +14,14 @@ namespace TASI
         }
         public StatementType statementType;
         public TreeElement treeElement;
+        public string statementName;
 
 
-        public CustomStatement(StatementType statementType, TreeElement treeElement)
+        public CustomStatement(StatementType statementType, TreeElement treeElement, string statementName)
         {
             this.statementType = statementType;
             this.treeElement = treeElement;
-
+            this.statementName = statementName;
         }
     }
 }

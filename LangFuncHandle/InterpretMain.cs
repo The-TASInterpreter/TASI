@@ -206,11 +206,11 @@ namespace TASI
 
 
                                 if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "")), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, ""), new()), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                                 Value? setToValue = null;
                                 if (commandLine.commands.Count == 4)
                                 {
-                                    setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "")));
+                                    setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new()));
                                 }
 
                                 if (commandLine.commands[1].commandText == "all")
@@ -308,13 +308,13 @@ namespace TASI
                 if (commands[0].commandType != Command.CommandTypes.Statement || commands[1].commandType != Command.CommandTypes.Statement)
                     throw new CodeSyntaxException("Invalid use of tree Custom statement initialiser. Correct use:\n<statement: statement type> <statement: statement name>;\nor\n<statement: statement type> <statement: statement name> : <value: provide with value>;\nCorrect statement types are:\nreturnStatement\nstatement");
                 if (!Enum.TryParse(commands[0].commandText.ToLower(), out statement)) throw new CodeSyntaxException($"The statement-type \"{commands[0].commandText}\" doesn't exist.");
-                return new(statement, new(TreeElement.ElementType.Always, null, null, true));
+                return new(statement, new(TreeElement.ElementType.Always, null, null, true), commands[1].commandText.ToLower());
             }
             if (commands.Count < 4 || commands[2].commandType != Command.CommandTypes.Statement || commands[2].commandText != ":")
                 throw new CodeSyntaxException("Invalid use of tree Custom statement initialiser. Correct use:\n<statement: statement type> <statement: statement name>;\nor\n<statement: statement type> <statement: statement name> : <value: provide with value>;\nCorrect statement types are:\nreturnStatement\nstatement");
             if (!Enum.TryParse(commands[0].commandText.ToLower(), out statement)) throw new CodeSyntaxException($"The statement-type \"{commands[0].commandText}\" doesn't exist.");
 
-            return new(statement, new(TreeElement.ElementType.Always, new(commands.GetRange(3, commands.Count - 3), -1), null, true));
+            return new(statement, new(TreeElement.ElementType.Always, new(commands.GetRange(3, commands.Count - 3), -1), null, true), commands[1].commandText.ToLower());
 
         }
 

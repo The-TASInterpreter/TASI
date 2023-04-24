@@ -60,6 +60,8 @@ namespace TASI
                 if (startCode == null)
                     if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.library)
                         throw new CodeSyntaxException("You can't start a library-type namespace directly.");
+                    else if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.story && startValues.Item2.namespaceFuncitons.Any(x => x.funcName == "start"))
+                        startCode = StringProcess.ConvertLineToCommand($"[{startValues.Item2.Name}.start]");
                     else
                         throw new CodeSyntaxException("You need to define a start. You can use the start statement to do so.");
 
@@ -81,7 +83,7 @@ namespace TASI
                     }
 
                 }
-                foreach (Command command in startValues.Item1)
+                foreach (Command command in startCode)
                 {
                     Global.currentLine = command.commandLine;
                     if (command.commandType == Command.CommandTypes.FunctionCall) command.FunctionCall.SearchCallFunction(startValues.Item2);
@@ -90,7 +92,7 @@ namespace TASI
                 }
 
 
-                InterpretMain.InterpretNormalMode(startCode, new(new(), startValues.Item2));
+                InterpretMain.InterpretNormalMode(startCode, new(new(), startValues.Item2, new()));
                 codeRuntime.Stop();
                 Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
                 Console.ReadKey(false);
@@ -98,7 +100,7 @@ namespace TASI
             }
             catch (Exception ex)
             {
-                
+
                 Console.Clear();
 
                 switch (ex)
@@ -135,13 +137,13 @@ namespace TASI
 
 
                 Console.ReadKey();
-                
+
 
             }
 
 
             return;
-                
+
 
         }
     }

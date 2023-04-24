@@ -80,7 +80,14 @@ namespace TASI
                                 if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.Calculation.InitFunctions(namespaceInfo);
                             }
                         }
+
+                        foreach (CustomStatement customStatement in function.customStatements)
+                        {
+                            customStatement.treeElement
+                        }
+
                     }
+
 
                 }
                 foreach (Command command in startCode)

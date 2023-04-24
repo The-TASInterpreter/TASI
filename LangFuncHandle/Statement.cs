@@ -136,10 +136,10 @@ namespace TASI
                         throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
                     var checkIfExist = accessableObjects.customStatements.FirstOrDefault(x => x.statementType == CustomStatement.StatementType.statement && x.statementName == commandLine.commands[0].commandText, null);
                     if (checkIfExist != null)
-                        Console.WriteLine();
+                        return checkIfExist.treeElement.SimulateTree(Statement.GetValueOfCommandLine(checkIfExist.treeElement.provide, accessableObjects), accessableObjects, out bool aintGonnUseThat);
                     else
                         throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
-                    return null;
+                    
             }
         }
         public static Value GetValueOfCommandLine(CommandLine commandLine, Value.ValueType expectedType, AccessableObjects accessableObjects)
@@ -321,7 +321,8 @@ namespace TASI
 
                     var checkIfExist = accessableObjects.customStatements.FirstOrDefault(x => x.statementType == CustomStatement.StatementType.returnstatement && x.statementName == commands[0].commandText, null);
                     if (checkIfExist != null)
-                        Console.WriteLine();
+                        return checkIfExist.treeElement.SimulateTree(Statement.GetValueOfCommandLine(checkIfExist.treeElement.provide, accessableObjects), accessableObjects, out bool aintGonnUseThat) ?? throw new Exception("A custom return statement gotta return something.");
+
 
                     commands[0].commandText = commands[0].commandText.ToLower();
                     foreach (Var var in accessableObjects.accessableVars)

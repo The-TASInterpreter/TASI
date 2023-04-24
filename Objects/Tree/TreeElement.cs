@@ -23,7 +23,10 @@
                                 if (treeElement.elementType == ElementType.Break && foundInternalMatchTracker)
                                     return null;
                                 if (!(treeElement.elementType == ElementType.Else && foundInternalMatchTracker))
-                                    returnedValue = treeElement.SimulateTree(Statement.GetValueOfCommandLine(provide, accessableObjects), accessableObjects, out foundInternalMatch);
+                                    if (provide == null)
+                                        returnedValue = treeElement.SimulateTree(null, accessableObjects, out foundInternalMatch);
+                                    else
+                                        returnedValue = treeElement.SimulateTree(Statement.GetValueOfCommandLine(provide, accessableObjects), accessableObjects, out foundInternalMatch);
                                 if (foundInternalMatch) foundInternalMatchTracker = true;
                                 if (returnedValue != null) return returnedValue;
                             }
@@ -37,7 +40,29 @@
                     return null;
                 case ElementType.Always or ElementType.Else:
                     foundMatch = false;
-                    return InterpretMain.InterpretNormalMode(doCode.commands, accessableObjects);
+                    if (isBranch)
+                    {
+                        bool foundInternalMatchTracker = false;
+                        bool foundInternalMatch = false;
+                        foreach (TreeElement treeElement in subBranch)
+                        {
+                            Value returnedValue = null;
+                            if (treeElement.elementType == ElementType.Break && foundInternalMatchTracker)
+                                return null;
+                            if (!(treeElement.elementType == ElementType.Else && foundInternalMatchTracker))
+                                if (provide == null)
+                                    returnedValue = treeElement.SimulateTree(null, accessableObjects, out foundInternalMatch);
+                                else
+                                    returnedValue = treeElement.SimulateTree(Statement.GetValueOfCommandLine(provide, accessableObjects), accessableObjects, out foundInternalMatch);
+                            if (foundInternalMatch) foundInternalMatchTracker = true;
+                            if (returnedValue != null) return returnedValue;
+                        }
+                    }
+                    else
+                    {
+                        return InterpretMain.InterpretNormalMode(doCode.commands, accessableObjects);
+                    }
+                    return null;
                 case ElementType.Check:
                     valueOfCheck = Statement.GetValueOfCommandLine(checkLine, accessableObjects);
                     if (valueOfCheck.GetBoolValue)
@@ -53,8 +78,10 @@
                                 if (treeElement.elementType == ElementType.Break && foundInternalMatchTracker)
                                     return null;
                                 if (!(treeElement.elementType == ElementType.Else && foundInternalMatchTracker))
-                                    returnedValue = treeElement.SimulateTree(Statement.GetValueOfCommandLine(provide, accessableObjects), accessableObjects, out foundInternalMatch);
-                                if (foundInternalMatch) foundInternalMatchTracker = true;
+                                    if (provide == null)
+                                        returnedValue = treeElement.SimulateTree(null, accessableObjects, out foundInternalMatch);
+                                    else
+                                        returnedValue = treeElement.SimulateTree(Statement.GetValueOfCommandLine(provide, accessableObjects), accessableObjects, out foundInternalMatch); if (foundInternalMatch) foundInternalMatchTracker = true;
                                 if (returnedValue != null) return returnedValue;
                             }
                         }
@@ -79,7 +106,7 @@
             Break       // -;
         }
 
-        public TreeElement(ElementType elementType, CommandLine? commandLine0, CommandLine? doCode, bool isBranch)
+        public TreeElement(ElementType elementType, CommandLine? commandLine0, CommandLine? doCode, bool isBranch, CommandLine? provide)
         {
             this.elementType = elementType;
             switch (elementType)
@@ -104,7 +131,17 @@
             if (isBranch)
                 subBranch = new();
             this.isBranch = isBranch;
+            this.provide = provide;
         }
+
+        public void ActivateFunctions(NamespaceInfo currentNamespace)
+        {
+            if (checkLine != null) checkLine.ActivateFunction(currentNamespace);
+            if (doCode != null) doCode.ActivateFunction(currentNamespace);
+            if (provide != null) provide.ActivateFunction(currentNamespace);
+            foreach (TreeElement treeElement in subBranch) treeElement.ActivateFunctions(currentNamespace);
+        }
+
 
         public ElementType elementType;
         public List<TreeElement>? subBranch;

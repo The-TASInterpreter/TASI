@@ -308,13 +308,13 @@ namespace TASI
                 if (commands[0].commandType != Command.CommandTypes.Statement || commands[1].commandType != Command.CommandTypes.Statement)
                     throw new CodeSyntaxException("Invalid use of tree Custom statement initialiser. Correct use:\n<statement: statement type> <statement: statement name>;\nor\n<statement: statement type> <statement: statement name> : <value: provide with value>;\nCorrect statement types are:\nreturnStatement\nstatement");
                 if (!Enum.TryParse(commands[0].commandText.ToLower(), out statement)) throw new CodeSyntaxException($"The statement-type \"{commands[0].commandText}\" doesn't exist.");
-                return new(statement, new(TreeElement.ElementType.Always, null, null, true), commands[1].commandText.ToLower());
+                return new(statement, new(TreeElement.ElementType.Always, null, null, true, null), commands[1].commandText.ToLower());
             }
             if (commands.Count < 4 || commands[2].commandType != Command.CommandTypes.Statement || commands[2].commandText != ":")
                 throw new CodeSyntaxException("Invalid use of tree Custom statement initialiser. Correct use:\n<statement: statement type> <statement: statement name>;\nor\n<statement: statement type> <statement: statement name> : <value: provide with value>;\nCorrect statement types are:\nreturnStatement\nstatement");
             if (!Enum.TryParse(commands[0].commandText.ToLower(), out statement)) throw new CodeSyntaxException($"The statement-type \"{commands[0].commandText}\" doesn't exist.");
 
-            return new(statement, new(TreeElement.ElementType.Always, new(commands.GetRange(3, commands.Count - 3), -1), null, true), commands[1].commandText.ToLower());
+            return new(statement, new(TreeElement.ElementType.Always, null, null, true, new(commands.GetRange(3, commands.Count - 3), -1)), commands[1].commandText.ToLower());
 
         }
 
@@ -341,19 +341,19 @@ namespace TASI
                 switch (currentStatement[0].commandText)
                 {
                     case "|§>":
-                        currentElement = new(TreeElement.ElementType.Check, new(new(), -1), null, true);
+                        currentElement = new(TreeElement.ElementType.Check, new(new(), -1), null, true, null);
                         break;
                     case "|=>":
-                        currentElement = new(TreeElement.ElementType.Else, new(new(), -1), null, false);
+                        currentElement = new(TreeElement.ElementType.Else, new(new(), -1), null, false, null);
                         break;
                     case "|>":
-                        currentElement = new(TreeElement.ElementType.Compare, new(new(), -1), null, true);
+                        currentElement = new(TreeElement.ElementType.Compare, new(new(), -1), null, true, null);
                         break;
                     case "|":
-                        currentElement = new(TreeElement.ElementType.Always, new(new(), -1), null, false);
+                        currentElement = new(TreeElement.ElementType.Always, new(new(), -1), null, false, null);
                         break;
                     case "-":
-                        currentElement = new(TreeElement.ElementType.Break, null, null, false);
+                        currentElement = new(TreeElement.ElementType.Break, null, null, false, null);
                         break;
                     default:
                         throw new CodeSyntaxException($"\"{command.commandText}\" is not a recognices tree statement.");

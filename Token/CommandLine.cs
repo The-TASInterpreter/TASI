@@ -1,4 +1,5 @@
 ﻿using DataTypeStore;
+using static TASI.Command;
 
 namespace TASI
 {
@@ -7,7 +8,16 @@ namespace TASI
         public List<Command> commands;
         public long lineIDX;
 
-
+        public void ActivateFunction(NamespaceInfo namespaceInfo)
+        {
+            foreach (Command code in commands)
+            {
+                Global.currentLine = code.commandLine;
+                if (code.commandType == Command.CommandTypes.FunctionCall) code.FunctionCall.SearchCallFunction(namespaceInfo);
+                if (code.commandType == CommandTypes.CodeContainer) code.initCodeContainerFunctions(namespaceInfo);
+                if (code.commandType == CommandTypes.Calculation) code.Calculation.InitFunctions(namespaceInfo);
+            }
+        }
 
         public CommandLine(Region region)
         {

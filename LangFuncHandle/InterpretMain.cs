@@ -1,8 +1,4 @@
-﻿
-
-using System.Runtime.CompilerServices;
-
-namespace TASI
+﻿namespace TASI
 {
     internal class InterpretMain
     {
@@ -252,7 +248,7 @@ namespace TASI
                 if (statement != null)
                 {
                     InterpretMainBranches(statement.codeContainerCommands, thisNamespace);
-                } 
+                }
             }
             else if (statement != null) throw new CodeSyntaxException("You can only use the statement statement with story namespace types.");
 
@@ -283,7 +279,7 @@ namespace TASI
                 Function? accessFunction = thisNamespace.namespaceFuncitons.FirstOrDefault(x => x.funcName == currentStatement[1].commandText, null);
                 if (accessFunction == null)
                 {
-                    thisNamespace.namespaceFuncitons.Add(new(currentStatement[1].commandText, VarConstruct.VarType.@void, thisNamespace, new List<List<VarConstruct>>() {new List<VarConstruct>()}, StringProcess.ConvertLineToCommand("ask; return;", -1))); //Generate default function if function wasn't defined.
+                    thisNamespace.namespaceFuncitons.Add(new(currentStatement[1].commandText, VarConstruct.VarType.@void, thisNamespace, new List<List<VarConstruct>>() { new List<VarConstruct>() }, StringProcess.ConvertLineToCommand("ask; return;", -1))); //Generate default function if function wasn't defined.
                     accessFunction = thisNamespace.namespaceFuncitons.Last();
                 }
                 accessFunction.customStatements = InterpretCustomStatements(currentStatement[2].codeContainerCommands);
@@ -381,7 +377,7 @@ namespace TASI
                         }
                         input.Add(command1);
                     }
-                    
+
                 }
                 if (!currentElement.isBranch)
                 {
@@ -437,12 +433,12 @@ namespace TASI
                     throw new CodeSyntaxException("Seems like you had one too many semicolon.");
                 }
 
-               
-                    currentCreatingCustomStatement = InterpretCustomStatementInit(currentStatement);
-                    currentCreatingCustomStatement.treeElement.subBranch = InterpretTreeElement(commands.GetRange(i + 1, commands.Count - (1 + i)), out int ended);
-                    i += ended + 1;
-                    result.Add(currentCreatingCustomStatement);
-                
+
+                currentCreatingCustomStatement = InterpretCustomStatementInit(currentStatement);
+                currentCreatingCustomStatement.treeElement.subBranch = InterpretTreeElement(commands.GetRange(i + 1, commands.Count - (1 + i)), out int ended);
+                i += ended + 1;
+                result.Add(currentCreatingCustomStatement);
+
 
 
                 currentStatement = new();
@@ -514,8 +510,16 @@ namespace TASI
                         throw new NotImplementedException($"You can't use a {command.commandType}-type directly.");
                 }
             }
+
+            if (statementMode)
+            {
+                returnValue = Statement.StaticStatement(commandLine, accessableObjects);
+                if (returnValue != null)
+                    return returnValue;
+            }
             return null;
         }
+
         public static Function? FindFunctionUsingFunctionPath(string functionPath)
         {
             foreach (Function function in Global.AllFunctions)

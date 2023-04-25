@@ -183,7 +183,7 @@ namespace TASI
         }
         public static Value GetValueOfCommandLine(CommandLine commandLine, AccessableObjects accessableObjects)
         {
-
+            Global.currentLine = commandLine.commands[0].commandLine;
             switch (commandLine.commands[0].commandType)//Check var type thats provided
             {
                 case Command.CommandTypes.FunctionCall:
@@ -304,6 +304,9 @@ namespace TASI
                     returnValueFromVar = new(foundLinkableVar.VarValue);
                     returnValueFromVar.comesFromVarValue = foundLinkableVar;
                     return returnValueFromVar;
+                case "isaprilfools":
+                    if (commands.Count != 1) throw new CodeSyntaxException("Incorrect use of isAprilFools return-statement. Correct use:\nisAprilFools");
+                    return new(Value.ValueType.@bool, DateTime.Now.Month == 4 && DateTime.Now.Day == 1 && new Random().Next(0, 20) == 1);
 
 
 
@@ -325,10 +328,10 @@ namespace TASI
                     var checkIfExist = accessableObjects.customStatements.FirstOrDefault(x => x.statementType == CustomStatement.StatementType.returnstatement && x.statementName == commands[0].commandText, null);
                     if (checkIfExist != null)
                         if (checkIfExist.treeElement.provide == null)
-                            return checkIfExist.treeElement.SimulateTree(null, accessableObjects, out bool aintGonnUseThat) ?? throw new Exception("A custom return statement gotta return something.");
+                            return checkIfExist.treeElement.SimulateTree(null, accessableObjects, out bool aintGonnUseThat) ?? throw new CodeSyntaxException("A custom return statement gotta return something.");
 
                         else
-                            return checkIfExist.treeElement.SimulateTree(Statement.GetValueOfCommandLine(checkIfExist.treeElement.provide, accessableObjects), accessableObjects, out bool aintGonnUseThat) ?? throw new Exception("A custom return statement gotta return something.");
+                            return checkIfExist.treeElement.SimulateTree(Statement.GetValueOfCommandLine(checkIfExist.treeElement.provide, accessableObjects), accessableObjects, out bool aintGonnUseThat) ?? throw new CodeSyntaxException( "A custom return statement gotta return something.");
 
 
                     commands[0].commandText = commands[0].commandText.ToLower();

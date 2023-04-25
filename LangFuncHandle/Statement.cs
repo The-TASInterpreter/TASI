@@ -136,10 +136,8 @@ namespace TASI
                         throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
                     var checkIfExist = accessableObjects.customStatements.FirstOrDefault(x => x.statementType == CustomStatement.StatementType.statement && x.statementName == commandLine.commands[0].commandText, null);
                     if (checkIfExist != null)
-                        if (checkIfExist.treeElement.provide == null)
-                            return checkIfExist.treeElement.SimulateTree(null, accessableObjects, out bool aintGonnUseThat) ?? throw new Exception("A custom return statement gotta return something.");
-                        else
-                            return checkIfExist.treeElement.SimulateTree(Statement.GetValueOfCommandLine(checkIfExist.treeElement.provide, accessableObjects), accessableObjects, out bool aintGonnUseThat) ?? throw new Exception("A custom return statement gotta return something.");
+                            return checkIfExist.treeElement.SimulateTree(null, accessableObjects, out bool aintGonnUseThat) ?? throw new CodeSyntaxException("A custom return statement gotta return something.");
+                        
                     else
                         throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
 

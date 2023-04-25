@@ -54,9 +54,20 @@
                 case "program.exit":
                     Environment.Exit(0);
                     return null;
+                case "string.getletter":
+                    try
+                    {
+                        return new(Value.ValueType.@string, input[0].StringValue[Convert.ToInt32(input[1].NumValue)]);
+                    }
+                    catch (Exception)
+                    {
+                        throw new RuntimeCodeExecutionFailException("Invalid index of string.getletter", "InternalMethodException");
+                    }
+                case "string.tolower":
+                    return new(Value.ValueType.@string, input[0].StringValue.ToLower());
 
 
-                    
+
 
 
 

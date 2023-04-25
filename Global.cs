@@ -70,6 +70,15 @@
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "Prompt")}
             }, new());
 
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "String"));
+            allLoadedFiles.Add("*internal");
+            new Function("ToLower", VarConstruct.VarType.@string, Namespaces[6], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "Input")}
+            }, new());
+            new Function("GetLetter", VarConstruct.VarType.@string, Namespaces[6], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "InputString"), new(VarConstruct.VarType.num, "Number") }
+            }, new());
+
         }
     }
 }

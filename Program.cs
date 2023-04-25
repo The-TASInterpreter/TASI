@@ -83,7 +83,7 @@ namespace TASI
 
                         foreach (CustomStatement customStatement in function.customStatements)
                         {
-                            customStatement.treeElement
+                            customStatement.treeElement.ActivateFunctions(namespaceInfo);
                         }
 
                     }

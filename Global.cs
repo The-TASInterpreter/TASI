@@ -5,16 +5,16 @@
         public static List<NamespaceInfo> Namespaces = new List<NamespaceInfo>();
         public static List<string> allLoadedFiles = new(); //It is important, that allLoadedFiles and Namespaces corrospond
         public static List<Function> AllFunctions = new List<Function>();
-        
+
         public static List<Var> globalVars = new List<Var>();
 
         public static bool debugMode = false;
         public static int currentLine;
         public static List<FunctionCall> allFunctionCalls = new();
         public static string mainFilePath;
-        
-        
-        
+
+
+
         public static void InitInternalNamespaces()
         {
             Namespaces = new();
@@ -48,6 +48,9 @@
                 new List<VarConstruct> {},
                 new List<VarConstruct> {new(VarConstruct.VarType.@bool, "showPausedMessage")}
             }, new());
+            new Function("Exit", VarConstruct.VarType.@void, Namespaces[2], new List<List<VarConstruct>> {
+                new List<VarConstruct> {}
+            }, new());
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Inf"));
             allLoadedFiles.Add("*internal");
@@ -58,6 +61,13 @@
             allLoadedFiles.Add("*internal");
             new Function("ToNum", VarConstruct.VarType.num, Namespaces[4], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "ConvertFrom"), new(VarConstruct.VarType.@bool, "errorOnParseFail")}
+            }, new());
+
+
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Story"));
+            allLoadedFiles.Add("*internal");
+            new Function("AskQuestion", VarConstruct.VarType.@string, Namespaces[5], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "Prompt")}
             }, new());
 
         }

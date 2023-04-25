@@ -139,7 +139,8 @@
             if (checkLine != null) checkLine.ActivateFunction(currentNamespace);
             if (doCode != null) doCode.ActivateFunction(currentNamespace);
             if (provide != null) provide.ActivateFunction(currentNamespace);
-            foreach (TreeElement treeElement in subBranch) treeElement.ActivateFunctions(currentNamespace);
+            if (subBranch != null)
+                foreach (TreeElement treeElement in subBranch) treeElement.ActivateFunctions(currentNamespace);
         }
 
 

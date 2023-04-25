@@ -46,10 +46,17 @@
                             throw new CodeSyntaxException("Can't convert string in current format to double.");
                         else
                             return new(Value.ValueType.num, double.NaN);
-
-
-
                     return new(Value.ValueType.num, result);
+
+                case "story.askquestion":
+                    Console.WriteLine(input[0].StringValue);
+                    return new(Value.ValueType.@string, Console.ReadLine() ?? throw new RuntimeCodeExecutionFailException("Console.ReadLine did return null.", "InternalMethodException"));
+                case "program.exit":
+                    Environment.Exit(0);
+                    return null;
+
+
+                    
 
 
 

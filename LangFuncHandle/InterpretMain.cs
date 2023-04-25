@@ -260,11 +260,12 @@
 
         public static void InterpretMainBranches(List<Command> commands, NamespaceInfo thisNamespace)
         {
-
+            
             List<Command> currentStatement = new();
             for (int i = 0; i < commands.Count; i++)
             {
                 Command command = commands[i];
+                Global.currentLine = command.commandLine;
                 if (command.commandType != Command.CommandTypes.EndCommand)
                 {
                     currentStatement.Add(command);

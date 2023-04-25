@@ -5,6 +5,9 @@
 
         public Value? SimulateTree(Value? provided, AccessableObjects accessableObjects, out bool foundMatch)
         {
+            if (doCode != null && doCode.commands.Count == 1 && doCode.commands[0].commandType == Command.CommandTypes.CodeContainer)
+                doCode = new(doCode.commands[0].codeContainerCommands, -1);
+
             switch (elementType)
             {
                 case ElementType.Compare:
@@ -15,6 +18,8 @@
                         foundMatch = true;
                         if (isBranch)
                         {
+                            if (provide != null)
+                                provided = Statement.GetValueOfCommandLine(provide, accessableObjects);
                             bool foundInternalMatchTracker = false;
                             bool foundInternalMatch = false;
                             foreach (TreeElement treeElement in subBranch)
@@ -26,7 +31,7 @@
                                     if (provide == null)
                                         returnedValue = treeElement.SimulateTree(null, accessableObjects, out foundInternalMatch);
                                     else
-                                        returnedValue = treeElement.SimulateTree(Statement.GetValueOfCommandLine(provide, accessableObjects), accessableObjects, out foundInternalMatch);
+                                        returnedValue = treeElement.SimulateTree(provided, accessableObjects, out foundInternalMatch);
                                 if (foundInternalMatch) foundInternalMatchTracker = true;
                                 if (returnedValue != null) return returnedValue;
                             }
@@ -42,6 +47,8 @@
                     foundMatch = false;
                     if (isBranch)
                     {
+                        if (provide != null)
+                            provided = Statement.GetValueOfCommandLine(provide, accessableObjects);
                         bool foundInternalMatchTracker = false;
                         bool foundInternalMatch = false;
                         foreach (TreeElement treeElement in subBranch)
@@ -53,7 +60,7 @@
                                 if (provide == null)
                                     returnedValue = treeElement.SimulateTree(null, accessableObjects, out foundInternalMatch);
                                 else
-                                    returnedValue = treeElement.SimulateTree(Statement.GetValueOfCommandLine(provide, accessableObjects), accessableObjects, out foundInternalMatch);
+                                    returnedValue = treeElement.SimulateTree(provided, accessableObjects, out foundInternalMatch);
                             if (foundInternalMatch) foundInternalMatchTracker = true;
                             if (returnedValue != null) return returnedValue;
                         }
@@ -70,6 +77,8 @@
                         foundMatch = true;
                         if (isBranch)
                         {
+                            if (provide != null)
+                                provided = Statement.GetValueOfCommandLine(provide, accessableObjects);
                             bool foundInternalMatchTracker = false;
                             bool foundInternalMatch = false;
                             foreach (TreeElement treeElement in subBranch)
@@ -81,7 +90,7 @@
                                     if (provide == null)
                                         returnedValue = treeElement.SimulateTree(null, accessableObjects, out foundInternalMatch);
                                     else
-                                        returnedValue = treeElement.SimulateTree(Statement.GetValueOfCommandLine(provide, accessableObjects), accessableObjects, out foundInternalMatch); if (foundInternalMatch) foundInternalMatchTracker = true;
+                                        returnedValue = treeElement.SimulateTree(provided, accessableObjects, out foundInternalMatch); if (foundInternalMatch) foundInternalMatchTracker = true;
                                 if (returnedValue != null) return returnedValue;
                             }
                         }

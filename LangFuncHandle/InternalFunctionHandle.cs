@@ -41,7 +41,7 @@
                     accessableObjects.accessableVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType)));
                     return null;
                 case "convert.tonum":
-                    if (!double.TryParse(input[0].StringValue, out double result))
+                    if (!double.TryParse(input[0].StringValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))
                         if (input[1].GetBoolValue)
                             throw new CodeSyntaxException("Can't convert string in current format to double.");
                         else

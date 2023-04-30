@@ -214,7 +214,7 @@ namespace TASI
                         type = Type.@operator;
                         return;
                     }
-                    if (!double.TryParse(command.commandText, out double value))
+                    if (!double.TryParse(command.commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double value))
                     {
                         type = Type.returnStatement;
                         returnStatement = new List<Command>() { command };

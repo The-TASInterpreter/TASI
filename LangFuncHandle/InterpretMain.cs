@@ -110,7 +110,11 @@
                                 thisNamespace.namespaceIntend = result;
                                 break;
                             case "start":
-                                if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new CodeSyntaxException("You can't start while not having defined namespace name and type.\nYou can use the name and type statement to do this.");
+                                if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null)
+                                {
+                                    Tutorial.TutorialPhaseMinusOne();
+                                    throw new CodeSyntaxException("You can't start while not having defined namespace name and type.\nYou can use the name and type statement to do this.");
+                                }
                                 if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.library) throw new CodeSyntaxException("Library type namespaces can't have a start.");
 
                                 if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
@@ -232,7 +236,11 @@
                 }
             }
 
-            if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new CodeSyntaxException("You need to enter name and type for this namespace. You can do that using the name and type statements.");
+            if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null)
+            {
+                Tutorial.TutorialPhaseMinusOne();
+                throw new CodeSyntaxException("You need to enter name and type for this namespace. You can do that using the name and type statements.");
+            }
             if (Global.Namespaces.Any(x => x != thisNamespace && x.Name == thisNamespace.Name)) throw new CodeSyntaxException($"A namespace with the name \"{thisNamespace.Name}\" has already been defined.");
 
 
@@ -253,7 +261,7 @@
         public static Value? InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
         {
             foreach (NamespaceInfo namespaceInfo in accessableObjects.currentNamespace.accessableNamespaces)
-              {
+            {
                 foreach (Var var in namespaceInfo.publicNamespaceVars)
                 {
                     if (accessableObjects.accessableVars.Contains(var)) continue;

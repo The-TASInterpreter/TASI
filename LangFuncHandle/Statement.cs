@@ -1,5 +1,4 @@
-﻿
-namespace TASI
+﻿namespace TASI
 {
 
 
@@ -126,6 +125,24 @@ namespace TASI
                     }
                     accessableObjects.accessableVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
                     return null;
+                case "save":
+                    if (commandLine.commands.Count < 3) throw new CodeSyntaxException("Invalid use of save statement. Correct use: save <string: header> <num value: save slot>");
+                    int slot = (int)Statement.GetValueOfCommandLine(new(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), 0), Value.ValueType.num, accessableObjects).NumValue;
+                    string varSave = Statement.GetValueOfCommandLine(new(new() { commandLine.commands[1]}, -1), Value.ValueType.@string, accessableObjects).StringValue;
+
+
+                    if (slot < 0 || slot > 10) throw new CodeSyntaxException("Invalid use of save statement. You can only save to slots from 0 to 10.");
+
+                    foreach (Var var in accessableObjects.currentNamespace.publicNamespaceVars)
+                    {
+                        if (!var.varConstruct.isLink)
+                            varSave += $";{DataTypeStore.DirectValueClearify.EncodeInvalidChars(var.varConstruct.name)};{DataTypeStore.DirectValueClearify.EncodeInvalidChars(var.varConstruct.type.ToString())};{DataTypeStore.DirectValueClearify.EncodeInvalidChars(var.varValueHolder.value.ObjectValue.ToString())}";
+                    }
+                    if (!Directory.Exists(Global.savePath)) throw new CodeSyntaxException("The Global save directory was not specified or is invalid, therefore savefiles can't be made.");
+                    if (varSave.Length > 500000) throw new CodeSyntaxException("Your save has exceeded the maximum allowed lenght of 500,000 chars.");
+                    File.WriteAllText(Path.Combine(Global.savePath, $"{slot}.SaveSlot"), varSave);
+                    return null;
+
 
 
 

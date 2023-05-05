@@ -2,10 +2,11 @@
 {
     internal class Global
     {
+        public static string? savePath = null;
         public static List<NamespaceInfo> Namespaces = new List<NamespaceInfo>();
         public static List<string> allLoadedFiles = new(); //It is important, that allLoadedFiles and Namespaces corrospond
         public static List<Function> AllFunctions = new List<Function>();
-
+        public static bool showError = false;
         public static List<Var> globalVars = new List<Var>();
 
         public static bool debugMode = false;

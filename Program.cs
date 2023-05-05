@@ -2,6 +2,7 @@
 
 
 using System.Diagnostics;
+using TASI.LangFuncHandle;
 using static TASI.Command;
 
 namespace TASI
@@ -17,10 +18,17 @@ namespace TASI
         public static Logger interpretInitLog = new();
         public static void Main(string[] args)
         {
+
+
+
             string? location = null;
-            if (args.Length == 1)
+            if (args.Length >= 1)
             {
                 location = args[0];
+            }
+            if (args.Length == 2)
+            {
+                Global.savePath = args[1];
             }
 
             if (location == null)
@@ -52,19 +60,20 @@ namespace TASI
                 Global.mainFilePath = Path.GetDirectoryName(location);
                 List<Command> commands = LoadFile.ByPath(location);
                 codeRuntime.Start();
+                Console.Clear();
+                Console.WriteLine("Running on: TXTAC Interpreter powered by TASI");
+                Console.WriteLine($"Made by Ekischleki. Version {interpreterVer}");
+                Console.WriteLine("Starting up...");
 
+                var startValues = DoHeaderInterpret(commands, Global.mainFilePath);
+                if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.supervisor)
+                {
+                    if (Supervisor.startFile == null) throw new CodeSyntaxException("A supervisor needs to define its start file. Do that using the \"inf startFile <string: path>\" statement.");
 
-                var startValues = InterpretMain.InterpretHeaders(commands, Global.mainFilePath);
-                Global.currentLine = -1;
-                var startCode = startValues.Item1;
-                if (startCode == null)
-                    if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.library)
-                        throw new CodeSyntaxException("You can't start a library-type namespace directly.");
-                    else if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.story && startValues.Item2.namespaceFuncitons.Any(x => x.funcName == "start"))
-                        startCode = StringProcess.ConvertLineToCommand($"[{startValues.Item2.Name}.start]");
-                    else
-                        throw new CodeSyntaxException("You need to define a start. You can use the start statement to do so.");
-
+                    Global.mainFilePath = Path.GetDirectoryName(Supervisor.startFile);
+                    commands = LoadFile.ByPath(Supervisor.startFile);
+                    startValues = DoHeaderInterpret(commands, Global.mainFilePath);
+                }
 
                 foreach (NamespaceInfo namespaceInfo in Global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
                 {
@@ -90,7 +99,7 @@ namespace TASI
 
 
                 }
-                foreach (Command command in startCode)
+                foreach (Command command in startValues.Item1)
                 {
                     Global.currentLine = command.commandLine;
                     if (command.commandType == Command.CommandTypes.FunctionCall) command.FunctionCall.SearchCallFunction(startValues.Item2);
@@ -99,7 +108,17 @@ namespace TASI
                 }
 
 
-                InterpretMain.InterpretNormalMode(startCode, new(new(), startValues.Item2, new()));
+
+                checked
+                {
+                    Console.WriteLine("Done starting up!");
+                    int sleepTime = 1500 - (int)codeRuntime.ElapsedMilliseconds;
+                    if (sleepTime > 0)
+                        Thread.Sleep(sleepTime); // It should not overflow, but if it does, it'll just be stuck forever and nobody wants that
+                }
+
+                Console.Clear();
+                InterpretMain.InterpretNormalMode(startValues.Item1, new(new(), startValues.Item2, new()));
                 codeRuntime.Stop();
                 Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
                 Console.ReadKey(false);
@@ -124,6 +143,7 @@ namespace TASI
                             Console.WriteLine($"\nThe error happened on line: {Global.currentLine + 1}");
                         Console.WriteLine("The error message is:");
                         Console.WriteLine(ex.Message);
+                        Exit("CSE"); // Code syntax error
                         break;
                     default:
                         Console.WriteLine("There was an internal error in the compiler.");
@@ -134,24 +154,49 @@ namespace TASI
                         Console.WriteLine(ex.Message);
                         Console.WriteLine("Here is the stack trace:");
                         Console.WriteLine(ex.StackTrace);
+                        Exit("IIE"); // Internal interpreter error
                         break;
                     case RuntimeCodeExecutionFailException runtimeException:
                         Console.WriteLine("The code threw a fail, because it couldn't take it anymore or smt...");
                         Console.WriteLine($"The fail type is:\n{runtimeException.exceptionType}");
                         Console.WriteLine($"The fail message is:\n{runtimeException.Message}");
+                        Exit("CCE"); // Code crashed error
                         break;
                 }
 
-
-                Console.ReadKey();
+                if (Global.showError)
+                    Console.ReadKey();
+                else
+                    Console.Clear();
 
 
             }
 
-
             return;
 
 
+        }
+        public static Tuple<List<Command>?, NamespaceInfo?> DoHeaderInterpret(List<Command> commands, string filePath)
+        {
+            var startValues = InterpretMain.InterpretHeaders(commands, Global.mainFilePath);
+            Global.currentLine = -1;
+            var startCode = startValues.Item1;
+            if (startCode == null && startValues.Item2.namespaceIntend != NamespaceInfo.NamespaceIntend.supervisor)
+                if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.library)
+                    throw new CodeSyntaxException($"You can't start a {startValues.Item2.namespaceIntend}-type namespace directly.");
+                else if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.story && startValues.Item2.namespaceFuncitons.Any(x => x.funcName == "start"))
+                    startCode = StringProcess.ConvertLineToCommand($"[{startValues.Item2.Name}.start]");
+                else
+                    throw new CodeSyntaxException("You need to define a start. You can use the start statement to do so.");
+            return startValues;
+        }
+        public static void Exit(string exitCode)
+        {
+            if (Supervisor.reportExit != null)
+            {
+                File.WriteAllText(Supervisor.reportExit, exitCode);
+            }
+            return;
         }
     }
 }

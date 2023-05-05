@@ -1,4 +1,6 @@
-﻿namespace TASI
+﻿using TASI.LangFuncHandle;
+
+namespace TASI
 {
     internal class InterpretMain
     {
@@ -117,6 +119,13 @@
                                 if (thisNamespace.namespaceIntend != NamespaceInfo.NamespaceIntend.nonedef) throw new CodeSyntaxException("Type can't be defined twice.");
                                 if (!Enum.TryParse<NamespaceInfo.NamespaceIntend>(commandLine.commands[1].commandText.ToLower(), out NamespaceInfo.NamespaceIntend result)) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 thisNamespace.namespaceIntend = result;
+                                break;
+                            case "inf":
+                                if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal) throw new CodeSyntaxException("You need to define the namespace type before you can use type specific statements");
+                                if (thisNamespace.namespaceIntend != NamespaceInfo.NamespaceIntend.supervisor) throw new CodeSyntaxException("You can only use the inf statement with a supervisor type namespace");
+                                if (commandLine.commands.Count != 3) throw new CodeSyntaxException("Invalid usage of inf statement.\nCorrect usage: type <statement: infName> <value: infValue>;\nPossible types are: Supervisor, Generic, Internal, Library.");
+                                Supervisor.SetInf(commandLine.commands[1].commandText, Statement.GetValueOfCommandLine(new(new() { commandLine.commands[2] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.@internal, ""), new())));
+
                                 break;
                             case "start":
                                 if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null) throw new CodeSyntaxException("You can't start while not having defined namespace name and type.\nYou can use the name and type statement to do this.");

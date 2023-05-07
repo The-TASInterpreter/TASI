@@ -121,7 +121,6 @@ namespace TASI
                 InterpretMain.InterpretNormalMode(startValues.Item1, new(new(), startValues.Item2, new()));
                 codeRuntime.Stop();
                 Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
-                Console.ReadKey(false);
 
             }
             catch (Exception ex)
@@ -163,15 +162,14 @@ namespace TASI
                         Exit("CCE"); // Code crashed error
                         break;
                 }
-
                 if (Global.showError)
                     Console.ReadKey();
                 else
                     Console.Clear();
-
+                return;
 
             }
-
+            Exit("SUCCESS");
             return;
 
 

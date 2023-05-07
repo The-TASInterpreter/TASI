@@ -127,8 +127,9 @@
                     return null;
                 case "save":
                     if (commandLine.commands.Count < 3) throw new CodeSyntaxException("Invalid use of save statement. Correct use: save <string: header> <num value: save slot>");
+
                     int slot = (int)Statement.GetValueOfCommandLine(new(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), 0), Value.ValueType.num, accessableObjects).NumValue;
-                    string varSave = Statement.GetValueOfCommandLine(new(new() { commandLine.commands[1]}, -1), Value.ValueType.@string, accessableObjects).StringValue;
+                    string varSave = Statement.GetValueOfCommandLine(new(new() { commandLine.commands[1] }, -1), Value.ValueType.@string, accessableObjects).StringValue;
 
 
                     if (slot < 0 || slot > 10) throw new CodeSyntaxException("Invalid use of save statement. You can only save to slots from 0 to 10.");
@@ -142,8 +143,18 @@
                     if (varSave.Length > 500000) throw new CodeSyntaxException("Your save has exceeded the maximum allowed lenght of 500,000 chars.");
                     File.WriteAllText(Path.Combine(Global.savePath, $"{slot}.SaveSlot"), varSave);
                     return null;
+                case "savec":
+                    if (commandLine.commands.Count < 3) throw new CodeSyntaxException("Invalid use of savec statement. Correct use: save <string: customSaveString> <num value: save slot>");
+
+                    slot = (int)Statement.GetValueOfCommandLine(new(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), 0), Value.ValueType.num, accessableObjects).NumValue;
+                    varSave = Statement.GetValueOfCommandLine(new(new() { commandLine.commands[1] }, -1), Value.ValueType.@string, accessableObjects).StringValue;
 
 
+                    if (slot < 0 || slot > 10) throw new CodeSyntaxException("Invalid use of savec statement. You can only save to slots from 0 to 10.");
+                    if (!Directory.Exists(Global.savePath)) throw new CodeSyntaxException("The Global save directory was not specified or is invalid, therefore savefiles can't be made.");
+                    if (varSave.Length > 500000) throw new CodeSyntaxException("Your save has exceeded the maximum allowed lenght of 500,000 chars.");
+                    File.WriteAllText(Path.Combine(Global.savePath, $"{slot}.SaveSlot"), varSave);
+                    return null;
 
 
 
@@ -322,7 +333,13 @@
                 case "isaprilfools":
                     if (commands.Count != 1) throw new CodeSyntaxException("Incorrect use of isAprilFools return-statement. Correct use:\nisAprilFools");
                     return new(Value.ValueType.@bool, DateTime.Now.Month == 4 && DateTime.Now.Day == 1 && new Random().Next(0, 20) == 1);
+                case "loadc":
+                    if (commands.Count != 2) throw new CodeSyntaxException("Invalid use of loadc statement. Correct use: loadc <num value: save slot>");
+                    int slot = (int)Statement.GetValueOfCommandLine(new(new() { commands[1] }, -1), Value.ValueType.num, accessableObjects).NumValue;
+                    if (slot < 0 || slot > 10) throw new CodeSyntaxException("Invalid use of loadc statement. You can only load from slots from 0 to 10.");
+                    if (!Directory.Exists(Global.savePath)) throw new CodeSyntaxException("The Global save directory was not specified or is invalid, therefore savefiles can't be made.");
 
+                    return new(Value.ValueType.@string, File.ReadAllText(Path.Combine(Global.savePath, $"{slot}.SaveSlot")));
 
 
 

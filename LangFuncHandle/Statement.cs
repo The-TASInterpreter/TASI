@@ -44,7 +44,7 @@ namespace TASI
                         throw new CodeSyntaxException("Invalid stuff in while loop I hate writeing these messages pls kill me");
                     List<Command> code = commandLine.commands[checkStatement.commands.Count + 1].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list.");
 
-                    while (GetValueOfCommandLine(checkStatement, accessableObjects).GetBoolValue)
+                    while (GetValueOfCommandLine(checkStatement, accessableObjects).BoolValue)
                     {
                         returnValue = InterpretMain.InterpretNormalMode(code, accessableObjects);
                         if (returnValue != null) return returnValue;
@@ -59,7 +59,7 @@ namespace TASI
 
                     if (commandLine.commands.Count == 3)
                     {
-                        if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
+                        if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).BoolValue)
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue != null) return returnValue;
@@ -72,7 +72,7 @@ namespace TASI
                             throw new CodeSyntaxException("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                         if (commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer)
                             throw new CodeSyntaxException("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
-                        if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).GetBoolValue)
+                        if (GetValueOfCommandLine(new(new List<Command> { commandLine.commands[1] }, -1), accessableObjects).BoolValue)
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                             if (returnValue != null) return returnValue;
@@ -273,7 +273,7 @@ namespace TASI
                     Value? returnValue = null;
                     if (commands.Count != 5 || commands[2].commandType != Command.CommandTypes.CodeContainer || commands[3].commandType != Command.CommandTypes.Statement || commands[3].commandText.ToLower() != "else" || commands[4].commandType != Command.CommandTypes.CodeContainer)
                         throw new CodeSyntaxException("Invalid return-type if statement; Correct usage:\nif <code container> else <code container>");
-                    if (GetValueOfCommandLine(new(new List<Command> { commands[1] }, -1), accessableObjects).GetBoolValue)
+                    if (GetValueOfCommandLine(new(new List<Command> { commands[1] }, -1), accessableObjects).BoolValue)
                         returnValue = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                     else
                         returnValue = InterpretMain.InterpretNormalMode(commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
@@ -283,7 +283,7 @@ namespace TASI
                         throw new CodeSyntaxException("The return-type if statemtent didn't return anything");
                 case "do":
                     if (commands.Count != 2 || commands[1].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of do return-statement. Correct usage:\ndo <code container>");
-                    returnValue = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
+                    returnValue = InterpretMain.InterpretNormalMode(commands[1].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
                     if (returnValue != null)
                         return returnValue;
                     else

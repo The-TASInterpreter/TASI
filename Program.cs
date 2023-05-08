@@ -26,10 +26,6 @@ namespace TASI
             if (location == null)
             {
                 Global.currentLine = -1;
-                Console.WriteLine("Doing tests...");
-                Tests.NumCalcTests();
-                //SyntaxAnalysis.AnalyseSyntax(StringProcess.ConvertLineToCommand("set helloWorld [Console.ReadLine];"));
-                Console.ReadKey(false);
                 Console.Clear();
 
                 Console.WriteLine("Enter file location with code:");

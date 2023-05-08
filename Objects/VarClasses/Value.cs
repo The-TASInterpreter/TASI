@@ -108,7 +108,7 @@ namespace TASI
             }
         }
 
-        public bool GetBoolValue
+        public bool BoolValue
         {
             get
             {

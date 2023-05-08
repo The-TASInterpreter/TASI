@@ -114,13 +114,13 @@ namespace TASI
                     return new(Value.ValueType.num, values[0].NumValue / values[1].NumValue);
                 case "and":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for an and operator.");
-                    return new(Value.ValueType.@bool, values[0].GetBoolValue && values[1].GetBoolValue);
+                    return new(Value.ValueType.@bool, values[0].BoolValue && values[1].BoolValue);
                 case "or":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for an or operator.");
-                    return new(Value.ValueType.@bool, values[0].GetBoolValue || values[1].GetBoolValue);
+                    return new(Value.ValueType.@bool, values[0].BoolValue || values[1].BoolValue);
                 case "!" or "not":
                     if (values.Count != 1) throw new CodeSyntaxException("You need 1 value for a not operator.");
-                    return new(Value.ValueType.@bool, !values[0].GetBoolValue);
+                    return new(Value.ValueType.@bool, !values[0].BoolValue);
                 case "%":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for a modulus operator.");
                     if (values.Any(x => !x.IsNumeric)) throw new CodeSyntaxException("You can't mod with a non-number type.");
@@ -138,9 +138,9 @@ namespace TASI
                         case "bool":
                             try
                             {
-                                bool firstBoolValue = values[1].GetBoolValue;
+                                bool firstBoolValue = values[1].BoolValue;
                                 values.RemoveRange(0, 2);
-                                return new(Value.ValueType.@bool, !values.Any(x => x.GetBoolValue != firstBoolValue));
+                                return new(Value.ValueType.@bool, !values.Any(x => x.BoolValue != firstBoolValue));
                             }
                             catch (Exception ex)
                             { //If one value couldn't be converted to a bool

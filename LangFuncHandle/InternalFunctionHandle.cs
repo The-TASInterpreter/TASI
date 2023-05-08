@@ -14,7 +14,7 @@
                         Console.WriteLine("No text pritable.");
                     return null;
                 case "console.readline":
-                    return new(Value.ValueType.@string, Console.ReadLine());
+                    return new(Value.ValueType.@string, Console.ReadLine()?? throw new RuntimeCodeExecutionFailException("Console.ReadLine returned null", "InternalFuncException"));
                 case "console.clear":
                     Console.Clear();
                     return null;
@@ -42,7 +42,7 @@
                     return null;
                 case "convert.tonum":
                     if (!double.TryParse(input[0].StringValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))
-                        if (input[1].GetBoolValue)
+                        if (input[1].BoolValue)
                             throw new CodeSyntaxException("Can't convert string in current format to double.");
                         else
                             return new(Value.ValueType.num, double.NaN);

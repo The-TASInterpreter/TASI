@@ -126,6 +126,9 @@ set stringValue2 "Hello World!"; #Set both variables to "Hello World!"
 - makevar
 	The makevar statement can create a variable. It's used like this:
 	 - ```makeVar <statement: var type> <statement: var name>;```
+- loop
+	The loop statement is a special statement, which can only be used inside loops. It will jump to the beginning of the loop. The usage is really simple:
+	- ```loop;```
 
 ### Return statements:
 
@@ -134,7 +137,7 @@ set stringValue2 "Hello World!"; #Set both variables to "Hello World!"
 - false:
 	does nothing and returns a bool-type with the value of false (ctrl + c, ctrl + v. Yes yes, very boring).
 - void:
-	does nothing and returns a void-type (idk why you would wanna use that, but there must be a case. That's why I put it in.
+	does nothing and returns a void-type (idk why you would wanna use that, but there must be a case. That's why I put it in.)
 - nl:
 	does nothing and returns a string-type with the value of \n (new line). TASI doesn't have something like \n, so you must use this return statement instead.
 - if:
@@ -171,7 +174,7 @@ set variable ($ do { set variable "value"; return "Different and final value";})
 [Example.SetValueTo5:linkable numVal] #Pass numVal as a link to the function, so that any change that happens to the value, that the function is using, is also happening to the numVal variable.
 [Console.WriteLine:numVal] #This should display 5
 ```
-
+There is an exception to return statements though: if you enter a number as a statement, it will try to parse into its literal value before checking whether it's a variable. So the return statement ```15``` will return a value of 15.
 **VARIABLES ARE RETURN-STATEMENTS TOO!!! It's very important to keep that in mind!**
 
 
@@ -206,23 +209,13 @@ set stringVar [Function.ThatReturnsThisString:"this string?!"]; # This will set 
 
 
 ## Calculations
-Calculations are used to combine multible values or things into one value. Calculations are always in braces. There are operators, which I'll list in a sec. The normal calculation rules like the ones in math don't apply. It's just left to right and if theres something in braces, calcualte it in a batch. If you want to provide a number value, you need to put it in a calculation like this:
+Calculations are used to combine multible values or things into one value. Calculations are always in braces. There are operators, which I'll list in a sec. The normal calculation rules like the ones in math don't apply. It's just left to right and if theres something in braces, calcualte it in a batch. At the end of the caluculation there can only be one value left. Values and operators must be space seperated. If you want to use return statements inside a calculation, you need a return statement calculation brace. But there's an exception to this, if your return statement is only one statement long (like variables and e.g. the return statements true and false), you can use it without the return statement calculation brace. It's basically like a normal calculation brace, just that you have to put a '$' at the first position inside the brace.
 
 ```
-set numVar (14);
-```
+set numVar ($do {return 15;}); #This is not a practical use, you should rather just use set numVar 15; but it's just an example to better explain it.
+set numVar (15 + ($variable)); #Variables are return statements too, but you could also put the variable without the "return statement calculation brace" there, because it's just 1 statement long.
 
-something like
-```
-set numVar 14; #THIS WONT WORK
-```
-would not work, because 14 wouldn't be percieved as a number but rather as a statement by TASI. To make it be percieved as a number, you need the calculation. At the end of the caluculation there can only be one value left. Values and operators must be space seperated. If you want to use return statements (like variables. Did you keep it in mind? I told you it would be important) inside a calculation, you need a return statement calculation brace. It's basically like a normal calculation brace, just that you have to put a '$' at the first position inside the brace.
-
-```
-set numVar ($variable); #BECAUSE VARIABLES ARE RETURN STATEMENTS TOO
-set numVar (15 + ($variable));
-
-set boolVarUserEnteredJEEP ($ if ([Console.ReadLine] == "JEEP") {return true;} else {return false;});
+set boolVarUserEnteredJEEP ($ if ([Console.ReadLine] == "JEEP") {return true;} else {return false;}); #This is an actual good example OMG
 ```
 
 Functions, strings and other calculations can be used as normal inside calculations:

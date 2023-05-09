@@ -66,7 +66,11 @@
                 case "string.tolower":
                     return new(Value.ValueType.@string, input[0].StringValue.ToLower());
 
-
+                case "random.between":
+                    if (input[2].GetBoolValue) // Get whole value
+                        return new(Value.ValueType.num, Math.Round(Random.Shared.NextDouble() * (input[1].NumValue - input[0].NumValue)) + input[0].NumValue);
+                    else
+                        return new(Value.ValueType.num, (Random.Shared.NextDouble() * (input[1].NumValue - input[0].NumValue)) + input[0].NumValue);
 
 
 

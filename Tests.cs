@@ -264,6 +264,20 @@ namespace TASI
             Assert.AreEqual("high\n", consoleOutput.Replace("\r\n", "\n"));
 
         }
+        [Test]
+        public static void LoopTest()
+        {
+            Global.InitInternalNamespaces();
+
+            StringReader sr = new StringReader("");
+            StringWriter sw = new StringWriter();
+            Console.SetOut(sw);
+            Console.SetIn(sr);
+            LoadFile.RunCode("Name LoopTest;Type Generic;Start {makevar num i;set i 0; while (i == 50 !){set i (i + 1); loop; [Console.WriteLine:\"Seems like looping didn't work...\"] };};");
+            string consoleOutput = sw.ToString();
+            Assert.AreEqual("", consoleOutput);
+
+        }
     }
 
 

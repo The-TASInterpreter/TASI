@@ -16,7 +16,10 @@ namespace TASI
 
             switch (commandLine.commands[0].commandText.ToLower())
             {
-
+                case "loop":
+                    if (!accessableObjects.inLoop) throw new CodeSyntaxException("You can't use a loop statement outside a loop.");
+                    if (commandLine.commands.Count != 1) throw new CodeSyntaxException("Invalid use of loop statement. Correct use: loop;");
+                    return new(Value.SpecialReturns.loop);
 
                 case "return":
                     if (commandLine.commands.Count == 1) return new();
@@ -43,13 +46,17 @@ namespace TASI
                     if (commandLine.commands[checkStatement.commands.Count + 1].commandType != Command.CommandTypes.CodeContainer)
                         throw new CodeSyntaxException("Invalid stuff in while loop I hate writeing these messages pls kill me");
                     List<Command> code = commandLine.commands[checkStatement.commands.Count + 1].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list.");
-
+                    accessableObjects.inLoop = true;
                     while (GetValueOfCommandLine(checkStatement, accessableObjects).BoolValue)
                     {
                         returnValue = InterpretMain.InterpretNormalMode(code, accessableObjects);
-                        if (returnValue != null) return returnValue;
+                        if (returnValue != null && returnValue.specialReturn == null)
+                        {
+                            accessableObjects.inLoop = false;
+                            return returnValue;
+                        }
                     }
-
+                    accessableObjects.inLoop = false;
 
                     return null;
                 case "if":

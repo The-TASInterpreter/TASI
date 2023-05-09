@@ -164,7 +164,7 @@ namespace TASI
                 case "==": //Type strict equal
                     if (values.Count < 2) throw new CodeSyntaxException("You need at least 2 values for the type strict equal operator.");
 
-                    Value.ValueType firstType = values[0].valueType;
+                    Value.ValueType firstType = values[0].valueType ?? throw new InternalInterpreterException("valueType was null");
                     if (values.Any(x => x.valueType != firstType)) return new(Value.ValueType.@bool, false);
                     object firstValue = values[0].ObjectValue;
                     values.RemoveAt(0);

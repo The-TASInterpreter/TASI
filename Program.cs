@@ -123,9 +123,9 @@ namespace TASI
                 Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
 
             }
-            catch (Exception ex)
+            catch (NotImplementedException ex)
             {
-
+                /*
                 Console.Clear();
 
                 switch (ex)
@@ -167,10 +167,11 @@ namespace TASI
                 else
                     Console.Clear();
                 return;
-
+                */
             }
             Exit("SUCCESS");
             return;
+
 
 
         }
@@ -196,5 +197,6 @@ namespace TASI
             }
             return;
         }
+
     }
 }

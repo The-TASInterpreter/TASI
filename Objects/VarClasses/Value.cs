@@ -3,11 +3,16 @@ namespace TASI
 {
     public class Value
     {
+        public enum SpecialReturns
+        {
+            loop
+        }
+
         public double? numValue;
         public string? stringValue;
         public bool? boolValue;
-        public ValueType valueType;
-        public bool isReturnValue;
+        public ValueType? valueType;
+        public SpecialReturns? specialReturn = null;
         public Var? comesFromVarValue = null;
 
         public string StringValue
@@ -54,6 +59,12 @@ namespace TASI
                     return VarConstruct.VarType.@void;
                 default: throw new InternalInterpreterException("Internal: Unimplemented Value Type.");
             }
+        }
+
+        public Value(SpecialReturns specialReturn)
+        {
+            valueType = null;
+            this.specialReturn = specialReturn;
         }
 
         public Value(Value value)

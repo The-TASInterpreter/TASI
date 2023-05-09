@@ -15,8 +15,10 @@
 
             switch (commandLine.commands[0].commandText.ToLower())
             {
-
-
+                case "loop":
+                    if (!accessableObjects.inLoop) throw new CodeSyntaxException("You can't use a loop statement outside a loop.");
+                    if (commandLine.commands.Count != 1) throw new CodeSyntaxException("Invalid use of loop statement. Correct use: loop;");
+                    return new(Value.SpecialReturns.loop);
                 case "return":
                     if (commandLine.commands.Count == 1) return new();
                     if (commandLine.commands.Count < 2) throw new CodeSyntaxException("Invalid return statement usage; Right usage: return <value>;");
@@ -42,13 +44,17 @@
                     if (commandLine.commands[checkStatement.commands.Count + 1].commandType != Command.CommandTypes.CodeContainer)
                         throw new CodeSyntaxException("Invalid stuff in while loop I hate writeing these messages pls kill me");
                     List<Command> code = commandLine.commands[checkStatement.commands.Count + 1].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list.");
-
+                    accessableObjects.inLoop = true;
                     while (GetValueOfCommandLine(checkStatement, accessableObjects).GetBoolValue)
                     {
                         returnValue = InterpretMain.InterpretNormalMode(code, accessableObjects);
-                        if (returnValue != null) return returnValue;
+                        if (returnValue != null && returnValue.specialReturn == null)
+                        {
+                            accessableObjects.inLoop = false;
+                            return returnValue;
+                        }
                     }
-
+                    accessableObjects.inLoop = false;
 
                     return null;
                 case "if":
@@ -108,7 +114,7 @@
                 case "unlink":
                     if (commandLine.commands.Count != 2 || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of unlink return statement. Correct usage:\nlink <statement: variable to unlink>");
                     Var foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
-                    foundVar.varValueHolder = new(new(foundVar.varValueHolder.value.valueType, foundVar.varValueHolder.value.ObjectValue));
+                    foundVar.varValueHolder = new(new(foundVar.varValueHolder.value.valueType ?? throw new InternalInterpreterException("valueType was null"), foundVar.varValueHolder.value.ObjectValue));
                     return null;
                 case "makevar":
 
@@ -129,7 +135,7 @@
                     if (commandLine.commands.Count < 3) throw new CodeSyntaxException("Invalid use of save statement. Correct use: save <string: header> <num value: save slot>");
 
                     int slot = (int)Statement.GetValueOfCommandLine(new(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), 0), Value.ValueType.num, accessableObjects).NumValue;
-                    string varSave = Statement.GetValueOfCommandLine(new(new() { commandLine.commands[1] }, -1), Value.ValueType.@string, accessableObjects).StringValue;
+                    string varSave = DataTypeStore.DirectValueClearify.EncodeInvalidChars(Statement.GetValueOfCommandLine(new(new() { commandLine.commands[1] }, -1), Value.ValueType.@string, accessableObjects).StringValue);
 
 
                     if (slot < 0 || slot > 10) throw new CodeSyntaxException("Invalid use of save statement. You can only save to slots from 0 to 10.");
@@ -281,7 +287,7 @@
             if (commands[0].commandType != Command.CommandTypes.Statement)
                 throw new InternalInterpreterException("Internal: ReturnStatements must start with a Statement");
 
-            switch (commands[0].commandText)
+            switch (commands[0].commandText.ToLower())
             {
 
                 case "true":
@@ -333,11 +339,34 @@
                 case "isaprilfools":
                     if (commands.Count != 1) throw new CodeSyntaxException("Incorrect use of isAprilFools return-statement. Correct use:\nisAprilFools");
                     return new(Value.ValueType.@bool, DateTime.Now.Month == 4 && DateTime.Now.Day == 1 && new Random().Next(0, 20) == 1);
+
+                case "saveexist":
+                    if (commands.Count != 2) throw new CodeSyntaxException("Invalid use of saveExist statement. Correct use: saveExist <num value: save slot>");
+                    int slot = (int)Statement.GetValueOfCommandLine(new(new() { commands[1] }, -1), Value.ValueType.num, accessableObjects).NumValue;
+                    if (slot < 0 || slot > 10) throw new CodeSyntaxException("Invalid use of saveExist statement. You can only load from slots from 0 to 10.");
+                    if (!Directory.Exists(Global.savePath)) throw new CodeSyntaxException("The Global save directory was not specified or is invalid, therefore savefiles can't be used.");
+
+                    return new(Value.ValueType.@bool, File.Exists(Path.Combine(Global.savePath, $"{slot}.SaveSlot")));
+
+                case "loadhead":
+                    if (commands.Count != 2) throw new CodeSyntaxException("Invalid use of loadHead statement. Correct use: loadHead <num value: save slot>");
+                    slot = (int)Statement.GetValueOfCommandLine(new(new() { commands[1] }, -1), Value.ValueType.num, accessableObjects).NumValue;
+                    if (slot < 0 || slot > 10) throw new CodeSyntaxException("Invalid use of loadHead statement. You can only load from slots from 0 to 10.");
+                    if (!Directory.Exists(Global.savePath)) throw new CodeSyntaxException("The Global save directory was not specified or is invalid, therefore savefiles can't be used.");
+                    if (!File.Exists(Path.Combine(Global.savePath, $"{slot}.SaveSlot"))) throw new CodeSyntaxException($"The save slot {slot} doesn't exist and therefore can't be loaded.");
+
+                    string[] file = File.ReadAllText(Path.Combine(Global.savePath, $"{slot}.SaveSlot")).Split(';');
+                    if (file.Length < 1) throw new CodeSyntaxException($"The {slot} save-slot is not in the standard format. You'll have to extract it using loadc");
+
+                    return new(Value.ValueType.@string, DataTypeStore.DirectValueClearify.DecodeInvalidCharCode(file[0]));
+
+
                 case "loadc":
                     if (commands.Count != 2) throw new CodeSyntaxException("Invalid use of loadc statement. Correct use: loadc <num value: save slot>");
-                    int slot = (int)Statement.GetValueOfCommandLine(new(new() { commands[1] }, -1), Value.ValueType.num, accessableObjects).NumValue;
+                    slot = (int)Statement.GetValueOfCommandLine(new(new() { commands[1] }, -1), Value.ValueType.num, accessableObjects).NumValue;
                     if (slot < 0 || slot > 10) throw new CodeSyntaxException("Invalid use of loadc statement. You can only load from slots from 0 to 10.");
-                    if (!Directory.Exists(Global.savePath)) throw new CodeSyntaxException("The Global save directory was not specified or is invalid, therefore savefiles can't be made.");
+                    if (!Directory.Exists(Global.savePath)) throw new CodeSyntaxException("The Global save directory was not specified or is invalid, therefore savefiles can't be used.");
+                    if (!File.Exists(Path.Combine(Global.savePath, $"{slot}.SaveSlot"))) throw new CodeSyntaxException($"The save slot {slot} doesn't exist and therefore can't be loaded.");
 
                     return new(Value.ValueType.@string, File.ReadAllText(Path.Combine(Global.savePath, $"{slot}.SaveSlot")));
 

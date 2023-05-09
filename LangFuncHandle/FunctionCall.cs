@@ -167,7 +167,7 @@ namespace TASI
                     matching = true;
                     for (int i = 0; i < inputVars.Count; i++)
                     {
-                        if ((functionInputType[i].type != Value.ConvertValueTypeToVarType( inputVars[i].valueType) && functionInputType[i].type != VarConstruct.VarType.all) || (inputVars[i].comesFromVarValue == null && functionInputType[i].isLink))
+                        if ((functionInputType[i].type != Value.ConvertValueTypeToVarType( inputVars[i].valueType ?? throw new InternalInterpreterException("valueType was null")) && functionInputType[i].type != VarConstruct.VarType.all) || (inputVars[i].comesFromVarValue == null && functionInputType[i].isLink))
                         {
                             matching = false;
                             break;
@@ -272,7 +272,7 @@ namespace TASI
                     //new VarDef(inputValues[i].varDef.varType, functionCallInputHelp.inputVarType[i].varName), this.inputValues[i].ObjectValue
                     functionCallInput.Add(new(new(VarConstruct.VarType.all, functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
                 else
-                    functionCallInput.Add(new(new(Value.ConvertValueTypeToVarType(inputValues[i].valueType), functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
+                    functionCallInput.Add(new(new(Value.ConvertValueTypeToVarType(inputValues[i].valueType ?? throw new InternalInterpreterException("valueType was null")), functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
                 if (inputValues[i].comesFromVarValue != null)
                 {
                     functionCallInput.Last().varValueHolder = inputValues[i].comesFromVarValue.varValueHolder;
@@ -283,7 +283,7 @@ namespace TASI
 
 
 
-            if (functionReturnValue == null || ((Value.ConvertValueTypeToVarType(functionReturnValue.valueType) != callFunction.returnType && callFunction.returnType != VarConstruct.VarType.all)))
+            if (functionReturnValue == null || ((Value.ConvertValueTypeToVarType(functionReturnValue.valueType ?? throw new InternalInterpreterException("valueType was null")) != callFunction.returnType && callFunction.returnType != VarConstruct.VarType.all)))
                 throw new CodeSyntaxException($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
             return functionReturnValue;
             

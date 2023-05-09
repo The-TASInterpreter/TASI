@@ -54,10 +54,13 @@
                 case "program.exit":
                     Environment.Exit(0);
                     return null;
+                case "string.getlenght":
+                    return new(Value.ValueType.num, (double)input[0].StringValue.Length);
+
                 case "string.getletter":
                     try
                     {
-                        return new(Value.ValueType.@string, input[0].StringValue[Convert.ToInt32(input[1].NumValue)]);
+                        return new(Value.ValueType.@string, input[0].StringValue.Substring((int)input[1].NumValue, 1));
                     }
                     catch (Exception)
                     {

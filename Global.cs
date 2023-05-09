@@ -73,10 +73,13 @@
             new Function("GetLetter", VarConstruct.VarType.@string, Namespaces.Last(), new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "InputString"), new(VarConstruct.VarType.num, "Number") }
             }, new());
+            new Function("GetLenght", VarConstruct.VarType.num, Namespaces.Last(), new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "InputString")}
+            }, new());
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Random"));
             allLoadedFiles.Add("*internal");
-            new Function("Between", VarConstruct.VarType.@string, Namespaces.Last(), new List<List<VarConstruct>> {
+            new Function("Between", VarConstruct.VarType.num, Namespaces.Last(), new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.num, "min"), new(VarConstruct.VarType.num, "max"), new(VarConstruct.VarType.@bool, "returnWholeNumber") }
             }, new());
 

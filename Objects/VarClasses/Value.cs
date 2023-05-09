@@ -3,12 +3,26 @@ namespace TASI
 {
     public class Value
     {
+        public enum SpecialReturns
+        {
+            loop
+        }
+
+
+        public SpecialReturns? specialReturn = null;
+
         public double? numValue;
         public string? stringValue;
         public bool? boolValue;
-        public ValueType valueType;
+        public ValueType? valueType;
         public bool isReturnValue;
         public Var? comesFromVarValue = null;
+
+        public Value(SpecialReturns specialReturn)
+        {
+            valueType = null;
+            this.specialReturn = specialReturn;
+        }
 
         public string StringValue
         {

@@ -109,7 +109,7 @@ namespace TASI
                 case "unlink":
                     if (commandLine.commands.Count != 2 || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of unlink return statement. Correct usage:\nlink <statement: variable to unlink>");
                     Var foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
-                    foundVar.varValueHolder = new(new(foundVar.varValueHolder.value.valueType, foundVar.varValueHolder.value.ObjectValue));
+                    foundVar.varValueHolder = new(new(foundVar.varValueHolder.value.valueType ?? throw new InternalInterpreterException("Value type of value was null"), foundVar.varValueHolder.value.ObjectValue));
                     return null;
                 case "makevar":
 

@@ -10,7 +10,7 @@ namespace TASI
     {
         public List<Var> accessableVars = new();
         public NamespaceInfo currentNamespace;
-
+        public bool inLoop = false;
         public AccessableObjects(List<Var> accessableVars, NamespaceInfo importedNamespaces)
         {
             this.accessableVars = accessableVars;

@@ -245,7 +245,7 @@ namespace TASI
             if (commands[0].commandType != Command.CommandTypes.Statement)
                 throw new InternalInterpreterException("Internal: ReturnStatements must start with a Statement");
 
-            switch (commands[0].commandText)
+            switch (commands[0].commandText.ToLower())
             {
 
                 case "true":

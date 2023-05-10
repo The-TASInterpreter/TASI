@@ -12,9 +12,10 @@
         public static int currentLine;
         public static List<FunctionCall> allFunctionCalls = new();
         public static string mainFilePath;
-        
-        
-        
+        public static List<Task> processFiles = new();
+        public static object processFileLock = new();
+        public static object importFileLock = new();
+
         public static void InitInternalNamespaces()
         {
             Namespaces = new();

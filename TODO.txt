@@ -12,16 +12,18 @@ Add interpreter extentions
 
 Add argument API
 
-Add More general tests
+Add More general tests | doine
 
 Add ways to obscure code and compile it into an intermediate language
 
 Add Supervisor-Type namespaces
+
 Add Lists. Possible return type syntax:
+
 [Inf.DefList:"string", "TestList"]
 Add TestList "Hello World";
-[Console.WriteLine:TestList (0)]
+[Console.WriteLine:TestList 0]
 
 Hashmap for var name
 
-BETTER SYNTAX
+BETTER SYNTAX => A step foreward

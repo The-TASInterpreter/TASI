@@ -4,7 +4,7 @@ namespace TASI
 {
     internal class LoadFile
     {
-        public static List<Command> ByPath(string location)
+        public static List<Command> ByPath(string location, bool autoAddToGlobal = true)
         {
             location = location.Trim('"');
             if (!File.Exists(location)) throw new CodeSyntaxException("The entered file doesn't exist.");
@@ -27,7 +27,8 @@ namespace TASI
                 if (line.Contains('Ⅼ')) throw new CodeSyntaxException($"Uhhhhmmm this is a weird error now. So basically, on line {i + 1} you used a character, that is already used by TASI to map code to lines (The character is:(I would have inserted it here right now, but the console can't even print this char. It looks like an L, but it's a bit larger.)). I picked this character, because I thought noone would use it directly in their code. Well, seems like I thought wrong... Simply said, you must remove this character from your code. But fear now! With the return statement \"lineChar\", you can paste this char into strings and stuff. I hope this character is worth the errors with lines! I'm sorry.\n-Ekischleki");
                 allFileCode += $"Ⅼ{i}Ⅼ{line}";
             }
-            Global.allLoadedFiles.Add(location);
+            if (autoAddToGlobal)
+                Global.allLoadedFiles.Add(location);
             return StringProcess.ConvertLineToCommand(allFileCode);
 
         }
@@ -62,7 +63,7 @@ namespace TASI
                 if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(codeHeaderInformation.Item2);
             }
 
-            InterpretMain.InterpretNormalMode(codeHeaderInformation.Item1,initialAccessableObjects);
+            InterpretMain.InterpretNormalMode(codeHeaderInformation.Item1, initialAccessableObjects);
 
         }
 

@@ -174,21 +174,31 @@
                                     default:
                                         throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import < string: path >;\nor\nimport base < string: path >;");
                                 }
-
-                                if (!Global.allLoadedFiles.Any(x => ComparePaths(x, pathLocation)))
+                                lock (Global.importFileLock)
                                 {
-                                    var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocation), pathLocation);
-                                    alreadyImportedNamespaces.Add(pathLocation);
+                                    if (!Global.allLoadedFiles.Any(x => ComparePaths(x, pathLocation)))
+                                    {
+                                        alreadyImportedNamespaces.Add(pathLocation);
+                                        string pathLocationCopy = pathLocation;
+                                        Global.allLoadedFiles.Add(pathLocationCopy);
+                                        Global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, ""));
+                                        Global.processFiles.Add(Task.Run(() =>
+                                        {
+                                            var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocationCopy, false), pathLocationCopy);
+                                            Global.Namespaces[Global.allLoadedFiles.FindIndex(x => ComparePaths(x, pathLocation))] = importNamespace.Item2;
 
+                                            thisNamespace.accessableNamespaces.Add(importNamespace.Item2);
 
-                                    thisNamespace.accessableNamespaces.Add(importNamespace.Item2);
-                                }
-                                else
-                                {
+                                        }));
+                                    }
+                                    else
+                                    {
 
-                                    if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new CodeSyntaxException($"The namespace \"{pathLocation} has already been imported.");
-                                    thisNamespace.accessableNamespaces.Add(Global.Namespaces[Global.allLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
-                                    alreadyImportedNamespaces.Add(pathLocation);
+                                        if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new CodeSyntaxException($"The namespace \"{pathLocation} has already been imported.");
+
+                                        thisNamespace.accessableNamespaces.Add(Global.Namespaces[Global.allLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
+                                        alreadyImportedNamespaces.Add(pathLocation);
+                                    }
                                 }
                                 break;
                             case "makeglobalvar":
@@ -244,7 +254,8 @@
             if (Global.Namespaces.Any(x => x != thisNamespace && x.Name == thisNamespace.Name)) throw new CodeSyntaxException($"A namespace with the name \"{thisNamespace.Name}\" has already been defined.");
 
 
-
+            
+            
             return new(startCode, thisNamespace);
         }
 

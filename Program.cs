@@ -42,13 +42,14 @@ namespace TASI
             try
             {
                 if (location == null)
-                    location = Console.ReadLine() ?? throw new CodeSyntaxException("Code is null.");
+                    location = (Console.ReadLine() ?? throw new CodeSyntaxException("Code is null.")).Replace("\"", "");
                 Global.mainFilePath = Path.GetDirectoryName(location);
                 List<Command> commands = LoadFile.ByPath(location);
                 codeRuntime.Start();
 
 
                 var startValues = InterpretMain.InterpretHeaders(commands, Global.mainFilePath);
+                Task.WhenAll(Global.processFiles).Wait();
                 Global.currentLine = -1;
                 var startCode = startValues.Item1;
                 if (startCode == null)

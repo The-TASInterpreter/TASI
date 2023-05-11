@@ -309,10 +309,15 @@ namespace TASI
 
 
 
+
+
                 default:
                     // Is probably var
 
-                    if (commands.Count != 1) throw new CodeSyntaxException($"Unexpected syntax after varname \"{commands[0].commandText}\".");
+                    if (commands.Count != 1) 
+                    { 
+
+                    }
                     if (double.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))
                     {
                         return new(Value.ValueType.num, result);

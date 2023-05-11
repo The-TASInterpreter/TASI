@@ -16,6 +16,7 @@ namespace TASI
         public bool? boolValue;
         public ValueType? valueType;
         public bool isReturnValue;
+        public List<Value>? listValue;
         public Var? comesFromVarValue = null;
 
         public Value(SpecialReturns specialReturn)
@@ -107,11 +108,11 @@ namespace TASI
 
         public enum ValueType
         {
-            @num, @string, @bool, @void
+            @num, @string, @bool, @void, @list
         }
 
         public bool IsNumeric
-        {
+        { 
             get
             {
                 return valueType switch
@@ -167,6 +168,8 @@ namespace TASI
                         return stringValue ?? throw new InternalInterpreterException("Internal: string value of string-type value was null.");
                     case ValueType.@bool:
                         return boolValue ?? throw new InternalInterpreterException("Internal: bool value of bool-type value was null.");
+                    case ValueType.@list:
+                        return listValue ?? throw new InternalInterpreterException("Internal: list value of list-type was null");
                     case ValueType.@void:
                         return "void";
                     default:
@@ -186,6 +189,9 @@ namespace TASI
                         break;
                     case ValueType.@bool:
                         boolValue = (bool)value;
+                        break;
+                    case ValueType.@list:
+                        listValue = (List<Value>)value;
                         break;
                     default:
                         throw new InternalInterpreterException("Internal: Unimplemented value type.");

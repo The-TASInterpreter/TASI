@@ -4,7 +4,7 @@
     {
         public enum VarType
         {
-            num, @string, @bool, @void, all
+            num, @string, @bool, @void, list, all
         }
         public string name;
         public VarType type;

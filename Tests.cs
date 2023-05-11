@@ -283,6 +283,11 @@ namespace TASI
         {
             Assert.AreEqual(15, LoadFile.RunCode("Name LinkTest;Type Generic;Start {makevar num link; makevar num linkTo; set link 10; set linkTo 15; link link linkTo; return link;};").ObjectValue);
         }
+        [Test]
+        public static void ListTest()
+        {
+            Assert.AreEqual("RandomItem!", LoadFile.RunCode("Name ListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; return (($randomList 0) + ($randomList 2));};").ObjectValue);
+        }
 
     }
 

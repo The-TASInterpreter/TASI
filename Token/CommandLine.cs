@@ -28,7 +28,7 @@ namespace TASI
 
             }
         }
-        public CommandLine(List<Command> commands, long lineIDX)
+        public CommandLine(List<Command> commands, long lineIDX = -1)
         {
             this.commands = commands;
             this.lineIDX = lineIDX;

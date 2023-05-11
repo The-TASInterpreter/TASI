@@ -1,4 +1,6 @@
 ﻿
+using System.Security.Cryptography.X509Certificates;
+
 namespace TASI
 {
 
@@ -10,7 +12,7 @@ namespace TASI
 
         public static Value? StaticStatement(CommandLine commandLine, AccessableObjects accessableObjects)
         {
-            Value? returnValue = new();
+            Value? returnValue;
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
                 throw new InternalInterpreterException("Internal: StaticStatements must start with a Statement");
 
@@ -30,6 +32,29 @@ namespace TASI
                     //Validate syntax
                     StaticStatementSet(commandLine, accessableObjects);
                     return null;
+                case "setlist":
+                    if (commandLine.commands.Count < 4) throw new CodeSyntaxException("invalid use of setlist statement. Correct use: setlist <statement: name> <num/s: index> <value: value>");
+                    Value foundValue = GetValueOfListUsingIndex(commandLine.commands.GetRange(2, commandLine.commands.Count - 3), (Var)(accessableObjects.accessableVars[commandLine.commands[1].commandText.ToLower()] ?? throw new CodeSyntaxException($"The list \"{commandLine.commands[0].commandText}\" couldn't be found")), accessableObjects);
+                    Value commandValue = GetValueOfCommandLine(new(new List<Command> { commandLine.commands.Last() }), accessableObjects);
+                    if (foundValue.comesFromVarValue != null && commandValue.comesFromVarValue == null) //Is linked value so update both
+                    {
+                        foundValue.comesFromVarValue.VarValue = commandValue;
+                    }
+                    foundValue.ObjectValue = commandValue.ObjectValue;
+                    return null;
+                case "add":
+                    if (commandLine.commands.Count < 3) throw new CodeSyntaxException("invalid use of add statement. Correct use: add <statement: name> (optional<num/s: index for nested list>) <value: value>;");
+                    foundValue = GetValueOfListUsingIndex(commandLine.commands.GetRange(2, commandLine.commands.Count - 3), (Var)(accessableObjects.accessableVars[commandLine.commands[1].commandText.ToLower()] ?? throw new CodeSyntaxException($"The list \"{commandLine.commands[1].commandText}\" couldn't be found")), accessableObjects);
+                    commandValue = GetValueOfCommandLine(new(new List<Command> { commandLine.commands.Last() }), accessableObjects);
+                    if (foundValue.comesFromVarValue != null && commandValue.comesFromVarValue == null) //Is linked value so update both
+                    {
+                        foundValue.comesFromVarValue.VarValue.ListValue.Add(commandValue);
+                    }
+                    foundValue.ListValue.Add(commandValue);
+                    return null;
+
+
+
                 case "while":
                     CommandLine checkStatement = new(new(), -1);
                     for (int i = 1; i < commandLine.commands.Count; i++)
@@ -301,7 +326,10 @@ namespace TASI
 
                     if (commands.Count != 1)
                     {
-
+                        Value foundValue = GetValueOfListUsingIndex(commands.GetRange(1, commands.Count - 1), (Var)(accessableObjects.accessableVars[commands[0].commandText.ToLower()] ?? throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"")), accessableObjects);
+                        if (foundValue.comesFromVarValue != null)
+                            return foundValue.comesFromVarValue.VarValue;
+                        return foundValue;
                     }
                     if (double.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))
                     {
@@ -317,7 +345,23 @@ namespace TASI
 
             }
 
-        }
+           
 
+        }
+        public static Value GetValueOfListUsingIndex(List<Command> indexes, Var listVar, AccessableObjects accessableObjects)
+        {
+            if (listVar == null || listVar.VarValue.valueType != Value.ValueType.list) throw new CodeSyntaxException($"Unknown or non-list variable \"{indexes[0].commandText}\"");
+            Value lastValue = listVar.VarValue;
+            for (int i = 0; i < indexes.Count; i++)
+            {
+                if (lastValue.valueType != Value.ValueType.list) throw new CodeSyntaxException("You can only use list fetch return statements with a list-type variable");
+                int index = (int)GetValueOfCommandLine(new(new List<Command> { indexes[i] }), Value.ValueType.num, accessableObjects).NumValue;
+                List<Value> listValue = lastValue.ListValue;
+                if (index < 0 || index >= listValue.Count) throw new CodeSyntaxException("Index out of bounds");
+                lastValue = listValue[index];
+            }
+            return lastValue;
+
+        }
     }
 }

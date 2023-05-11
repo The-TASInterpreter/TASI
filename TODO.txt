@@ -1,7 +1,10 @@
 Add value links: by setting the values of VAR to a different class. | done
 Public variables | done
 Make new exception classes for internal and user exceptions | done
-Revise errors to make them more descriptive => Endgoal: Be able to write low level code from some languages, and help the user to translate it to TASI
+
+
+
+Revise errors to make them more descriptive => Endgoal: Be able to write non-complexc code from some languages, and help the user to translate it to TASI
 
 
 Add more methods.
@@ -12,7 +15,7 @@ Add interpreter extentions
 
 Add argument API
 
-Add More general tests | doine
+Add More general tests | done
 
 Add ways to obscure code and compile it into an intermediate language
 
@@ -24,6 +27,9 @@ Add Lists. Possible return type syntax:
 Add TestList "Hello World";
 [Console.WriteLine:TestList 0]
 
-Hashmap for var name
+
+Add multithreading with promise values.
+
+Hashmap for var name | done
 
 BETTER SYNTAX => A step foreward

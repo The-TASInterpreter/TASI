@@ -25,6 +25,14 @@ namespace TASI
             this.specialReturn = specialReturn;
         }
 
+        public List<Value> ListValue
+        {
+            get
+            {
+                return listValue ?? throw new InternalInterpreterException("Internal: list value is null");
+            }
+        }
+
         public string StringValue
         {
             get
@@ -67,6 +75,8 @@ namespace TASI
                     return VarConstruct.VarType.@string;
                 case ValueType.@void:
                     return VarConstruct.VarType.@void;
+                case ValueType.list:
+                    return VarConstruct.VarType.list;
                 default: throw new InternalInterpreterException("Internal: Unimplemented Value Type.");
             }
         }
@@ -90,6 +100,9 @@ namespace TASI
                     break;
                 case ValueType.@string:
                     ObjectValue = String.Empty;
+                    break;
+                case ValueType.list:
+                    ObjectValue = new List<Value>();
                     break;
                 
             }

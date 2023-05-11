@@ -128,10 +128,10 @@ namespace TASI
                     if (FindVar(commandLine.commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                     if (commandLine.commands[1].commandText == "all")
                     {
-                        accessableObjects.accessableVars.Add(new(new(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(varType)));
+                        accessableObjects.accessableVars.Add(commandLine.commands[2].commandText, new Var(new(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(varType)));
                         return null;
                     }
-                    accessableObjects.accessableVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
+                    accessableObjects.accessableVars.Add(commandLine.commands[2].commandText.ToLower(), new Var(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
                     return null;
 
 
@@ -217,29 +217,14 @@ namespace TASI
             if (commandLine.commands.Count < 3) throw new CodeSyntaxException("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
             if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
 
-            Var? correctVar = null;
-            commandLine.commands[1].commandText = commandLine.commands[1].commandText.ToLower();
-            foreach (Var var in accessableObjects.accessableVars) //Search for variable
-            {
-                if (var.varConstruct.name == commandLine.commands[1].commandText)
-                {
-                    correctVar = var;
-                    break;
-                }
-            }
-            if (correctVar == null) throw new CodeSyntaxException($"The variable {commandLine.commands[1].commandText} cant be found.");
+            Var? correctVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
             correctVar.VarValue = GetValueOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), accessableObjects);
         }
         public static Var? FindVar(string name, AccessableObjects accessableObjects, bool failAtNotFind = false)
         {
-            name = name.ToLower();
-            foreach (Var var in accessableObjects.accessableVars) //Search for variable
-            {
-                if (var.varConstruct.name == name)
-                {
-                    return var;
-                }
-            }
+            Var? foundVar = (Var?)accessableObjects.accessableVars[name.ToLower()];
+            if (foundVar != null)
+                return foundVar;
             if (failAtNotFind)
                 throw new CodeSyntaxException($"The variable \"{name}\" wasn't found.");
             else
@@ -314,8 +299,8 @@ namespace TASI
                 default:
                     // Is probably var
 
-                    if (commands.Count != 1) 
-                    { 
+                    if (commands.Count != 1)
+                    {
 
                     }
                     if (double.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))
@@ -323,17 +308,13 @@ namespace TASI
                         return new(Value.ValueType.num, result);
                     }
                     commands[0].commandText = commands[0].commandText.ToLower();
-                    foreach (Var var in accessableObjects.accessableVars)
-                        if (var.varConstruct.name == commands[0].commandText)
-                        {
+                    return ((Var?)accessableObjects.accessableVars[commands[0].commandText] ?? throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"")).varValueHolder.value;
 
-                            return new(var.VarValue);
-                        }
 
                     //Var not found
 
 
-                    throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"");
+
             }
 
         }

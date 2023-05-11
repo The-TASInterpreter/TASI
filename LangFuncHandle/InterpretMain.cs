@@ -215,9 +215,9 @@
                                 }
 
                                 if (commandLine.commands[1].commandText == "all")
-                                    thisNamespace.publicNamespaceVars.Add(new(new(VarConstruct.VarType.all, commandLine.commands[2].commandText), setToValue ?? new(varType)));
+                                    thisNamespace.publicNamespaceVars.Add(commandLine.commands[2].commandText, new Var(new(VarConstruct.VarType.all, commandLine.commands[2].commandText), setToValue ?? new(varType)));
                                 else
-                                    thisNamespace.publicNamespaceVars.Add(new(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), setToValue ?? new(varType)));
+                                    thisNamespace.publicNamespaceVars.Add(commandLine.commands[2].commandText, new Var(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), setToValue ?? new(varType)));
                                 break;
 
                             default: throw new CodeSyntaxException($"\"{commandLine.commands[0].commandText}\" isn't a recognized statement in header interpret mode.");
@@ -254,8 +254,8 @@
             if (Global.Namespaces.Any(x => x != thisNamespace && x.Name == thisNamespace.Name)) throw new CodeSyntaxException($"A namespace with the name \"{thisNamespace.Name}\" has already been defined.");
 
 
-            
-            
+
+
             return new(startCode, thisNamespace);
         }
 
@@ -276,8 +276,8 @@
                 foreach (Var var in namespaceInfo.publicNamespaceVars)
                 {
                     if (accessableObjects.accessableVars.Contains(var)) continue;
-                    if (accessableObjects.accessableVars.Any(x => x.varConstruct.name == var.varConstruct.name)) throw new CodeSyntaxException($"A global variable with the name \"{var.varConstruct.name}\" already exists. So you can't use this name again.");
-                    accessableObjects.accessableVars.Add(var);
+                    if (accessableObjects.accessableVars.ContainsKey(var.varConstruct.name)) throw new CodeSyntaxException($"A global variable with the name \"{var.varConstruct.name}\" already exists. So you can't use this name again.");
+                    accessableObjects.accessableVars.Add(var.varConstruct.name, var);
                 }
             }
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal functions to the code.

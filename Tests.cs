@@ -96,8 +96,8 @@ namespace TASI
         public static void CalculationReturnStatementTests()
         {
             AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""));
-            accessableObjects.accessableVars.Add(new(new(VarConstruct.VarType.@string, "helloWorld"), new(Value.ValueType.@string, "Hello World!")));
-            accessableObjects.accessableVars.Add(new(new(VarConstruct.VarType.num, "num-pi"), new(Value.ValueType.num, -3.141)));
+            accessableObjects.accessableVars.Add("helloworld", new Var(new(VarConstruct.VarType.@string, "helloWorld"), new(Value.ValueType.@string, "Hello World!")));
+            accessableObjects.accessableVars.Add("num-pi", new Var(new(VarConstruct.VarType.num, "num-pi"), new(Value.ValueType.num, -3.141)));
 
             Assert.AreEqual(true, Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "helloWorld == \"Hello World!\""), accessableObjects).BoolValue);
 
@@ -216,7 +216,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Type Generic;Start {makeVar num i; set i 0; while (i < 5){[Console.WriteLine:i] set i (i + 1);}; };");
+            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Type Generic;Start {makeVar num I; set i 0; while (i < 5){[Console.WriteLine:i] set i (i + 1);}; };");
             string consoleOutput = sw.ToString();
             Assert.AreEqual("0\n1\n2\n3\n4\n", consoleOutput.Replace("\r\n", "\n"));
 
@@ -278,6 +278,12 @@ namespace TASI
             Assert.AreEqual("", consoleOutput);
 
         }
+        [Test]
+        public static void LinkTest()
+        {
+            Assert.AreEqual(15, LoadFile.RunCode("Name LinkTest;Type Generic;Start {makevar num link; makevar num linkTo; set link 10; set linkTo 15; link link linkTo; return link;};").ObjectValue);
+        }
+
     }
 
 

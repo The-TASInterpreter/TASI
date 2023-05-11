@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace TASI
 {
@@ -15,7 +16,7 @@ namespace TASI
         private string? name; 
         public List<Function> namespaceFuncitons = new();
         public List<VarConstruct.VarType> namespaceVars = new();
-        public List<Var> publicNamespaceVars = new();
+        public Hashtable publicNamespaceVars = new();
         public List<NamespaceInfo> accessableNamespaces = new();
         public NamespaceIntend namespaceIntend;
 

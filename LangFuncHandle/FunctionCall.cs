@@ -1,4 +1,5 @@
 ﻿using DataTypeStore;
+using System.Collections;
 using static TASI.Command;
 
 namespace TASI
@@ -264,18 +265,18 @@ namespace TASI
 
             }
             //return 
-            List<Var> functionCallInput = new();
+            Hashtable functionCallInput = new();
 
             for (int i = 0; i < inputValues.Count; i++)
             {
                 if (functionCallInputHelp.inputVarType[i].type == VarConstruct.VarType.all)
                     //new VarDef(inputValues[i].varDef.varType, functionCallInputHelp.inputVarType[i].varName), this.inputValues[i].ObjectValue
-                    functionCallInput.Add(new(new(VarConstruct.VarType.all, functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
+                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var(new(VarConstruct.VarType.all, functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
                 else
-                    functionCallInput.Add(new(new(Value.ConvertValueTypeToVarType(inputValues[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")), functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
+                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var (new(Value.ConvertValueTypeToVarType(inputValues[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")), functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
                 if (inputValues[i].comesFromVarValue != null)
                 {
-                    functionCallInput.Last().varValueHolder = inputValues[i].comesFromVarValue.varValueHolder;
+                    ((Var?)functionCallInput[functionCallInputHelp.inputVarType[i].name] ?? throw new InternalInterpreterException("Internal: Something, that wasn't supposed to be null ever ended up to be null")).varValueHolder = inputValues[i].comesFromVarValue.varValueHolder;
                 }
             }
 

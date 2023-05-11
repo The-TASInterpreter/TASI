@@ -32,7 +32,7 @@ namespace TASI
             return StringProcess.ConvertLineToCommand(allFileCode);
 
         }
-        public static void RunCode(string code)
+        public static Value? RunCode(string code)
         {
             List<Command> tokenisedCode = StringProcess.ConvertLineToCommand(code);
             var codeHeaderInformation = InterpretMain.InterpretHeaders(tokenisedCode, "");
@@ -63,7 +63,7 @@ namespace TASI
                 if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(codeHeaderInformation.Item2);
             }
 
-            InterpretMain.InterpretNormalMode(codeHeaderInformation.Item1, initialAccessableObjects);
+            return InterpretMain.InterpretNormalMode(codeHeaderInformation.Item1, initialAccessableObjects);
 
         }
 

@@ -10,13 +10,9 @@ namespace TASI
 
 
         public SpecialReturns? specialReturn = null;
-
-        public double? numValue;
-        public string? stringValue;
-        public bool? boolValue;
+        public object? value;
         public ValueType? valueType;
         public bool isReturnValue;
-        public List<Value>? listValue;
         public Var? comesFromVarValue = null;
 
         public Value(SpecialReturns specialReturn)
@@ -29,7 +25,12 @@ namespace TASI
         {
             get
             {
-                return listValue ?? throw new InternalInterpreterException("Internal: list value is null");
+                if (value is not List<Value>)
+                    if (valueType == ValueType.list)
+                        throw new InternalInterpreterException("Internal: value is not a list value");
+                    else
+                        throw new InternalInterpreterException("Internal: Tried to access list value of non-list type");
+                return (List<Value>)value;
             }
         }
 
@@ -37,7 +38,12 @@ namespace TASI
         {
             get
             {
-                return stringValue ?? throw new InternalInterpreterException("Internal: string value is null");
+                if (value is not string)
+                    if (valueType == ValueType.@string)
+                        throw new InternalInterpreterException("Internal: value is not a string value");
+                    else
+                        throw new InternalInterpreterException("Internal: Tried to access string value of non-list type");
+                return (string)value;
             }
         }
 
@@ -48,9 +54,13 @@ namespace TASI
                 switch (valueType)
                 {
                     case ValueType.num:
-                        return numValue ?? throw new InternalInterpreterException("Internal: num value is null.");
+                        if (value is not double)
+                            throw new InternalInterpreterException("Internal: value is not a double value");
+                        return (double)value;
                     case ValueType.@bool:
-                        switch (boolValue ?? throw new InternalInterpreterException("Internal: bool value is null."))
+                        if (value is not bool)
+                            throw new InternalInterpreterException("Internal: value is not a bool value");
+                        switch ((bool)value)
                         {
                             case true:
                                 return 1;
@@ -104,7 +114,7 @@ namespace TASI
                 case ValueType.list:
                     ObjectValue = new List<Value>();
                     break;
-                
+
             }
         }
         public Value()
@@ -125,7 +135,7 @@ namespace TASI
         }
 
         public bool IsNumeric
-        { 
+        {
             get
             {
                 return valueType switch
@@ -143,21 +153,20 @@ namespace TASI
                 switch (valueType)
                 {
                     case ValueType.num:
-                        if (numValue == null)
-                            throw new CodeSyntaxException($"The value \"{valueType}\" can't be used, because it is not defined.");
-                        if (numValue == 1) return true;
-                        if (numValue == 0) return false;
+                        if (value is not double) throw new InternalInterpreterException("Internal: value is not a double value");
+                        if ((double)value == 1) return true;
+                        if ((double)value == 0) return false;
                         throw new CodeSyntaxException($"The num value \"{valueType}\" can't be converted to a bool, because it is neither 1 or 0.");
                     case ValueType.@bool:
-                        return boolValue ?? throw new InternalInterpreterException("Internal: bool value is null.");
+                        if (value is not bool) throw new InternalInterpreterException("Internal: value is not a bool value");
+                        return (bool)value;
 
 
 
                     case ValueType.@string:
-                        if (stringValue == null)
-                            throw new CodeSyntaxException($"The value \"{valueType}\" can't be used, because it is not defined.");
-                        if (stringValue == "1" || stringValue == "true") return true;
-                        if (stringValue == "0" || stringValue == "false") return false;
+                        if (value is not string) throw new InternalInterpreterException("Internal: value is not a string value");
+                        if ((string)value == "1" || (string)value == "true") return true;
+                        if ((string)value == "0" || (string)value == "false") return false;
                         throw new CodeSyntaxException($"The string value \"{valueType}\" can't be converted to a bool, because it is neither 1, 0, true or false.");
 
                     default:
@@ -176,13 +185,21 @@ namespace TASI
                 switch (valueType)
                 {
                     case ValueType.num:
-                        return numValue ?? throw new InternalInterpreterException("Internal: num value of num-type value was null.");
+                        if (value is not double)
+                            throw new InternalInterpreterException("Internal: value is not a double value");
+                        return value;
                     case ValueType.@string:
-                        return stringValue ?? throw new InternalInterpreterException("Internal: string value of string-type value was null.");
+                        if (value is not string)
+                            throw new InternalInterpreterException("Internal: value is not a string value");
+                        return value;
                     case ValueType.@bool:
-                        return boolValue ?? throw new InternalInterpreterException("Internal: bool value of bool-type value was null.");
+                        if (value is not bool)
+                            throw new InternalInterpreterException("Internal: value is not a bool value");
+                        return value;
                     case ValueType.@list:
-                        return listValue ?? throw new InternalInterpreterException("Internal: list value of list-type was null");
+                        if (value is not List<Value>)
+                            throw new InternalInterpreterException("Internal: value is not a list value");
+                        return value;
                     case ValueType.@void:
                         return "void";
                     default:
@@ -192,23 +209,7 @@ namespace TASI
             }
             set
             {
-                switch (valueType)
-                {
-                    case ValueType.num:
-                        numValue = (double)value;
-                        break;
-                    case ValueType.@string:
-                        stringValue = (string)value;
-                        break;
-                    case ValueType.@bool:
-                        boolValue = (bool)value;
-                        break;
-                    case ValueType.@list:
-                        listValue = (List<Value>)value;
-                        break;
-                    default:
-                        throw new InternalInterpreterException("Internal: Unimplemented value type.");
-                }
+                this.value = value;
             }
         }
 

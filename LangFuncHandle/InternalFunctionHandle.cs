@@ -26,7 +26,7 @@
                         Console.WriteLine(input[0].StringValue);
                     return null;
                 case "program.pause":
-                    if (input.Count == 1 && input[0].numValue == 1)
+                    if (input.Count == 1 && input[0].NumValue == 1)
                         Console.WriteLine("Press any key to continue.");
                     Console.ReadKey();
                     return null;

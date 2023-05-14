@@ -242,7 +242,7 @@
                         commandLine = new(new List<Command> { command }, 1);
                         break;
                     default:
-                        throw new NotImplementedException($"You can only use statements in header-mode.");
+                        throw new CodeSyntaxException($"You can only use statements in header-mode.");
                 }
             }
 

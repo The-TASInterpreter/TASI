@@ -5,6 +5,7 @@
 
         public Value? SimulateTree(Value? provided, AccessableObjects accessableObjects, out bool foundMatch)
         {
+            foundMatch = false;
             if (doCode != null && doCode.commands.Count == 1 && doCode.commands[0].commandType == Command.CommandTypes.CodeContainer)
                 doCode = new(doCode.commands[0].codeContainerCommands, -1);
 
@@ -33,7 +34,11 @@
                                     else
                                         returnedValue = treeElement.SimulateTree(provided, accessableObjects, out foundInternalMatch);
                                 if (foundInternalMatch) foundInternalMatchTracker = true;
-                                if (returnedValue != null) return returnedValue;
+                                if (returnedValue != null)
+                                    if ((returnedValue.specialReturn ?? Value.SpecialReturns.loop) == Value.SpecialReturns.@break)
+                                        break;
+                                    else
+                                        return returnedValue;
                             }
                         }
                         else
@@ -43,6 +48,15 @@
                     }
                     foundMatch = false;
                     return null;
+                case ElementType.Break:
+                    if (foundMatch)
+                    {
+                        return new(Value.SpecialReturns.@break);
+                    } else
+                    {
+                        return null;
+                    }
+                    break;
                 case ElementType.Always or ElementType.Else:
                     foundMatch = false;
                     if (isBranch)
@@ -62,7 +76,11 @@
                                 else
                                     returnedValue = treeElement.SimulateTree(provided, accessableObjects, out foundInternalMatch);
                             if (foundInternalMatch) foundInternalMatchTracker = true;
-                            if (returnedValue != null) return returnedValue;
+                            if (returnedValue != null)
+                                if ((returnedValue.specialReturn ?? Value.SpecialReturns.loop) == Value.SpecialReturns.@break)
+                                    break;
+                                else
+                                    return returnedValue;
                         }
                     }
                     else
@@ -91,7 +109,11 @@
                                         returnedValue = treeElement.SimulateTree(null, accessableObjects, out foundInternalMatch);
                                     else
                                         returnedValue = treeElement.SimulateTree(provided, accessableObjects, out foundInternalMatch); if (foundInternalMatch) foundInternalMatchTracker = true;
-                                if (returnedValue != null) return returnedValue;
+                                if (returnedValue != null)
+                                    if ((returnedValue.specialReturn ?? Value.SpecialReturns.loop) == Value.SpecialReturns.@break)
+                                        break;
+                                    else
+                                        return returnedValue;
                             }
                         }
                         else

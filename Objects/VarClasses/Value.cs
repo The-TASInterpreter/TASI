@@ -5,7 +5,7 @@ namespace TASI
     {
         public enum SpecialReturns
         {
-            loop
+            loop, @break
         }
 
         public double? numValue;

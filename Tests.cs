@@ -288,7 +288,16 @@ namespace TASI
         {
             Assert.AreEqual("RandomItem!", LoadFile.RunCode("Name ListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; return (($randomList 0) + ($randomList 2));};").ObjectValue);
         }
-
+        [Test]
+        public static void NestedListTest()
+        {
+            Assert.AreEqual("It worked!", LoadFile.RunCode("Name NestedListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; add randomList insideList; return randomList 3 0;};").ObjectValue);
+        }
+        [Test]
+        public static void SetListTest()
+        {
+            Assert.AreEqual("It worked!", LoadFile.RunCode("Name SetListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; setList randomList 2 \"It \" ; add randomList insideList; setList randomList 3 0 \"worked!\"; return (($randomList 2) + ($randomList 3 0));};").ObjectValue);
+        }
     }
 
 

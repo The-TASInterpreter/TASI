@@ -6,6 +6,7 @@ Make new exception classes for internal and user exceptions | done
 
 Revise errors to make them more descriptive => Endgoal: Be able to write non-complexc code from some languages, and help the user to translate it to TASI
 
+for some reson bool operations take rly long. Make it better
 
 Add more methods.
 

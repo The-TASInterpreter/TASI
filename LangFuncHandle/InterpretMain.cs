@@ -286,10 +286,10 @@ namespace TASI
                 }
                 if (currentStatement[0].commandType != Command.CommandTypes.Statement || currentStatement[0].commandText != "branch") throw new CodeSyntaxException("You can only use the \"branch\" statement in this mode.");
                 if (currentStatement.Count != 3 || currentStatement[1].commandType != Command.CommandTypes.Statement || currentStatement[2].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid use of branch statement. Correct use:\nbranch <statement method name> {};");
-                Function? accessFunction = thisNamespace.namespaceFuncitons.FirstOrDefault(x => x.funcName == currentStatement[1].commandText, null);
+                Function? accessFunction = thisNamespace.namespaceFuncitons.FirstOrDefault(x => x.funcName.ToLower() == currentStatement[1].commandText.ToLower(), null);
                 if (accessFunction == null)
                 {
-                    thisNamespace.namespaceFuncitons.Add(new(currentStatement[1].commandText, VarConstruct.VarType.@void, thisNamespace, new List<List<VarConstruct>>() { new List<VarConstruct>() }, StringProcess.ConvertLineToCommand("ask; return;", -1))); //Generate default function if function wasn't defined.
+                    new Function(currentStatement[1].commandText, VarConstruct.VarType.@void, thisNamespace, new List<List<VarConstruct>>() { new List<VarConstruct>() }, StringProcess.ConvertLineToCommand("ask; return;", -1)); //Generate default function if function wasn't defined.
                     accessFunction = thisNamespace.namespaceFuncitons.Last();
                 }
                 accessFunction.customStatements = InterpretCustomStatements(currentStatement[2].codeContainerCommands);

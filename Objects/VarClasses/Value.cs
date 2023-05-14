@@ -42,7 +42,7 @@ namespace TASI
                     if (valueType == ValueType.@string)
                         throw new InternalInterpreterException("Internal: value is not a string value");
                     else
-                        throw new InternalInterpreterException("Internal: Tried to access string value of non-list type");
+                        throw new InternalInterpreterException("Internal: Tried to access string value of non-string type");
                 return (string)value;
             }
         }

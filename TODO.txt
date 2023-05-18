@@ -1,6 +1,10 @@
 Add value links: by setting the values of VAR to a different class. | done
 Public variables | done
 Make new exception classes for internal and user exceptions | done
+Add More general tests | done
+Hashmap for var name | done
+Add Lists | done
+Add multithreading with promise values. | done
 
 
 
@@ -16,21 +20,15 @@ Add interpreter extentions
 
 Add argument API
 
-Add More general tests | done
+Limit memory usage by reusing values more often.
 
 Add ways to obscure code and compile it into an intermediate language
 
 Add Supervisor-Type namespaces
 
-Add Lists. Possible return type syntax:
-
-[Inf.DefList:"string", "TestList"]
-Add TestList "Hello World";
-[Console.WriteLine:TestList 0]
+Add a proper debugger
 
 
-Add multithreading with promise values.
 
-Hashmap for var name | done
 
 BETTER SYNTAX => A step foreward

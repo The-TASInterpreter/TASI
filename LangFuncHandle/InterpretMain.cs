@@ -7,11 +7,78 @@
 
 
 
+        /*
+        public static List<VarConstruct> InterpretCopyVar(List<Command> commands)
+        {
+            bool statementMode = false;
+            CommandLine? commandLine = new(new(), -1);
+            List<VarConstruct> result = new();
+
+            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand, ";", commands.Last().commandLine));
+
+            foreach (Command command in commands)
+            {
+
+                if (statementMode)
+                {
+                    if (command.commandType != Command.CommandTypes.EndCommand)
+                    {
+                        commandLine.commands.Add(command);
+                        continue;
+                    }
+
+                    if (commandLine.commands.Count != 2 && commandLine.commands[0].commandType == Command.CommandTypes.Statement && commandLine.commands[1].commandType == Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarCopy statement.\nRight way of using it:<statemt: var one> <statement: var two>;");
+                    if (commandLine.commands.Count == 3) // Is link
+                    {
+                        if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
+                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        result.ForEach(x =>
+                        {
+                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                        });
+                        result.Add(new(varType, commandLine.commands[2].commandText.ToLower(), true));
+                    }
+                    else
+                    {
+                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
+                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        result.ForEach(x =>
+                        {
+                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                        });
+
+                        result.Add(new(varType, commandLine.commands[1].commandText.ToLower()));
+
+                    }
+                    statementMode = false;
+                    continue;
+                }
+
+
+                switch (command.commandType)
+                {
+                    case Command.CommandTypes.Statement:
+                        Global.currentLine = command.commandLine;
+                        statementMode = true;
+                        commandLine = new(new List<Command> { command }, 1);
+                        break;
+                    default:
+                        throw new NotImplementedException($"You can only use statements in VarConstruct-mode.");
+                }
+            }
+            return result;
+        }
+
+        */
+
+
         public static List<VarConstruct> InterpretVarDef(List<Command> commands)
         {
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<VarConstruct> result = new();
+            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand, ";", commands.Last().commandLine));
+
             foreach (Command command in commands)
             {
 
@@ -61,18 +128,6 @@
                     default:
                         throw new NotImplementedException($"You can only use statements in VarConstruct-mode.");
                 }
-            }
-            if (statementMode)
-            {
-                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>");
-                if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
-                result.ForEach(x =>
-                {
-                    if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()}. Keep in mind, that variable names are not case sensitive.");
-                });
-
-                result.Add(new(varType, commandLine.commands[1].commandText.ToLower()));
             }
             return result;
         }
@@ -329,6 +384,8 @@
                         throw new NotImplementedException($"You can't use a {command.commandType}-type directly.");
                 }
             }
+            if (statementMode) throw new CodeSyntaxException("Seems like you forgot a semicolon (;)");
+
             return null;
         }
         public static Function? FindFunctionUsingFunctionPath(string functionPath)

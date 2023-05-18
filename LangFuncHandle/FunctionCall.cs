@@ -168,7 +168,7 @@ namespace TASI
                     matching = true;
                     for (int i = 0; i < inputVars.Count; i++)
                     {
-                        if ((functionInputType[i].type != Value.ConvertValueTypeToVarType( inputVars[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")) && functionInputType[i].type != VarConstruct.VarType.all) || (inputVars[i].comesFromVarValue == null && functionInputType[i].isLink))
+                        if ((functionInputType[i].type != Value.ConvertValueTypeToVarType(inputVars[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")) && functionInputType[i].type != VarConstruct.VarType.all) || (inputVars[i].comesFromVarValue == null && functionInputType[i].isLink))
                         {
                             matching = false;
                             break;
@@ -271,9 +271,9 @@ namespace TASI
             {
                 if (functionCallInputHelp.inputVarType[i].type == VarConstruct.VarType.all)
                     //new VarDef(inputValues[i].varDef.varType, functionCallInputHelp.inputVarType[i].varName), this.inputValues[i].ObjectValue
-                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var(new(VarConstruct.VarType.all, functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
+                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var(new VarConstruct(VarConstruct.VarType.all, functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
                 else
-                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var (new(Value.ConvertValueTypeToVarType(inputValues[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")), functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
+                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var(new VarConstruct(Value.ConvertValueTypeToVarType(inputValues[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")), functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
                 if (inputValues[i].comesFromVarValue != null)
                 {
                     ((Var?)functionCallInput[functionCallInputHelp.inputVarType[i].name] ?? throw new InternalInterpreterException("Internal: Something, that wasn't supposed to be null ever ended up to be null")).varValueHolder = inputValues[i].comesFromVarValue.varValueHolder;
@@ -284,10 +284,10 @@ namespace TASI
 
 
 
-            if (functionReturnValue == null || ((Value.ConvertValueTypeToVarType(functionReturnValue.valueType ?? throw new InternalInterpreterException("Value type of value was null")) != callFunction.returnType && callFunction.returnType != VarConstruct.VarType.all)))
+            if (functionReturnValue == null || (Value.ConvertValueTypeToVarType(functionReturnValue.valueType ?? throw new InternalInterpreterException("Value type of value was null")) != callFunction.returnType && callFunction.returnType != VarConstruct.VarType.all))
                 throw new CodeSyntaxException($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
             return functionReturnValue;
-            
+
             //throw new InternalInterpreterException("Internal: Only internal functions are implemented");
         }
 

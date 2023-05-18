@@ -1,7 +1,4 @@
-﻿
-using System.Security.Cryptography.X509Certificates;
-
-namespace TASI
+﻿namespace TASI
 {
 
 
@@ -139,9 +136,42 @@ namespace TASI
                     FindVar(commandLine.commands[1].commandText, accessableObjects, true).varValueHolder = FindVar(commandLine.commands[2].commandText, accessableObjects, true).varValueHolder;
                     return null;
                 case "unlink":
-                    if (commandLine.commands.Count != 2 || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of unlink return statement. Correct usage:\nlink <statement: variable to unlink>");
+                    if (commandLine.commands.Count != 2 || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of unlink return statement. Correct usage:\nunlink <statement: variable to unlink>");
                     Var foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
+                    if (foundVar.promised != null)
+                    { //After unlink value will be reset, so promise can be aborted
+                        foundVar.promiseCancel.Cancel();
+                        foundVar.WaitPromise();
+                        foundVar.promiseCancel = null;
+                        foundVar.promised = null;
+                    }
                     foundVar.varValueHolder = new(new(foundVar.varValueHolder.value.valueType ?? throw new InternalInterpreterException("Value type of value was null"), foundVar.varValueHolder.value.ObjectValue));
+                    return null;
+                case "promise": //promise <var> <init> <code>;
+                    if (commandLine.commands.Count != 3 && commandLine.commands.Count != 4) throw new CodeSyntaxException("Invalid use of promise stratement. Valid use: promise <statement: var name> <code container: init> <code container: execute code>;\nOr\npromise <statement: var name> <code container: execute code>;");
+
+                    foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
+                    AccessableObjects newPromise = new AccessableObjects(new(), accessableObjects.currentNamespace);
+                    foreach(Var var in accessableObjects.accessableVars.Values)
+                    {
+                        newPromise.accessableVars.Add(var.varConstruct.name, new Var(var, true));
+                    }
+
+                    if (commandLine.commands.Count == 4)
+                        InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands, newPromise);
+                    foundVar.Promise(commandLine.commands.Last(), accessableObjects);
+                    return null;
+
+                case "unpromise":
+                    if (commandLine.commands.Count != 2 || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of unpromise return statement. Correct usage:\nunpromise <statement: variable to abort promise>");
+                    foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
+                    if (foundVar.promised != null)
+                    {
+                        foundVar.promiseCancel.Cancel();
+                        foundVar.WaitPromise();
+                        foundVar.promiseCancel = null;
+                        foundVar.promised = null;
+                    }
                     return null;
                 case "makevar":
 
@@ -153,10 +183,10 @@ namespace TASI
                     if (FindVar(commandLine.commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                     if (commandLine.commands[1].commandText == "all")
                     {
-                        accessableObjects.accessableVars.Add(commandLine.commands[2].commandText, new Var(new(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(varType)));
+                        accessableObjects.accessableVars.Add(commandLine.commands[2].commandText, new Var(new VarConstruct(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(varType)));
                         return null;
                     }
-                    accessableObjects.accessableVars.Add(commandLine.commands[2].commandText.ToLower(), new Var(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
+                    accessableObjects.accessableVars.Add(commandLine.commands[2].commandText.ToLower(), new Var(new VarConstruct(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
                     return null;
 
 
@@ -345,7 +375,7 @@ namespace TASI
 
             }
 
-           
+
 
         }
         public static Value GetValueOfListUsingIndex(List<Command> indexes, Var listVar, AccessableObjects accessableObjects)

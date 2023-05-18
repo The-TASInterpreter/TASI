@@ -96,8 +96,8 @@ namespace TASI
         public static void CalculationReturnStatementTests()
         {
             AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""));
-            accessableObjects.accessableVars.Add("helloworld", new Var(new(VarConstruct.VarType.@string, "helloWorld"), new(Value.ValueType.@string, "Hello World!")));
-            accessableObjects.accessableVars.Add("num-pi", new Var(new(VarConstruct.VarType.num, "num-pi"), new(Value.ValueType.num, -3.141)));
+            accessableObjects.accessableVars.Add("helloworld", new Var(new VarConstruct(VarConstruct.VarType.@string, "helloWorld"), new(Value.ValueType.@string, "Hello World!")));
+            accessableObjects.accessableVars.Add("num-pi", new Var(new VarConstruct(VarConstruct.VarType.num, "num-pi"), new(Value.ValueType.num, -3.141)));
 
             Assert.AreEqual(true, Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "helloWorld == \"Hello World!\""), accessableObjects).BoolValue);
 
@@ -173,9 +173,34 @@ namespace TASI
         }
 
     }
-
-
     [TestFixture]
+    public class ThreadingTests
+    {
+        [Test]
+        public static void PromiseTest()
+        {
+            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""));
+
+            accessableObjects.accessableVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.num, "promisetestvar"), new(Value.ValueType.num, "")));
+            Statement.StaticStatement(new(StringProcess.ConvertLineToCommand("promise promiseTestVar {} { makeVar num i; while (i < 6969) { set i (i + 1); }; return i; }")), accessableObjects);
+            //Assert.AreEqual("", ((Var)accessableObjects.accessableVars["promisetestvar"]).varValueHolder.value.value); //This is the worst way to test, please don't send me to hell :3
+            Assert.AreEqual( 6969, ((Var)accessableObjects.accessableVars["promisetestvar"]).VarValue.ObjectValue);
+        }
+        [Test]
+        public static void PromiseOutsideTest()
+        {
+            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""));
+
+            accessableObjects.accessableVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.@string, "promisetestvar"), new(Value.ValueType.@string, "")));
+            accessableObjects.accessableVars.Add("outside", new Var(new VarConstruct(VarConstruct.VarType.@string, "outside"), new(Value.ValueType.@string, "notChange")));
+             
+            Statement.StaticStatement(new(StringProcess.ConvertLineToCommand("promise promiseTestVar {} { while (outside == \"notChange\" ) {}; return outside; }")), accessableObjects);
+            Thread.Sleep(50);
+            ((Var)accessableObjects.accessableVars["outside"]).VarValue.ObjectValue = "change";
+            Assert.AreEqual("change", ((Var)accessableObjects.accessableVars["promisetestvar"]).VarValue.ObjectValue);
+        }
+    }
+        [TestFixture]
     public class GeneralCodeTests
     {
         [Test]
@@ -298,6 +323,7 @@ namespace TASI
         {
             Assert.AreEqual("It worked!", LoadFile.RunCode("Name SetListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; setList randomList 2 \"It \" ; add randomList insideList; setList randomList 3 0 \"worked!\"; return (($randomList 2) + ($randomList 3 0));};").ObjectValue);
         }
+       
     }
 
 

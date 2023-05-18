@@ -35,10 +35,10 @@
                     if (!Enum.TryParse<Value.ValueType>(input[0].StringValue, true, out Value.ValueType varType) && input[0].StringValue != "all") throw new CodeSyntaxException($"The vartype \"{input[0].StringValue}\" doesn't exist.");
                     if (input[0].StringValue == "all")
                     {
-                        accessableObjects.accessableVars.Add(input[1].StringValue, new Var(new(VarConstruct.VarType.all, input[1].StringValue), new(varType)));
+                        accessableObjects.accessableVars.Add(input[1].StringValue, new Var(new VarConstruct(VarConstruct.VarType.all, input[1].StringValue), new(varType)));
                         return null;
                     }
-                    accessableObjects.accessableVars.Add(input[1].StringValue, new Var(new(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType)));
+                    accessableObjects.accessableVars.Add(input[1].StringValue, new Var(new VarConstruct(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType)));
                     return null;
                 case "convert.tonum":
                     if (!double.TryParse(input[0].StringValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))

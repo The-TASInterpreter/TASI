@@ -10,11 +10,13 @@
             bool stringMode = false;
             bool functionMode = false;
             bool skipBecauseString = false;
+            bool silentLineCharMode = false;
 
             bool syntaxMode = false;
             bool CalculationMode = false;
             bool commentMode = false;
             int functionModeDeph = 0;
+            int codeContainerLineStart = -1;
             int codeContainerDeph = 0;
             bool codeContainerMode = false;
             bool stringModeBackslash = false;
@@ -26,6 +28,26 @@
 
             foreach (char c in line) //Thats some shit code and imma have to fix it some time, but it basically is the main syntax analysis function.
             {
+                if (silentLineCharMode)
+                {
+                    if (c == 'Ⅼ')
+                    {
+                        silentLineCharMode = false;
+                        currentLine = Convert.ToInt32(lineCharLine);
+                        lineCharLine = "";
+                        Global.currentLine = currentLine;
+                    }
+                    lineCharLine += c;
+                }
+                else
+                {
+                    if (c == 'Ⅼ' && !lineCharMode && !silentLineCharMode)
+                    {
+                        lineCharLine = "";
+                        silentLineCharMode = true;
+                    }
+                }
+
 
 
                 if (lineCharMode)
@@ -77,7 +99,7 @@
                         {
                             TASI_Main.interpretInitLog.Log($"Code container found:\n{commandText}");
                             codeContainerMode = false;
-                            commands.Add(new Command(Command.CommandTypes.CodeContainer, commandText, currentLine));
+                            commands.Add(new Command(Command.CommandTypes.CodeContainer, commandText, codeContainerLineStart, currentLine));
                             commandText = string.Empty;
                             continue;
                         }
@@ -249,6 +271,7 @@
                 {
                     case 'Ⅼ':
                         lineCharMode = true;
+                        silentLineCharMode = false;
                         continue;
                     case '^':
                         TASI_Main.interpretInitLog.Log($"Comment found; Skiping line");
@@ -266,6 +289,7 @@
                         CalculationMode = true;
                         break;
                     case '{':
+                        codeContainerLineStart = currentLine;
                         TASI_Main.interpretInitLog.Log($"CodeContainer found \"{c}\"");
                         codeContainerDeph = 1;
                         codeContainerMode = true;

@@ -7,6 +7,7 @@ namespace TASI
         public string commandText;
         public CommandTypes commandType;
         public int commandLine;
+        public int commandEnd;
         public string originalCommandText;
         public List<Command>? codeContainerCommands;
         public FunctionCall? functionCall;
@@ -65,11 +66,12 @@ namespace TASI
         {
             FunctionCall, Statement, Calculation, String, CodeContainer, EndCommand
         }
-        public Command(CommandTypes commandType, string commandText, int commandLine = -1)
+        public Command(CommandTypes commandType, string commandText, int commandLine = -1, int commandEnd = -1)
         {
             this.commandText = commandText;
             this.commandType = commandType;
             this.commandLine = commandLine;
+            this.commandEnd = commandEnd;
             switch (commandType)
             {
                 case CommandTypes.FunctionCall:

@@ -2,6 +2,7 @@
 
 
 using System.Diagnostics;
+using TASI.debug;
 using static TASI.Command;
 
 namespace TASI
@@ -45,6 +46,22 @@ namespace TASI
                     location = (Console.ReadLine() ?? throw new CodeSyntaxException("Code is null.")).Replace("\"", "");
                 Global.mainFilePath = Path.GetDirectoryName(location);
                 List<Command> commands = LoadFile.ByPath(location);
+                int line = -1;
+                while (true)
+                {
+                    ConsoleHelper.ClearConsole();
+
+
+
+                    Format.PrintFormatedString(Format.FormatCommands(commands, line).Item1);
+                    line++;
+                    
+                    Console.ResetColor();
+
+
+
+                    Console.ReadKey();
+                }
                 codeRuntime.Start();
 
 
@@ -111,6 +128,7 @@ namespace TASI
                         Console.WriteLine("The error message is:");
                         Console.WriteLine(ex.Message);
                         break;
+                    default:
                     case InternalInterpreterException:
                         Console.WriteLine("There was an internal error in the compiler.");
                         Console.WriteLine("Please report this error on github and please include the code and this error message and (if available) you inputs, that lead to this error. You can create a new issue, reporting the error here:\nhttps://github.com/Ekischleki/TASI/issues/new");

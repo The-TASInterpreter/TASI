@@ -119,7 +119,7 @@
                     if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
                     if (commandLine.commands[1].commandType != Command.CommandTypes.FunctionCall) throw new CodeSyntaxException("Invalid helpm statement syntax. Example for right syntax:\nhelpm <function call>;");
                     FunctionCall helpCall = commandLine.commands[1].functionCall ?? throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
-                    Help.ListFunctionArguments(helpCall.callFunction);
+                    Help.ListFunctionArguments(helpCall.CallFunction);
                     return null;
                 case "listm":
                     if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
@@ -206,8 +206,8 @@
                     FunctionCall functionCall = commandLine.commands[0].functionCall ?? throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a function call
                         throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
-                    if (functionCall.callFunction.returnType != Value.ConvertValueTypeToVarType(expectedType)) //Find out if function returns desired type
-                        throw new CodeSyntaxException($"The function {functionCall.callFunction.functionLocation} does not return the expected {expectedType} type.");
+                    if (functionCall.CallFunction.returnType != Value.ConvertValueTypeToVarType(expectedType)) //Find out if function returns desired type
+                        throw new CodeSyntaxException($"The function {functionCall.CallFunction.functionLocation} does not return the expected {expectedType} type.");
                     return functionCall.DoFunctionCall(accessableObjects);
 
                 case Command.CommandTypes.Calculation:

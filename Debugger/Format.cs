@@ -71,10 +71,35 @@ namespace TASI.debug
             }
         }
 
-        public static Tuple<string, int> FormatCommands(List<Command> commands, int highlightCurrentLine = -1, int deph = 0, int currentCommandLine = -1)
+        public static Tuple<string,int> FormatFunctionCall(FunctionCall functionCall, int highlightCurrentLine = -1, int deph = 0, int currentCommandLine = -1)
+        {
+            string result = $"ⅬY[{functionCall.CallFunction.functionLocation}";
+            if (functionCall.argumentCommands.Count == 0)
+            {
+                result += "]";
+                return new(result, currentCommandLine);
+            }
+            result += ":";
+
+            foreach(CommandLine commandLine in functionCall.argumentCommands)
+            {
+                var formated = FormatCommands(commandLine.commands, highlightCurrentLine, deph, currentCommandLine, true);
+                result += formated.Item1;
+                currentCommandLine = formated.Item2;
+                if (commandLine != functionCall.argumentCommands.Last())
+                {
+                    result += "ⅬW,";
+                }
+            }
+            result += "ⅬY]";
+            return new(result, currentCommandLine);
+
+        }
+
+
+        public static Tuple<string, int> FormatCommands(List<Command> commands, int highlightCurrentLine = -1, int deph = 0, int currentCommandLine = -1, bool statementMode = false)
         {
             string result = "";
-            bool statementMode = false;
             bool isNewLine = false;
             string tabs = new('\t', deph);
             foreach (Command command in commands)
@@ -157,7 +182,9 @@ namespace TASI.debug
                     case Command.CommandTypes.FunctionCall:
                         if (statementMode && !isNewLine)
                             result += " ";
-                        result += "ⅬY" + executingCommand.originalCommandText;
+                        insideContainer = FormatFunctionCall(executingCommand.functionCall, highlightCurrentLine, deph, currentCommandLine);
+                        result += insideContainer.Item1;
+                        currentCommandLine = insideContainer.Item2;
                         break;
                     case Command.CommandTypes.EndCommand:
                         statementMode = false;

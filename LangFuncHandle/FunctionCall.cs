@@ -6,14 +6,35 @@ namespace TASI
 {
     public class FunctionCall
     {
-        public Function? callFunction;
+        private Function? callFunction;
         public List<Value> inputValues;
         public List<CommandLine> argumentCommands;
         private string functionName;
 
+        public Function CallFunction
+        {
+            get
+            {
+                if (callFunction == null)
+                {
+                    if (!Global.DebugErrorSkip)
+                        throw new InternalInterpreterException($"The function call call function \"{functionName}\" was not activated.");
+                    NamespaceInfo allNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, "")
+                    {
+                        accessableNamespaces = Global.Namespaces
+                    };
+                    SearchCallFunction(allNamespace);
+
+                }
+                return callFunction;
+
+            }
+            set { callFunction = value; }
+        }
+
         public FunctionCall(Region region)
         {
-            callFunction = FindFunctionByPath(region.FindDirectValue("mL").value, Global.Namespaces, true, null);
+            CallFunction = FindFunctionByPath(region.FindDirectValue("mL").value, Global.Namespaces, true, null);
             argumentCommands = new List<CommandLine>();
             foreach (Region region1 in region.FindSubregionWithNameArray("CmdL"))
             {
@@ -25,7 +46,7 @@ namespace TASI
             get
             {
                 Region result = new("MC", new List<Region>(), new());
-                result.directValues.Add(new("mL", callFunction.functionLocation, false));
+                result.directValues.Add(new("mL", CallFunction.functionLocation, false));
                 foreach (var arg in argumentCommands)
                     result.SubRegions.Add(arg.Region);
                 return result;
@@ -34,7 +55,7 @@ namespace TASI
         }
         public FunctionCall(Function callFunction, List<Value> inputVars)
         {
-            this.callFunction = callFunction;
+            this.CallFunction = callFunction;
             this.inputValues = new List<Value>(inputVars);
         }
 
@@ -146,7 +167,7 @@ namespace TASI
         public void SearchCallFunction(NamespaceInfo currentNamespace) //This is there, so header analysis can be done, without any errors.
         {
 
-            callFunction = FindFunctionByPath(functionName.ToLower(), Global.Namespaces, true, currentNamespace);
+            CallFunction = FindFunctionByPath(functionName.ToLower(), Global.Namespaces, true, currentNamespace);
             foreach (CommandLine commandLine in argumentCommands)
                 foreach (Command command in commandLine.commands)
                 {
@@ -160,9 +181,9 @@ namespace TASI
         public FunctionCallInputHelp? CheckIfFunctionCallHasValidArgTypesAndReturnCode(List<Value> inputVars)
         {
             bool matching;
-            for (int j = 0; j < callFunction.functionArguments.Count; j++)
+            for (int j = 0; j < CallFunction.functionArguments.Count; j++)
             {
-                List<VarConstruct> functionInputType = callFunction.functionArguments[j];
+                List<VarConstruct> functionInputType = CallFunction.functionArguments[j];
                 if (functionInputType.Count == inputVars.Count)
                 {
                     matching = true;
@@ -176,9 +197,9 @@ namespace TASI
                     }
                     if (matching)
                     {
-                        if (callFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
+                        if (CallFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
                             return new(new(), new());
-                        return new(callFunction.functionCode[j], functionInputType);
+                        return new(CallFunction.functionCode[j], functionInputType);
                     }
                 }
             }
@@ -250,15 +271,15 @@ namespace TASI
             FunctionCallInputHelp? functionCallInputHelp = CheckIfFunctionCallHasValidArgTypesAndReturnCode(inputValues);
 
             if (functionCallInputHelp == null)
-                throw new CodeSyntaxException($"The function \"{callFunction.functionLocation}\" doesent support the provided input types. Use the syntax \"helpm <function call>;\"\nFor this function it would be: \"helpm [{callFunction.functionLocation}];\"");
+                throw new CodeSyntaxException($"The function \"{CallFunction.functionLocation}\" doesent support the provided input types. Use the syntax \"helpm <function call>;\"\nFor this function it would be: \"helpm [{CallFunction.functionLocation}];\"");
 
 
-            if (callFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
+            if (CallFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
             {
-                Value? returnValue = InternalFunctionHandle.HandleInternalFunc(callFunction.functionLocation, inputValues, accessableObjects);
+                Value? returnValue = InternalFunctionHandle.HandleInternalFunc(CallFunction.functionLocation, inputValues, accessableObjects);
                 if (Global.debugMode)
                 {
-                    Console.WriteLine($"Did function call to {callFunction.parentNamespace.namespaceIntend}-intend {callFunction.functionLocation}.\nIt returns a {callFunction.returnType}.\nIt returned a {returnValue.valueType}-type with a value of \"{returnValue.ObjectValue}\".");
+                    Console.WriteLine($"Did function call to {CallFunction.parentNamespace.namespaceIntend}-intend {CallFunction.functionLocation}.\nIt returns a {CallFunction.returnType}.\nIt returned a {returnValue.valueType}-type with a value of \"{returnValue.ObjectValue}\".");
                     Console.ReadKey();
                 }
                 return returnValue;
@@ -280,12 +301,12 @@ namespace TASI
                 }
             }
 
-            Value? functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, callFunction.parentNamespace));
+            Value? functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, CallFunction.parentNamespace));
 
 
 
-            if (functionReturnValue == null || (Value.ConvertValueTypeToVarType(functionReturnValue.valueType ?? throw new InternalInterpreterException("Value type of value was null")) != callFunction.returnType && callFunction.returnType != VarConstruct.VarType.all))
-                throw new CodeSyntaxException($"The function \"{callFunction.functionLocation}\" didn't return the expected {callFunction.returnType}-type.");
+            if (functionReturnValue == null || (Value.ConvertValueTypeToVarType(functionReturnValue.valueType ?? throw new InternalInterpreterException("Value type of value was null")) != CallFunction.returnType && CallFunction.returnType != VarConstruct.VarType.all))
+                throw new CodeSyntaxException($"The function \"{CallFunction.functionLocation}\" didn't return the expected {CallFunction.returnType}-type.");
             return functionReturnValue;
 
             //throw new InternalInterpreterException("Internal: Only internal functions are implemented");

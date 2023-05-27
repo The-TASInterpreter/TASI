@@ -46,22 +46,7 @@ namespace TASI
                     location = (Console.ReadLine() ?? throw new CodeSyntaxException("Code is null.")).Replace("\"", "");
                 Global.mainFilePath = Path.GetDirectoryName(location);
                 List<Command> commands = LoadFile.ByPath(location);
-                int line = -1;
-                while (true)
-                {
-                    ConsoleHelper.ClearConsole();
 
-
-
-                    Format.PrintFormatedString(Format.FormatCommands(commands, line).Item1);
-                    line++;
-                    
-                    Console.ResetColor();
-
-
-
-                    Console.ReadKey();
-                }
                 codeRuntime.Start();
 
 
@@ -99,6 +84,22 @@ namespace TASI
                     if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(startValues.Item2);
                     if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(startValues.Item2);
                     if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(startValues.Item2);
+                }
+                int line = -1;
+                while (true)
+                {
+                    ConsoleHelper.ClearConsole();
+
+
+
+                    Format.PrintFormatedString(Format.FormatCommands(commands, line).Item1);
+                    line++;
+
+                    Console.ResetColor();
+
+
+
+                    Console.ReadKey();
                 }
 
 

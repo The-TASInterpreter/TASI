@@ -2,6 +2,8 @@
 {
     internal class Global
     {
+
+        public const bool DebugErrorSkip = true;
         public static List<NamespaceInfo> Namespaces = new List<NamespaceInfo>();
         public static List<string> allLoadedFiles = new(); //It is important, that allLoadedFiles and Namespaces corrospond
         public static List<Function> AllFunctions = new List<Function>();

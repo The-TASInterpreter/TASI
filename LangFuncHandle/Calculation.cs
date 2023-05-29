@@ -193,6 +193,7 @@ namespace TASI
         }
 
         public Type type;
+        public int line;
         public string? @operator;
         public List<Command>? returnStatement;
         public FunctionCall? functionCall;
@@ -200,6 +201,7 @@ namespace TASI
         public List<CalculationType>? subValues;
         public CalculationType(Command command)
         {
+            line = command.commandLine;
             switch (command.commandType)
             {
                 case Command.CommandTypes.FunctionCall:

@@ -70,6 +70,53 @@ namespace TASI.debug
                 Console.Write('\n');
             }
         }
+        public static Tuple<string, int> FormatCalculation(CalculationType calculationType, int highlightCurrentLine = -1, int deph = 0, int currentCommandLine = -1)
+        {
+            switch (calculationType.type)
+            {
+                case CalculationType.Type.value:
+                    switch (calculationType.value.valueType)
+                    {
+                        case Value.ValueType.num:
+                            return new($"ⅬB{calculationType.value.ObjectValue} ", calculationType.line);
+                        case Value.ValueType.@bool:
+                            if (calculationType.value.BoolValue)
+                                return new($"ⅬBtrue ", calculationType.line);
+                            else
+                                return new($"ⅬBfalse ", calculationType.line);
+                        case Value.ValueType.@string:
+                            return new($"ⅬY\"{calculationType.value.ObjectValue}\" ", calculationType.line);
+                        default:
+                            return new($"ⅬY<unimplemented> ", calculationType.line);
+
+
+
+
+                    }
+                case CalculationType.Type.@operator:
+                    return new($"ⅬP{calculationType.@operator} ", calculationType.line);
+                case CalculationType.Type.function:
+                    return FormatFunctionCall(calculationType.functionCall, highlightCurrentLine, deph, currentCommandLine);
+                case CalculationType.Type.returnStatement:
+                    var returnStatement = FormatCommands(calculationType.returnStatement, highlightCurrentLine, deph, currentCommandLine, true);
+                    return new($"ⅬB(${returnStatement.Item1} ) ", returnStatement.Item2);
+                case CalculationType.Type.calculation:
+                    string result = "ⅬG (";
+                    foreach(CalculationType calculationType1 in calculationType.subValues)
+                    {
+                        result += FormatCalculation(calculationType1, highlightCurrentLine, deph + 1, currentCommandLine).Item1;
+                    }
+                    result += "ⅬG) ";
+                    return new(result, currentCommandLine);
+
+
+                default: return new($"ⅬY<Unimplemented>", calculationType.line);
+
+            }
+
+        }
+
+
 
         public static Tuple<string,int> FormatFunctionCall(FunctionCall functionCall, int highlightCurrentLine = -1, int deph = 0, int currentCommandLine = -1)
         {
@@ -148,7 +195,11 @@ namespace TASI.debug
                             result += "ⅬW}";
                         }
                         break;
-                    case Command.CommandTypes.Statement or Command.CommandTypes.Calculation or Command.CommandTypes.String:
+                    case Command.CommandTypes.Calculation:
+                        result += FormatCalculation(executingCommand.calculation, highlightCurrentLine, deph + 1, currentCommandLine).Item1;
+                        break;
+
+                    case Command.CommandTypes.Statement or Command.CommandTypes.String:
 
                         switch (executingCommand.commandType)
                         {

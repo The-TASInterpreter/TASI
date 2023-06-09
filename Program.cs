@@ -86,6 +86,7 @@ namespace TASI
                     if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(startValues.Item2);
                 }
                 int line = -1;
+                /*
                 while (true)
                 {
                     ConsoleHelper.ClearConsole();
@@ -101,7 +102,7 @@ namespace TASI
 
                     Console.ReadKey();
                 }
-
+                */
 
                 InterpretMain.InterpretNormalMode(startCode, new(new(), startValues.Item2));
                 codeRuntime.Stop();

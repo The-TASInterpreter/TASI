@@ -1,8 +1,42 @@
 ﻿
 using NUnit.Framework;
+using System;
+using System.Diagnostics;
 
 namespace TASI
 {
+
+
+    [TestFixture]
+    public class Benchmarks
+    {
+        [Test]
+        public static void BenchmarkAnalysisString()
+        {
+            Stopwatch benchmark = new();
+            benchmark.Start();
+            for (int i = 0; i < 1000000; i++)
+            {
+                StringProcess.ConvertLineToCommand("\"1\"\"4\"\"789\"");
+            }
+            benchmark.Stop();
+            Console.WriteLine($"Benchmark took {benchmark.ElapsedMilliseconds}ms");
+
+        }
+        [Test]
+        public static void BenchmarkAnalysisStatement()
+        {
+            Stopwatch benchmark = new();
+            benchmark.Start();
+            for (int i = 0; i < 1000000; i++)
+            {
+                StringProcess.ConvertLineToCommand("one four nt");
+            }
+            benchmark.Stop();
+            Console.WriteLine($"Benchmark took {benchmark.ElapsedMilliseconds}ms");
+        }
+    }
+
 
     [TestFixture]
     public class CalcTests

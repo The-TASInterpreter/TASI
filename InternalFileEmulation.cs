@@ -7,25 +7,31 @@ namespace TASI
     {
 
         public string path; //Basically just identyfier idk how to spell
-        private string hash;
+        private string? hash;
 
         public string Hash
         {
             get
             {
-                return hash;
+                return hash ?? throw new Exception("Content.Deleted");
             }
         }
 
-        public string Content
+        public string? Content
         {
             get
             {
-                return SFM.LoadFile(hash);
+                return SFM.LoadFile(hash ?? throw new Exception("Content.Deleted"));
             }
             set
             {
-                SFM.OverwriteFile(hash, value);
+                if (value == null)
+                {
+                    SFM.Delete(Hash);
+                    hash = null;
+                }
+                else
+                    hash = SFM.OverwriteFile(Hash, value);
             }
         }
 
@@ -59,9 +65,10 @@ namespace TASI
         public static List<InternalFileEmulation> LoadInternalFiles(Region region)
         {
             List<InternalFileEmulation> result = new(region.SubRegions.Count);
-            region.SubRegions.ForEach(region => result.Add(new() {
+            region.SubRegions.ForEach(region => result.Add(new()
+            {
                 path = region.regionName,
-                hash = region.FindDirectValue("C").value 
+                hash = region.FindDirectValue("C").value
             }));
             return result;
         }

@@ -1,13 +1,15 @@
 ﻿namespace TASI
 {
-    internal class Global
+    public class Global
     {
 
         public const bool DebugErrorSkip = true;
         public static List<NamespaceInfo> Namespaces = new List<NamespaceInfo>();
         public static List<string> allLoadedFiles = new(); //It is important, that allLoadedFiles and Namespaces corrospond
         public static List<Function> AllFunctions = new List<Function>();
-        
+
+        public static List<InternalFileEmulation> internalFiles = new();
+
         public static List<Var> globalVars = new List<Var>();
 
         public static bool debugMode = false;
@@ -20,6 +22,12 @@
 
         public static void InitInternalNamespaces()
         {
+
+
+
+
+
+
             Namespaces = new();
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Test"));
             allLoadedFiles.Add("*internal");

@@ -1,4 +1,5 @@
-﻿namespace TASI
+﻿using SFM;
+namespace TASI
 {
     public class Global
     {

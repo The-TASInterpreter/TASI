@@ -1,4 +1,4 @@
-﻿using DataTypeStore;
+﻿
 using System.Collections;
 using static TASI.Command;
 
@@ -32,27 +32,7 @@ namespace TASI
             set { callFunction = value; }
         }
 
-        public FunctionCall(Region region)
-        {
-            CallFunction = FindFunctionByPath(region.FindDirectValue("mL").value, Global.Namespaces, true, null);
-            argumentCommands = new List<CommandLine>();
-            foreach (Region region1 in region.FindSubregionWithNameArray("CmdL"))
-            {
-                argumentCommands.Add(new(region));
-            }
-        }
-        public Region Region
-        {
-            get
-            {
-                Region result = new("MC", new List<Region>(), new());
-                result.directValues.Add(new("mL", CallFunction.functionLocation, false));
-                foreach (var arg in argumentCommands)
-                    result.SubRegions.Add(arg.Region);
-                return result;
 
-            }
-        }
         public FunctionCall(Function callFunction, List<Value> inputVars)
         {
             this.CallFunction = callFunction;

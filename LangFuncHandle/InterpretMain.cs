@@ -345,7 +345,7 @@
             CommandLine? commandLine = new(new(), -1);
             foreach (Command command in commands)
             {
-
+                accessableObjects.cancellationTokenSource?.Token.ThrowIfCancellationRequested();
                 if (statementMode)
                 {
                     if (command.commandType == Command.CommandTypes.EndCommand)

@@ -1,7 +1,114 @@
-﻿namespace TASI
+﻿using System.Text;
+
+namespace TASI
 {
+
+    internal class IntHolder
+    {
+        public int value;
+        public IntHolder(int value)
+        {
+            this.value = value;
+        }
+        public static IntHolder operator +(IntHolder a, int b)
+        {
+            return new(a.value + b);
+        }
+        public static IntHolder operator -(IntHolder a, int b)
+        {
+            return new(a.value - b);
+        }
+        public static IntHolder operator ++(IntHolder a)
+        {
+            return new(a.value + 1);
+        }
+        public override string ToString()
+        {
+            return value.ToString();
+        }
+    }
     public class StringProcess
     {
+
+
+        public static List<Command> V2(string input, int currentLine = 1)
+        {
+            List<Command> result = new();
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                char c = input[i];
+                if (c == '\"')
+                {
+                    result.Add(HandleString(input, i, out i, out currentLine, currentLine));
+                    continue;
+                }
+
+            }
+            return result;
+        }
+        private static readonly Dictionary<char, char> backslashReplace = new Dictionary<char, char>()
+        {
+            { 'n', '\n' },
+            { '\"', '\"' },
+            { 't', '\t' },
+            { 'l', 'Ⅼ' }
+
+
+        };
+        public static Command HandleString(string input, int start, out int endCharIDX, out int endLine, int startLine = -1)
+        {
+
+            StringBuilder resultString = new();
+            if (input[start] == '\"')
+                start++;
+            endLine = startLine;
+            Command result = new(Command.CommandTypes.String, "", startLine, endLine);
+            bool lastCharBackslash = false;
+            for (endCharIDX = start; endCharIDX < input.Length; endCharIDX++)
+            {
+                char c = input[endCharIDX];
+                if (c == 'Ⅼ')
+                {
+                    StringBuilder nextLine = new StringBuilder();
+                    endCharIDX++;
+                    while (input[endCharIDX] != 'Ⅼ')
+                    {
+                        nextLine.Append(c);
+                    }
+                    endLine = int.Parse(nextLine.ToString());
+                    continue;
+
+                }
+                if (lastCharBackslash)
+                {
+                    lastCharBackslash = false;
+
+                    if (!backslashReplace.TryGetValue(input[endCharIDX], out char replace))
+                        throw new CodeSyntaxException($"Invalid string escape char: '{input[endCharIDX]}'");
+                    resultString.Append(replace);
+                    continue;
+                }
+                if (c == '\\')
+                {
+                    lastCharBackslash = true;
+                    continue;
+                }
+
+                if (c == '\"')
+                {
+                    result.commandEnd = endLine;
+                    result.commandText = resultString.ToString();
+                    return result;
+                }
+                resultString.Append(c);
+
+            }
+            throw new CodeSyntaxException("Didn't end string.");
+
+        }
+
+
         internal static readonly char[] specialCommandChars = { '\"', '[', ']', '(', ')', ';', '{', '}', 'Ⅼ' }; //A statement or syntax will end if it contains any of these chars and the correct type will follow
         public static List<Command> ConvertLineToCommand(string line, int currentLine = 1)
         {

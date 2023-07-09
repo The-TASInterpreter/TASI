@@ -68,6 +68,11 @@ namespace TASI
 
                 switch (c)
                 {
+                    case ')':
+                    case ']':
+                        throw new CodeSyntaxException($"Unexpected '{c}'");
+
+
                     case '\"':
                         result.Add(HandleString(input, endChar, out endChar, out line, line));
                         break;
@@ -203,7 +208,8 @@ namespace TASI
             { 'n', '\n' },
             { '\"', '\"' },
             { 't', '\t' },
-            { 'l', 'Ⅼ' }
+            { 'l', 'Ⅼ' },
+            {'h', '#' }
 
 
         };

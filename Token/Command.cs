@@ -30,6 +30,38 @@ namespace TASI
         {
             FunctionCall, Statement, Calculation, String, CodeContainer, EndCommand
         }
+        /// <summary>
+        /// For creating code containers
+        /// </summary>
+        /// <param name="codeContainerCommands"></param>
+        /// <param name="commandLine"></param>
+        /// <param name="commandEnd"></param>
+        public Command(List<Command> codeContainerCommands, int commandLine = - 1)
+        {
+            commandType = CommandTypes.CodeContainer;
+            commandText = string.Empty;
+            this.commandLine = commandLine;
+            if (codeContainerCommands.Any())
+            {
+                commandEnd = codeContainerCommands.Last().commandEnd;
+            }
+            else
+            {
+                commandEnd = commandLine;
+            }
+
+            
+            this.codeContainerCommands = codeContainerCommands;
+            
+        }
+
+        /// <summary>
+        /// General purpose command creation
+        /// </summary>
+        /// <param name="commandType"></param>
+        /// <param name="commandText"></param>
+        /// <param name="commandLine"></param>
+        /// <param name="commandEnd"></param>
         public Command(CommandTypes commandType, string commandText, int commandLine = -1, int commandEnd = -1)
         {
             this.commandText = commandText;

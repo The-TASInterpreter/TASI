@@ -42,7 +42,8 @@ namespace TASI
                 nextLine.Append(input[endChar]);
                 endChar++;
             }
-
+            int parsedLine = int.Parse(nextLine.ToString());
+            Global.currentLine = parsedLine;
             return int.Parse(nextLine.ToString());
         }
 
@@ -62,6 +63,7 @@ namespace TASI
             line = currentLine;
             StringBuilder sb = new();
             int startLine = startChar;
+            Global.currentLine = line;
             for (endChar = startChar; endChar < input.Length; endChar++)
             {
                 char c = input[endChar];
@@ -262,7 +264,7 @@ namespace TASI
 
 
         internal static readonly HashSet<char> specialCommandChars = new() { '\"', '[', ']', '(', ')', ';', '{', '}', ' ' }; //A sb or syntax will end if it contains any of these chars and the correct type will follow
-        
+
         public static List<Command> ConvertLineToCommand(string line, int currentLine = 1)
         {
             return V2(line, out int _, out int _, currentLine);

@@ -1,4 +1,4 @@
-﻿using DataTypeStore;
+﻿using DataTypeStoreLib;
 
 namespace TASI
 {

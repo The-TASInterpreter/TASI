@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
+using TASI.Token;
 
 namespace TASI
 {
@@ -37,6 +38,43 @@ namespace TASI
         }
     }
 
+
+    [TestFixture]
+    public class TokenTests
+    {
+        [Test]
+        public static void SringTest()
+        {
+            Command testCommand = StringProcess.HandleString("some statement \"\\nSome \\\"string\\\"\" some after that", 15, out int end, out _);
+            Assert.AreEqual(  "\nSome \"string\"", testCommand.commandText);
+            Assert.AreEqual(33, end);
+        }
+        [Test]
+        public static void SringPromise()
+        {
+            CancellationTokenSource ct = new();
+            PromisedString promisedString = new(ct, () =>
+            {
+                string result = "";
+                while (true)
+                {
+                    ct.Token.ThrowIfCancellationRequested();
+                    result += "Test";
+                }
+            });
+            promisedString.Result = "Something";
+            Assert.AreEqual("Something", promisedString.Result);
+            ct = new();
+
+            promisedString = new(ct, () =>
+            {
+                Thread.Sleep(100);
+                return "Hello World!";
+            });
+            Assert.AreEqual("Hello World!", promisedString.Result);
+
+        }
+    }
 
     [TestFixture]
     public class CalcTests

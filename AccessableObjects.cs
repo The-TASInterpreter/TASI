@@ -12,6 +12,7 @@ namespace TASI
         public Hashtable accessableVars = new();   //List<Var> accessableVars = new();
         public NamespaceInfo currentNamespace;
         public bool inLoop = false;
+        public CancellationTokenSource? cancellationTokenSource;
         public AccessableObjects(Hashtable accessableVars, NamespaceInfo importedNamespaces)
         {
             this.accessableVars = accessableVars;

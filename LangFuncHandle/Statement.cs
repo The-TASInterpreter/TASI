@@ -159,7 +159,7 @@
 
                     if (commandLine.commands.Count == 4)
                         InterpretMain.InterpretNormalMode(commandLine.commands[2].codeContainerCommands, newPromise);
-                    foundVar.Promise(commandLine.commands.Last(), accessableObjects);
+                    foundVar.Promise(commandLine.commands.Last(), newPromise);
                     return null;
 
                 case "unpromise":
@@ -167,10 +167,7 @@
                     foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
                     if (foundVar.promised != null)
                     {
-                        foundVar.promiseCancel.Cancel();
-                        foundVar.WaitPromise();
-                        foundVar.promiseCancel = null;
-                        foundVar.promised = null;
+                        foundVar.CancelPromise();
                     }
                     return null;
                 case "makevar":

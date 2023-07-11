@@ -1,7 +1,4 @@
-﻿
-
-using System.Collections;
-using TASI.Objects.VarClasses;
+﻿using TASI.Objects.VarClasses;
 
 namespace TASI
 {
@@ -13,10 +10,26 @@ namespace TASI
         public CancellationTokenSource? promiseCancel;
         public object taskLock = new();
 
+        public void CancelPromise()
+        {
+            promiseCancel.Cancel();
+
+
+
+            WaitPromise();
+
+            promised = null;
+            promiseCancel = null;
+        }
+
         public void WaitPromise()
         {
             if (promised != null)
-                promised.Wait();
+            {
+                    promised.Wait();
+
+
+            }
         }
 
         public void Promise(Command command, AccessableObjects accessableObjects)
@@ -24,18 +37,25 @@ namespace TASI
 
             lock (taskLock)
             {
+
                 promiseCancel = new();
+                accessableObjects.cancellationTokenSource = promiseCancel;
                 promised = new(() =>
                 {
-                    Value result = InterpretMain.InterpretNormalMode(command.codeContainerCommands, accessableObjects) ?? throw new CodeSyntaxException($"Promise for \"{varConstruct.name}\" returned not the expected {varConstruct.type}-type");
 
-                    if (Value.ConvertValueTypeToVarType(result.valueType ?? throw new InternalInterpreterException("Value type is null")) != varConstruct.type)
+                    try
                     {
-                        throw new CodeSyntaxException($"Promise for \"{varConstruct.name}\" returned not the expected {varConstruct.type}-type");
-                    }
-                    varValueHolder.value = result;
-                    promised = null;
+                        Value result = InterpretMain.InterpretNormalMode(command.codeContainerCommands, accessableObjects) ?? throw new CodeSyntaxException($"Promise for \"{varConstruct.name}\" returned not the expected {varConstruct.type}-type");
+                        if (Value.ConvertValueTypeToVarType(result.valueType ?? throw new InternalInterpreterException("Value type is null")) != varConstruct.type)
+                        {
+                            throw new CodeSyntaxException($"Promise for \"{varConstruct.name}\" returned not the expected {varConstruct.type}-type");
+                        }
+                        varValueHolder.value = result;
+                        promised = null;
+                        promiseCancel = null;
+                    } catch (OperationCanceledException) { return; }
                 }, promiseCancel.Token);
+
                 promised.Start();
             }
 
@@ -76,6 +96,10 @@ namespace TASI
             {
                 lock (taskLock)
                 {
+                    if (promised != null)
+                    {
+                        CancelPromise();
+                    }
                     if (varConstruct.type == VarConstruct.VarType.all)
                     {
                         varValueHolder.value = value;

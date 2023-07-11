@@ -41,7 +41,39 @@ namespace TASI
 
         }
 
+        public static Value? RunCode(List<Command> tokenisedCode)
+        {
+            var codeHeaderInformation = InterpretMain.InterpretHeaders(tokenisedCode, "");
+            AccessableObjects initialAccessableObjects = new(new(), codeHeaderInformation.Item2);
 
+            foreach (NamespaceInfo namespaceInfo in Global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
+            {
+                foreach (Function function in namespaceInfo.namespaceFuncitons)
+                {
+                    foreach (List<Command> functionCodeOverload in function.functionCode)
+                    {
+                        foreach (Command overloadCode in functionCodeOverload)
+                        {
+                            Global.currentLine = overloadCode.commandLine;
+                            if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo);
+                            if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo);
+                            if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo);
+                        }
+                    }
+                }
+
+            }
+            foreach (Command command in codeHeaderInformation.Item1)
+            {
+                Global.currentLine = command.commandLine;
+                if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(codeHeaderInformation.Item2);
+                if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(codeHeaderInformation.Item2);
+                if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(codeHeaderInformation.Item2);
+            }
+
+            return InterpretMain.InterpretNormalMode(codeHeaderInformation.Item1, initialAccessableObjects);
+
+        }
 
         public static Value? RunCode(string code)
         {

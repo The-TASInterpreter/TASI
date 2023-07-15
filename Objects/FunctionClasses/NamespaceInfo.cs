@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Runtime.CompilerServices;
 
 namespace TASI
 {
@@ -13,7 +12,7 @@ namespace TASI
             @internal, // An internal namspace hard-coded in.
             library // An also normal program, which doesn't have a start and will throw an error if tried to excecute normally.
         }
-        private string? name; 
+        private string? name;
         public List<Function> namespaceFuncitons = new();
         public List<VarConstruct.VarType> namespaceVars = new();
         public Hashtable publicNamespaceVars = new();
@@ -36,13 +35,14 @@ namespace TASI
         }
 
 
-        public NamespaceInfo(NamespaceIntend namespaceIntend, string? name)
+        public NamespaceInfo(NamespaceIntend namespaceIntend, string? name, Global? global = null)
         {
             TASI_Main.interpretInitLog.Log($"Creating new Namespace. Intend: {namespaceIntend}; Name: {name}");
             this.namespaceIntend = namespaceIntend;
             Name = name;
             accessableNamespaces.Add(this);
-            accessableNamespaces.AddRange(Global.Namespaces.Where(x => x.namespaceIntend == NamespaceIntend.@internal)); //Import all internal namespaces
+            if (global != null)
+                accessableNamespaces.AddRange(global.Namespaces.Where(x => x.namespaceIntend == NamespaceIntend.@internal)); //Import all internal namespaces
         }
 
         public NamespaceInfo(string? name, List<NamespaceInfo> accessableNamespaces, NamespaceIntend namespaceIntend)

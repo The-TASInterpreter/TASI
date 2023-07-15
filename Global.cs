@@ -1,67 +1,236 @@
 ﻿namespace TASI
 {
-    internal class Global
+
+
+    public class GlobalProjectShared
     {
+        public bool debugErrorSkip = true;
+        public List<NamespaceInfo> namespaces = new List<NamespaceInfo>();
+        public List<string> allLoadedFiles = new(); //It is important, that allLoadedFiles and namespaces corrospond
+        public List<Function> allFunctions = new List<Function>();
+        public bool debugMode = false;
+        public List<FunctionCall> allFunctionCalls = new();
+        public string mainFilePath;
+        public List<Task> processFiles = new();
+        public object processFileLock = new();
+        public object iportFileLock = new();
+    }
 
-        public const bool DebugErrorSkip = true;
-        public static List<NamespaceInfo> Namespaces = new List<NamespaceInfo>();
-        public static List<string> allLoadedFiles = new(); //It is important, that allLoadedFiles and Namespaces corrospond
-        public static List<Function> AllFunctions = new List<Function>();
-        
-        public static List<Var> globalVars = new List<Var>();
+    public class GlobalContext
+    {
+        public int currentLine;
+        public string currentFile;
+    }
 
-        public static bool debugMode = false;
-        public static int currentLine;
-        public static List<FunctionCall> allFunctionCalls = new();
-        public static string mainFilePath;
-        public static List<Task> processFiles = new();
-        public static object processFileLock = new();
-        public static object importFileLock = new();
-
-        public static void InitInternalNamespaces()
+    public class Global
+    {
+        public string CurrentFile
         {
+            get
+            {
+                return globalContext.currentFile;
+            }
+            set
+            {
+                globalContext.currentFile = value;
+            }
+        }
+
+        public bool DebugErrorSkip
+        {
+            get
+            {
+                return globalProjectShared.debugErrorSkip;
+            }
+            set
+            {
+                globalProjectShared.debugErrorSkip = value;
+            }
+        }
+        public List<NamespaceInfo> Namespaces
+        {
+            get
+            {
+                return globalProjectShared.namespaces;
+            }
+            set
+            {
+                globalProjectShared.namespaces = value;
+            }
+        }
+        public List<string> AllLoadedFiles
+        {
+            get
+            {
+                return globalProjectShared.allLoadedFiles;
+            }
+            set
+            {
+                globalProjectShared.allLoadedFiles = value;
+            }
+        }
+        public List<Function> AllFunctions
+        {
+            get
+            {
+                return globalProjectShared.allFunctions;
+            }
+            set
+            {
+                globalProjectShared.allFunctions = value;
+            }
+        }
+
+
+
+
+        public bool DebugMode
+        {
+            get
+            {
+                return globalProjectShared.debugMode;
+            }
+            set
+            {
+                globalProjectShared.debugMode = value;
+            }
+        }
+        public int CurrentLine
+        {
+            get
+            {
+                return globalContext.currentLine;
+            }
+            set
+            {
+                globalContext.currentLine = value;
+            }
+        }
+        public List<FunctionCall> AllFunctionCalls
+        {
+            get
+            {
+                return globalProjectShared.allFunctionCalls;
+            }
+            set
+            {
+                globalProjectShared.allFunctionCalls = value;
+            }
+        }
+        public string MainFilePath
+        {
+            get
+            {
+                return globalProjectShared.mainFilePath;
+            }
+            set
+            {
+                globalProjectShared.mainFilePath = value;
+            }
+        }
+        public List<Task> ProcessFiles
+        {
+            get
+            {
+                return globalProjectShared.processFiles;
+            }
+            set
+            {
+                globalProjectShared.processFiles = value;
+            }
+        }
+        public object ProcessFileLock
+        {
+            get
+            {
+                return globalProjectShared.processFileLock;
+            }
+            set
+            {
+                globalProjectShared.processFileLock = value;
+            }
+        }
+        public object IportFileLock
+        {
+            get
+            {
+                return globalProjectShared.iportFileLock;
+            }
+            set
+            {
+                globalProjectShared.iportFileLock = value;
+            }
+        }
+
+        public GlobalContext globalContext;
+        public GlobalProjectShared globalProjectShared;
+
+
+        public Global CreateNewContext(string file)
+        {
+            GlobalContext globalContext = new()
+            {
+                currentFile = file,
+                currentLine = -1
+            };
+            return new(globalContext, globalProjectShared);
+        }
+
+
+        public Global(GlobalContext globalContext, GlobalProjectShared globalProjectShared)
+        {
+            this.globalContext = globalContext;
+            this.globalProjectShared = globalProjectShared;
+        }
+        public Global(string currentFile = "")
+        {
+            globalContext = new GlobalContext();
+            globalContext.currentFile = currentFile;
+            globalProjectShared = new GlobalProjectShared();
+
+
             Namespaces = new();
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Test"));
-            allLoadedFiles.Add("*internal");
+            AllLoadedFiles.Add("*internal");
             new Function("HelloWorld", VarConstruct.VarType.@void, Namespaces[0], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@bool, "display"), new(VarConstruct.VarType.@string, "text")}
-            }, new());
+            }, new(), this);
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Console"));
-            allLoadedFiles.Add("*internal");
+            AllLoadedFiles.Add("*internal");
             new Function("WriteLine", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@string, "text")},
                 new List<VarConstruct> { new(VarConstruct.VarType.num, "num")},
                 new List<VarConstruct> { new(VarConstruct.VarType.@bool, "bool")}
-            }, new());
+            }, new(), this);
             new Function("Write", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@string, "text")}
-            }, new());
+            }, new(), this);
             new Function("ReadLine", VarConstruct.VarType.@string, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@bool, "showTextWhenTyping")},
                 new List<VarConstruct> {}
-            }, new());
+            }, new(), this);
             new Function("Clear", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> {}
-            }, new());
+            }, new(), this);
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Program"));
-            allLoadedFiles.Add("*internal");
+            AllLoadedFiles.Add("*internal");
             new Function("Pause", VarConstruct.VarType.@void, Namespaces[2], new List<List<VarConstruct>> {
                 new List<VarConstruct> {},
                 new List<VarConstruct> {new(VarConstruct.VarType.@bool, "showPausedMessage")}
-            }, new());
+            }, new(), this);
 
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Inf"));
-            allLoadedFiles.Add("*internal");
+            AllLoadedFiles.Add("*internal");
             new Function("DefVar", VarConstruct.VarType.@void, Namespaces[3], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "VarType"), new(VarConstruct.VarType.@string, "VarName")}
-            }, new());
+            }, new(), this);
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Convert"));
-            allLoadedFiles.Add("*internal");
+            AllLoadedFiles.Add("*internal");
             new Function("ToNum", VarConstruct.VarType.num, Namespaces[4], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "ConvertFrom"), new(VarConstruct.VarType.@bool, "errorOnParseFail")}
-            }, new());
+            }, new(), this);
 
         }
     }

@@ -28,30 +28,30 @@ namespace TASI
 
         }
 
-        public static void ListFunctionsOfNamespace(string location)
+        public static void ListFunctionsOfNamespace(string location, Global global)
         {
             Console.WriteLine($"Subfunctions of {location}:");
-            Console.WriteLine(ListFunctions(FunctionCall.FindNamespaceByName(location, Global.Namespaces, true).namespaceFuncitons));
+            Console.WriteLine(ListFunctions(FunctionCall.FindNamespaceByName(location, global.Namespaces, true).namespaceFuncitons));
 
 
         }
 
-        public static void ListLocation(string location)
+        public static void ListLocation(string location, Global global)
         {
             if (location.Split('.').Length == 1)
             {
-                ListFunctionsOfNamespace(location);
+                ListFunctionsOfNamespace(location, global);
             }
             else
             {
-                ListSubfunctionsOfFunction(location);
+                ListSubfunctionsOfFunction(location, global);
             }
         }
 
-        public static void ListSubfunctionsOfFunction(string location)
+        public static void ListSubfunctionsOfFunction(string location, Global global)
         {
             Console.WriteLine($"Subfunctions of {location}:");
-            Console.WriteLine(ListFunctions(FunctionCall.FindFunctionByPath(location, Global.Namespaces, true, null).subFunctions));
+            Console.WriteLine(ListFunctions(FunctionCall.FindFunctionByPath(location, global.Namespaces, true, null).subFunctions));
         }
 
         public static void ListNamespaces(List<NamespaceInfo> namespaces)

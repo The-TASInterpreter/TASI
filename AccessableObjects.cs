@@ -13,10 +13,12 @@ namespace TASI
         public NamespaceInfo currentNamespace;
         public bool inLoop = false;
         public CancellationTokenSource? cancellationTokenSource;
-        public AccessableObjects(Hashtable accessableVars, NamespaceInfo importedNamespaces)
+        public Global global;
+        public AccessableObjects(Hashtable accessableVars, NamespaceInfo importedNamespaces, Global global)
         {
             this.accessableVars = accessableVars;
             this.currentNamespace = importedNamespaces;
+            this.global = global;
         }
     }
 }

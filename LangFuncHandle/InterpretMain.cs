@@ -58,7 +58,7 @@
                 switch (command.commandType)
                 {
                     case Command.CommandTypes.Statement:
-                        Global.currentLine = command.commandLine;
+                        Global.CurrentLine = command.commandLine;
                         statementMode = true;
                         commandLine = new(new List<Command> { command }, 1);
                         break;
@@ -72,12 +72,12 @@
         */
 
 
-        public static List<VarConstruct> InterpretVarDef(List<Command> commands)
+        public static List<VarConstruct> InterpretVarDef(List<Command> commands, Global global)
         {
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<VarConstruct> result = new();
-            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand, ";", commands.Last().commandLine));
+            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand,  ";", global, commands.Last().commandLine));
 
             foreach (Command command in commands)
             {
@@ -121,7 +121,7 @@
                 switch (command.commandType)
                 {
                     case Command.CommandTypes.Statement:
-                        Global.currentLine = command.commandLine;
+                        global.CurrentLine = command.commandLine;
                         statementMode = true;
                         commandLine = new(new List<Command> { command }, 1);
                         break;
@@ -132,14 +132,14 @@
             return result;
         }
 
-        public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands, string currentFile) //This function will interpret the headers of the file and return the start code.
+        public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands, string currentFile, Global global) //This function will interpret the headers of the file and return the start code.
         {
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<Command>? startCode = null;
-            NamespaceInfo thisNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, null);
+            NamespaceInfo thisNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, null, global);
             List<string> alreadyImportedNamespaces = new();
-            Global.Namespaces.Add(thisNamespace);
+            global.Namespaces.Add(thisNamespace);
 
             foreach (Command command in commands)
             {
@@ -193,7 +193,7 @@
                                     if (function.funcName == commandLine.commands[2].commandText.ToLower()) thisFunction = function;
                                 }
                                 string functionName = commandLine.commands[2].commandText.ToLower();
-                                List<VarConstruct> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."));
+                                List<VarConstruct> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
 
                                 if (thisFunction != null) //If function with name already exist, check if input combination already exist.
                                 {
@@ -216,7 +216,7 @@
                                     thisFunction.functionArguments.Add(functionInputVars);
                                 }
                                 else
-                                    new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."));
+                                    new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
                                 break;
                             case "import":
                                 string pathLocation;
@@ -228,23 +228,23 @@
                                         break;
                                     case 3:
                                         if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandText.ToLower() != "base" || commandLine.commands[2].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
-                                        pathLocation = Path.Combine(Global.mainFilePath, commandLine.commands[2].commandText.ToLower());
+                                        pathLocation = Path.Combine( global.MainFilePath, commandLine.commands[2].commandText.ToLower());
                                         break;
                                     default:
                                         throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import < string: path >;\nor\nimport base < string: path >;");
                                 }
-                                lock (Global.importFileLock)
+                                lock (global.IportFileLock)
                                 {
-                                    if (!Global.allLoadedFiles.Any(x => ComparePaths(x, pathLocation)))
+                                    if (!global.AllLoadedFiles.Any(x => ComparePaths(x, pathLocation)))
                                     {
                                         alreadyImportedNamespaces.Add(pathLocation);
                                         string pathLocationCopy = pathLocation;
-                                        Global.allLoadedFiles.Add(pathLocationCopy);
-                                        Global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, ""));
-                                        Global.processFiles.Add(Task.Run(() =>
+                                        global.AllLoadedFiles.Add(pathLocationCopy);
+                                        global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "", global));
+                                        global.ProcessFiles.Add(Task.Run(() =>
                                         {
-                                            var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocationCopy, false), pathLocationCopy);
-                                            Global.Namespaces[Global.allLoadedFiles.FindIndex(x => ComparePaths(x, pathLocation))] = importNamespace.Item2;
+                                            var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocationCopy, global, false), pathLocationCopy, global);
+                                            global.Namespaces[global.AllLoadedFiles.FindIndex(x => ComparePaths(x, pathLocation))] = importNamespace.Item2;
 
                                             thisNamespace.accessableNamespaces.Add(importNamespace.Item2);
 
@@ -255,7 +255,7 @@
 
                                         if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new CodeSyntaxException($"The namespace \"{pathLocation} has already been imported.");
 
-                                        thisNamespace.accessableNamespaces.Add(Global.Namespaces[Global.allLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
+                                        thisNamespace.accessableNamespaces.Add(global.Namespaces[global.AllLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
                                         alreadyImportedNamespaces.Add(pathLocation);
                                     }
                                 }
@@ -266,11 +266,11 @@
 
 
                                 if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "")), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                                 Value? setToValue = null;
                                 if (commandLine.commands.Count == 4)
                                 {
-                                    setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "")));
+                                    setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", global), global));
                                 }
 
                                 if (commandLine.commands[1].commandText == "all")
@@ -296,7 +296,7 @@
                 {
 
                     case Command.CommandTypes.Statement:
-                        Global.currentLine = command.commandLine;
+                        global.CurrentLine = command.commandLine;
                         statementMode = true;
                         commandLine = new(new List<Command> { command }, 1);
                         break;
@@ -310,7 +310,7 @@
                 Tutorial.TutorialPhaseMinusOne();
                 throw new CodeSyntaxException("You need to enter name and type for this namespace. You can do that using the name and type statements.");
             }
-            if (Global.Namespaces.Any(x => x != thisNamespace && x.Name == thisNamespace.Name)) throw new CodeSyntaxException($"A namespace with the name \"{thisNamespace.Name}\" has already been defined.");
+            if (global.Namespaces.Any(x => x != thisNamespace && x.Name == thisNamespace.Name)) throw new CodeSyntaxException($"A namespace with the name \"{thisNamespace.Name}\" has already been defined.");
 
 
 
@@ -345,12 +345,14 @@
             CommandLine? commandLine = new(new(), -1);
             foreach (Command command in commands)
             {
+                accessableObjects.global.CurrentFile = command.commandFile;
+
                 accessableObjects.cancellationTokenSource?.Token.ThrowIfCancellationRequested();
                 if (statementMode)
                 {
                     if (command.commandType == Command.CommandTypes.EndCommand)
                     {
-                        if (Global.debugMode)
+                        if (accessableObjects.global.DebugMode)
                         {
 
                         }
@@ -370,7 +372,7 @@
                 switch (command.commandType)
                 {
                     case Command.CommandTypes.FunctionCall:
-                        Global.currentLine = command.commandLine;
+                        accessableObjects.global.CurrentLine = command.commandLine;
                         if (command.functionCall == null)
                             throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
 
@@ -380,7 +382,7 @@
                         //Just ignore it
                         break;
                     case Command.CommandTypes.Statement:
-                        Global.currentLine = command.commandLine;
+                        accessableObjects.global.CurrentLine = command.commandLine;
                         statementMode = true;
                         commandLine = new(new List<Command> { command }, 1);
                         break;
@@ -392,9 +394,9 @@
 
             return null;
         }
-        public static Function? FindFunctionUsingFunctionPath(string functionPath)
+        public static Function? FindFunctionUsingFunctionPath(string functionPath, Global global)
         {
-            foreach (Function function in Global.AllFunctions)
+            foreach (Function function in global.AllFunctions)
                 if (function.functionLocation == functionPath)
                     return function;
             return null;

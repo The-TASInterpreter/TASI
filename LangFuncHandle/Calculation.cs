@@ -18,26 +18,26 @@ namespace TASI
 
     public class CalculationType
     {
-        public void InitFunctions(NamespaceInfo currentNamespace)
+        public void InitFunctions(NamespaceInfo currentNamespace, Global global)
         {
             switch (type)
             {
                 case Type.calculation:
                     foreach (CalculationType calculationType in subValues)
                     {
-                        calculationType.InitFunctions(currentNamespace);
+                        calculationType.InitFunctions(currentNamespace, global);
                     }
                     break;
                 case Type.returnStatement:
                     foreach (Command command in returnStatement)
                     {
-                        if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace);
-                        if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace);
-                        if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace);
+                        if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace, global);
+                        if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace, global);
+                        if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace, global);
                     }
                     break;
                 case Type.function:
-                    functionCall.SearchCallFunction(currentNamespace);
+                    functionCall.SearchCallFunction(currentNamespace, global);
                     break;
 
 
@@ -199,7 +199,7 @@ namespace TASI
         public FunctionCall? functionCall;
         public Value? value;
         public List<CalculationType>? subValues;
-        public CalculationType(Command command)
+        public CalculationType(Command command, Global global)
         {
             line = command.commandLine;
             switch (command.commandType)
@@ -234,17 +234,17 @@ namespace TASI
                     if (command.commandText.StartsWith('$'))
                     {
                         type = Type.returnStatement;
-                        returnStatement = StringProcess.ConvertLineToCommand(command.commandText.Substring(1, command.commandText.Count() - 1), command.commandLine);
+                        returnStatement = StringProcess.ConvertLineToCommand(command.commandText.Substring(1, command.commandText.Count() - 1), global, command.commandLine);
                         return;
                     }
                     else
                     {
                         type = Type.calculation;
-                        List<Command> subCalculationTypes = StringProcess.ConvertLineToCommand(command.commandText, command.commandLine);
+                        List<Command> subCalculationTypes = StringProcess.ConvertLineToCommand(command.commandText, global, command.commandLine);
                         List<CalculationType> subCalculationTypesTokenSplit = new();
                         foreach (Command subCalculationType in subCalculationTypes)
                         {
-                            subCalculationTypesTokenSplit.Add(new(subCalculationType));
+                            subCalculationTypesTokenSplit.Add(new(subCalculationType, global));
                         }
 
 

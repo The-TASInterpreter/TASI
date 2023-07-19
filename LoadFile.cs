@@ -36,8 +36,8 @@ namespace TASI
                 sb.Append($"Ⅼ{i}Ⅼ{codeFile[i]}");
             }
             if (autoAddToGlobal)
-                Global.allLoadedFiles.Add(location);
-            return StringProcess.ConvertLineToCommand(sb.ToString());
+                global.AllLoadedFiles.Add(location);
+            return StringProcess.ConvertLineToCommand(sb.ToString(), global);
 
         }
 
@@ -77,11 +77,12 @@ namespace TASI
 
         public static Value? RunCode(string code)
         {
-            List<Command> tokenisedCode = StringProcess.ConvertLineToCommand(code);
-            var codeHeaderInformation = InterpretMain.InterpretHeaders(tokenisedCode, "");
-            AccessableObjects initialAccessableObjects = new(new(), codeHeaderInformation.Item2);
+            Global global = new();
+            List<Command> tokenisedCode = StringProcess.ConvertLineToCommand(code, global);
+            var codeHeaderInformation = InterpretMain.InterpretHeaders(tokenisedCode, "", global);
+            AccessableObjects initialAccessableObjects = new(new(), codeHeaderInformation.Item2, global);
 
-            foreach (NamespaceInfo namespaceInfo in Global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
+            foreach (NamespaceInfo namespaceInfo in global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
             {
                 foreach (Function function in namespaceInfo.namespaceFuncitons)
                 {
@@ -89,10 +90,10 @@ namespace TASI
                     {
                         foreach (Command overloadCode in functionCodeOverload)
                         {
-                            Global.currentLine = overloadCode.commandLine;
-                            if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo);
-                            if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo);
-                            if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo);
+                            global.CurrentLine = overloadCode.commandLine;
+                            if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo, global);
+                            if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo, global);
+                            if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo, global);
                         }
                     }
                 }
@@ -100,10 +101,10 @@ namespace TASI
             }
             foreach (Command command in codeHeaderInformation.Item1)
             {
-                Global.currentLine = command.commandLine;
-                if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(codeHeaderInformation.Item2);
-                if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(codeHeaderInformation.Item2);
-                if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(codeHeaderInformation.Item2);
+                global.CurrentLine = command.commandLine;
+                if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(codeHeaderInformation.Item2, global);
+                if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(codeHeaderInformation.Item2, global);
+                if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(codeHeaderInformation.Item2, global);
             }
 
             return InterpretMain.InterpretNormalMode(codeHeaderInformation.Item1, initialAccessableObjects);

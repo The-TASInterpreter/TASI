@@ -187,7 +187,7 @@ namespace TASI.debug
                         if (executingCommand.commandEnd > currentCommandLine)
                         {
 
-                            executingCommand = new(Command.CommandTypes.Statement, "ⅬW}", executingCommand.commandEnd);
+                            executingCommand = new(Command.CommandTypes.Statement, "ⅬW}", null, executingCommand.commandEnd);
                             goto start;
                         }
                         else

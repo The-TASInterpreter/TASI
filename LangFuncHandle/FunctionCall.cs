@@ -17,14 +17,7 @@ namespace TASI
             {
                 if (callFunction == null)
                 {
-                    if (!Global.DebugErrorSkip)
-                        throw new InternalInterpreterException($"The function call call function \"{functionName}\" was not activated.");
-                    NamespaceInfo allNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, "")
-                    {
-                        accessableNamespaces = Global.Namespaces
-                    };
-                    SearchCallFunction(allNamespace);
-
+                    throw new InternalInterpreterException($"The function call call function \"{functionName}\" was not activated.");
                 }
                 return callFunction;
 
@@ -39,7 +32,7 @@ namespace TASI
             this.inputValues = new List<Value>(inputVars);
         }
 
-        public FunctionCall(Command command)
+        public FunctionCall(Command command, Global global)
         {
             functionName = "";
             List<string> functionArguments = new();
@@ -133,8 +126,8 @@ namespace TASI
                 functionArguments.Add(currentArgument);
             argumentCommands = new(functionArguments.Count);
             foreach (string argument in functionArguments) //Convert string arguments to commands
-                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument, command.commandLine), -1));
-            Global.allFunctionCalls.Add(this);
+                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument, global, command.commandLine), -1));
+            global.AllFunctionCalls.Add(this);
 
 
 
@@ -144,16 +137,16 @@ namespace TASI
             return;
         }
 
-        public void SearchCallFunction(NamespaceInfo currentNamespace) //This is there, so header analysis can be done, without any errors.
+        public void SearchCallFunction(NamespaceInfo currentNamespace, Global global) //This is there, so header analysis can be done, without any errors.
         {
 
-            CallFunction = FindFunctionByPath(functionName.ToLower(), Global.Namespaces, true, currentNamespace);
+            CallFunction = FindFunctionByPath(functionName.ToLower(), global.Namespaces, true, currentNamespace);
             foreach (CommandLine commandLine in argumentCommands)
                 foreach (Command command in commandLine.commands)
                 {
-                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace);
-                    if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace);
-                    if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace);
+                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace, global);
+                    if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace, global);
+                    if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace, global);
 
                 }
         }
@@ -257,7 +250,7 @@ namespace TASI
             if (CallFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
             {
                 Value? returnValue = InternalFunctionHandle.HandleInternalFunc(CallFunction.functionLocation, inputValues, accessableObjects);
-                if (Global.debugMode)
+                if (accessableObjects.global.DebugMode)
                 {
                     Console.WriteLine($"Did function call to {CallFunction.parentNamespace.namespaceIntend}-intend {CallFunction.functionLocation}.\nIt returns a {CallFunction.returnType}.\nIt returned a {returnValue.valueType}-type with a value of \"{returnValue.ObjectValue}\".");
                     Console.ReadKey();
@@ -281,7 +274,7 @@ namespace TASI
                 }
             }
 
-            Value? functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, CallFunction.parentNamespace));
+            Value? functionReturnValue = InterpretMain.InterpretNormalMode(functionCallInputHelp.inputCode, new(functionCallInput, CallFunction.parentNamespace, accessableObjects.global));
 
 
 

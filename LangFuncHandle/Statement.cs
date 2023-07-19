@@ -124,12 +124,12 @@
                 case "listm":
                     if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
                     if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid listm statement syntax. Example for right syntax:\nhelpm <string location>;");
-                    Help.ListLocation(commandLine.commands[1].commandText);
+                    Help.ListLocation(commandLine.commands[1].commandText, accessableObjects.global);
                     return null;
                 case "rootm":
                     if (commandLine.commands.Count != 1) throw new CodeSyntaxException("Invalid rootm statement syntax. Example for right syntax:\nhelpm; (It's that simple)");
                     Console.WriteLine("All registered namespaces are:");
-                    Help.ListNamespaces(Global.Namespaces);
+                    Help.ListNamespaces(accessableObjects.global.Namespaces);
                     return null;
                 case "link":
                     if (commandLine.commands.Count != 3 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid use of link return statement. Correct usage:\nlink <statement: variable> <statement: variable linking to>;");
@@ -151,7 +151,7 @@
                     if (commandLine.commands.Count != 3 && commandLine.commands.Count != 4) throw new CodeSyntaxException("Invalid use of promise stratement. Valid use: promise <statement: var name> <code container: init> <code container: execute code>;\nOr\npromise <statement: var name> <code container: execute code>;");
 
                     foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
-                    AccessableObjects newPromise = new AccessableObjects(new(), accessableObjects.currentNamespace);
+                    AccessableObjects newPromise = new AccessableObjects(new(), accessableObjects.currentNamespace, accessableObjects.global.CreateNewContext(accessableObjects.global.CurrentFile));
                     foreach(Var var in accessableObjects.accessableVars.Values)
                     {
                         newPromise.accessableVars.Add(var.varConstruct.name, new Var(var, true));

@@ -18,6 +18,7 @@ namespace TASI
         public static Logger interpretInitLog = new();
         public static void Main(string[] args)
         {
+            Global global = new Global();
             string? location = null;
             if (args.Length == 1)
             {
@@ -26,14 +27,13 @@ namespace TASI
 
             if (location == null)
             {
-                Global.currentLine = -1;
+                global.CurrentLine = -1;
                 Console.Clear();
 
                 Console.WriteLine("Enter file location with code:");
             }
 
 
-            Global.InitInternalNamespaces();
 
 
             Stopwatch codeRuntime = new();
@@ -44,15 +44,15 @@ namespace TASI
             {
                 if (location == null)
                     location = (Console.ReadLine() ?? throw new CodeSyntaxException("Code is null.")).Replace("\"", "");
-                Global.mainFilePath = Path.GetDirectoryName(location);
-                List<Command> commands = LoadFile.ByPath(location);
+                global.MainFilePath = Path.GetDirectoryName(location);
+                List<Command> commands = LoadFile.ByPath(location, global);
 
                 codeRuntime.Start();
 
 
-                var startValues = InterpretMain.InterpretHeaders(commands, Global.mainFilePath);
-                Task.WhenAll(Global.processFiles).Wait();
-                Global.currentLine = -1;
+                var startValues = InterpretMain.InterpretHeaders(commands, global.MainFilePath, global);
+                Task.WhenAll(global.ProcessFiles).Wait();
+                global.CurrentLine = -1;
                 var startCode = startValues.Item1;
                 if (startCode == null)
                     if (startValues.Item2.namespaceIntend == NamespaceInfo.NamespaceIntend.library)
@@ -61,7 +61,7 @@ namespace TASI
                         throw new CodeSyntaxException("You need to define a start. You can use the start statement to do so.");
 
 
-                foreach (NamespaceInfo namespaceInfo in Global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
+                foreach (NamespaceInfo namespaceInfo in global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
                 {
                     foreach (Function function in namespaceInfo.namespaceFuncitons)
                     {
@@ -69,10 +69,10 @@ namespace TASI
                         {
                             foreach (Command overloadCode in functionCodeOverload)
                             {
-                                Global.currentLine = overloadCode.commandLine;
-                                if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo);
-                                if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo);
-                                if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo);
+                                global.CurrentLine = overloadCode.commandLine;
+                                if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo, global);
+                                if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo, global);
+                                if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo, global);
                             }
                         }
                     }
@@ -80,10 +80,10 @@ namespace TASI
                 }
                 foreach (Command command in startValues.Item1)
                 {
-                    Global.currentLine = command.commandLine;
-                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(startValues.Item2);
-                    if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(startValues.Item2);
-                    if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(startValues.Item2);
+                    global.CurrentLine = command.commandLine;
+                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(startValues.Item2, global);
+                    if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(startValues.Item2, global);
+                    if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(startValues.Item2, global);
                 }
                 int line = -1;
                 /*
@@ -104,7 +104,7 @@ namespace TASI
                 }
                 */
 
-                InterpretMain.InterpretNormalMode(startCode, new(new(), startValues.Item2));
+                InterpretMain.InterpretNormalMode(startCode, new(new(), startValues.Item2, global));
                 codeRuntime.Stop();
                 Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
                 Console.ReadKey(false);
@@ -125,8 +125,8 @@ namespace TASI
                             Console.WriteLine("--------------");
                         }
                         Console.WriteLine("There was a syntathical error in your code.");
-                        if (Global.currentLine != -1)
-                            Console.WriteLine($"\nThe error happened on line: {Global.currentLine + 1}");
+                        if (global.CurrentLine != -1)
+                            Console.WriteLine($"\nThe error happened on line: {global.CurrentLine + 1}");
                         Console.WriteLine("The error message is:");
                         Console.WriteLine(ex.Message);
                         break;
@@ -134,8 +134,8 @@ namespace TASI
                     case InternalInterpreterException:
                         Console.WriteLine("There was an internal error in the compiler.");
                         Console.WriteLine("Please report this error on github and please include the code and this error message and (if available) you inputs, that lead to this error. You can create a new issue, reporting the error here:\nhttps://github.com/Ekischleki/TASI/issues/new");
-                        if (Global.currentLine != -1)
-                            Console.WriteLine($"\nThe error happened on line: {Global.currentLine + 1}");
+                        if (global.CurrentLine != -1)
+                            Console.WriteLine($"\nThe error happened on line: {global.CurrentLine + 1}");
                         Console.WriteLine("The error message is:");
                         Console.WriteLine(ex.Message);
                         Console.WriteLine("Here is the stack trace:");

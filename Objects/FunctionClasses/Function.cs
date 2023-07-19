@@ -14,7 +14,7 @@
         public List<List<Command>> functionCode = new();
 
 
-        public Function(string funcName, Function parentFunction, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode) // Has a variable return type and is not a void, but is a sub function
+        public Function(string funcName, Function parentFunction, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global) // Has a variable return type and is not a void, but is a sub function
         {
             this.funcName = funcName;
             this.parentFunction = parentFunction;
@@ -25,12 +25,12 @@
             parentNamespace.namespaceFuncitons.Add(this);
             functionLocation = GetFunctionLocationString();
             this.functionArguments = new List<List<VarConstruct>>(functionArguments);
-            Global.AllFunctions.Add(this);
+            global.AllFunctions.Add(this);
             this.functionCode.Add(functionCode);
 
         }
 
-        public Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode) // Is a Main function and is not a void
+        public Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global) // Is a Main function and is not a void
         {
             this.funcName = funcName.ToLower();
             this.parentFunction = null;
@@ -41,7 +41,7 @@
             parentNamespace.namespaceFuncitons.Add(this);
             functionLocation = GetFunctionLocationString();
             this.functionArguments = new List<List<VarConstruct>>(functionArguments);
-            Global.AllFunctions.Add(this);
+            global.AllFunctions.Add(this);
             this.functionCode.Add(functionCode);
 
         }

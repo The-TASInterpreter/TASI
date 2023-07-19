@@ -15,6 +15,7 @@ namespace TASI
         public List<Task> processFiles = new();
         public object processFileLock = new();
         public object iportFileLock = new();
+        public List<InternalFileEmulation> internalFiles = new();
     }
 
     public class GlobalContext
@@ -25,6 +26,17 @@ namespace TASI
 
     public class Global
     {
+        public List<InternalFileEmulation> InternalFiles
+        {
+            get
+            {
+                return globalProjectShared.internalFiles;
+            }
+            set
+            {
+                globalProjectShared.internalFiles = value;
+            }
+        }
         public string CurrentFile
         {
             get

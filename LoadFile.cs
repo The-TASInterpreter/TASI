@@ -7,9 +7,9 @@ namespace TASI
 {
     public class LoadFile
     {
-        public static string GetGlobalEmulatedFile(string path)
+        public static string GetGlobalEmulatedFile(string path, Global global)
         {
-            InternalFileEmulation? result = Global.internalFiles.FirstOrDefault(x => x.path.ToLower() == path.ToLower(), null);
+            InternalFileEmulation? result = global.InternalFiles.FirstOrDefault(x => x.path.ToLower() == path.ToLower(), null);
             return (result ?? throw new CodeSyntaxException("The path to the file doens't exist.")).Content;
         }
 
@@ -17,7 +17,7 @@ namespace TASI
         {
             StringBuilder sb = new();
             location = location.Trim('"');
-            List<string> codeFile = LoadFile.GetGlobalEmulatedFile(location).Split('\n').ToList();
+            List<string> codeFile = LoadFile.GetGlobalEmulatedFile(location, global).Split('\n').ToList();
             for (int i = 0; i < codeFile.Count; i++)
             {
                 sb.Clear();

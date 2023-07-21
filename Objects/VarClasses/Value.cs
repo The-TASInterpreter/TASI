@@ -59,7 +59,7 @@ namespace TASI
                         return (double)value;
                     case ValueType.@int:
                         if (value is not int)
-                            throw new InternalInterpreterException("Internal: value is not a int value");
+                            throw new InternalInterpreterException("Internal: value is not an int value");
                         return (int)value;
                     case ValueType.@bool:
                         if (value is not bool)

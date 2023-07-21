@@ -318,7 +318,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Type Generic;Start {makeVar num I; set i 0; while (i < 5){[Console.WriteLine:i] set i (i + 1);}; };");
+            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Type Generic;Start {makeVar int I; set i 0; while (i < 5){[Console.WriteLine:i] set i (i + 1);}; };");
             string consoleOutput = sw.ToString();
             Assert.AreEqual("0\n1\n2\n3\n4\n", consoleOutput.Replace("\r\n", "\n"));
 
@@ -371,7 +371,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("Name LoopTest;Type Generic;Start {makevar num i;set i 0; while (i == 50 !){set i (i + 1); loop; [Console.WriteLine:\"Seems like looping didn't work...\"] };};");
+            LoadFile.RunCode("Name LoopTest;Type Generic;Start {makevar int i;set i 0; while (i == 50 !){set i (i + 1); loop; [Console.WriteLine:\"Seems like looping didn't work...\"] };};");
             string consoleOutput = sw.ToString();
             Assert.AreEqual("", consoleOutput);
 
@@ -379,7 +379,7 @@ namespace TASI
         [Test]
         public static void LinkTest()
         {
-            Assert.AreEqual(15, LoadFile.RunCode("Name LinkTest;Type Generic;Start {makevar num link; makevar num linkTo; set link 10; set linkTo 15; link link linkTo; return link;};").ObjectValue);
+            Assert.AreEqual(15, LoadFile.RunCode("Name LinkTest;Type Generic;Start {makevar num link; makevar num linkTo; set link 10.0; set linkTo 15.0; link link linkTo; return link;};").ObjectValue);
         }
         [Test]
         public static void ListTest()

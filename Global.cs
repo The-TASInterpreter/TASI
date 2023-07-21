@@ -213,7 +213,8 @@
             new Function("WriteLine", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@string, "text")},
                 new List<VarConstruct> { new(VarConstruct.VarType.num, "num")},
-                new List<VarConstruct> { new(VarConstruct.VarType.@bool, "bool")}
+                new List<VarConstruct> { new(VarConstruct.VarType.@bool, "bool")},
+                new List<VarConstruct> { new(VarConstruct.VarType.@int, "int")}
             }, new(), this);
             new Function("Write", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@string, "text")}

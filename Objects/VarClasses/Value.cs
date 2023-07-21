@@ -57,6 +57,10 @@ namespace TASI
                         if (value is not double)
                             throw new InternalInterpreterException("Internal: value is not a double value");
                         return (double)value;
+                    case ValueType.@int:
+                        if (value is not int)
+                            throw new InternalInterpreterException("Internal: value is not an int value");
+                        return (int)value;
                     case ValueType.@bool:
                         if (value is not bool)
                             throw new InternalInterpreterException("Internal: value is not a bool value");
@@ -79,6 +83,8 @@ namespace TASI
             {
                 case ValueType.num:
                     return VarConstruct.VarType.num;
+                case ValueType.@int:
+                    return VarConstruct.VarType.@int;
                 case ValueType.@bool:
                     return VarConstruct.VarType.@bool;
                 case ValueType.@string:
@@ -104,6 +110,9 @@ namespace TASI
             {
                 case ValueType.num:
                     ObjectValue = (double)0;
+                    break;
+                case ValueType.@int:
+                    ObjectValue = (int)0;
                     break;
                 case ValueType.@bool:
                     ObjectValue = false;
@@ -131,7 +140,7 @@ namespace TASI
 
         public enum ValueType
         {
-            @num, @string, @bool, @void, @list
+            @num, @string, @bool, @void, @int, @list
         }
 
         public bool IsNumeric
@@ -140,7 +149,7 @@ namespace TASI
             {
                 return valueType switch
                 {
-                    ValueType.num or ValueType.@bool => true,
+                    ValueType.num or ValueType.@bool or ValueType.@int => true,
                     _ => false,
                 };
             }
@@ -157,6 +166,11 @@ namespace TASI
                         if ((double)value == 1) return true;
                         if ((double)value == 0) return false;
                         throw new CodeSyntaxException($"The num value \"{valueType}\" can't be converted to a bool, because it is neither 1 or 0.");
+                    case ValueType.@int:
+                        if (value is not int) throw new InternalInterpreterException("Internal: value is not a int value");
+                        if ((int)value == 1) return true;
+                        if ((int)value == 0) return false;
+                        throw new CodeSyntaxException($"The int value \"{valueType}\" can't be converted to a bool, because it is neither 1 or 0.");
                     case ValueType.@bool:
                         if (value is not bool) throw new InternalInterpreterException("Internal: value is not a bool value");
                         return (bool)value;
@@ -187,6 +201,10 @@ namespace TASI
                     case ValueType.num:
                         if (value is not double)
                             throw new InternalInterpreterException("Internal: value is not a double value");
+                        return value;
+                    case ValueType.@int:
+                        if (value is not int)
+                            throw new InternalInterpreterException("Internal: value is not an int value");
                         return value;
                     case ValueType.@string:
                         if (value is not string)

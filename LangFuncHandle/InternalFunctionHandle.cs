@@ -1,4 +1,9 @@
-﻿namespace TASI
+﻿using NUnit.Framework;
+using NUnit.Framework.Constraints;
+using System.Diagnostics;
+using System.Runtime.Serialization.Formatters;
+
+namespace TASI
 {
     internal class InternalFunctionHandle
     {
@@ -25,6 +30,43 @@
                     else
                         Console.WriteLine(input[0].StringValue);
                     return null;
+                case "filesystem.open":
+                    FileStream stream = File.Open(input[0].StringValue, FileMode.Open);
+                    accessableObjects.global.AllFileStreams.Add(stream);
+
+                    int streamIndex = accessableObjects.global.AllFileStreams.IndexOf(stream);
+
+                    return new(Value.ValueType.@int, streamIndex);
+                case "filesystem.close":
+                    accessableObjects.global.AllFileStreams[(int)input[0].NumValue].Close();
+
+                    return null;
+                case "filestream.readline":
+                    {
+                        FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
+
+                        if (!fileStream.CanRead)
+                            throw new RuntimeCodeExecutionFailException("Tried to read from a stream that dosen't allow reading!", "InternalFuncException");
+
+                        using StreamReader reader = new(fileStream);
+                        string line = reader.ReadLine() ?? throw new RuntimeCodeExecutionFailException("Stream.ReadLine returned null", "InternalFuncException");
+
+                        return new Value(Value.ValueType.@string, line);
+
+                    }
+                case "filestream.read":
+                    {
+                        FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
+
+                        if (!fileStream.CanRead)
+                            throw new RuntimeCodeExecutionFailException("Tried to read from a stream that dosen't allow reading!", "InternalFuncException");
+
+                        using StreamReader reader = new(fileStream);
+                        int character = reader.Read();
+
+                        return new Value(Value.ValueType.@int, character);
+
+                    }
                 case "program.pause":
                     if (input.Count == 1 && input[0].NumValue == 1)
                         Console.WriteLine("Press any key to continue.");

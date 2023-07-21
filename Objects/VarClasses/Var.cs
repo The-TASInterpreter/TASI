@@ -111,6 +111,10 @@ namespace TASI
                             if (varConstruct.type != VarConstruct.VarType.num) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
                             varValueHolder.value = value;
                             break;
+                        case Value.ValueType.@int:
+                            if (varConstruct.type != VarConstruct.VarType.@int) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
+                            varValueHolder.value = value;
+                            break;
                         case Value.ValueType.@bool:
                             if (varConstruct.type != VarConstruct.VarType.@bool) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
                             varValueHolder.value = value;

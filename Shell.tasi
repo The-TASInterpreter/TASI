@@ -5,11 +5,11 @@ Start {
 	[Console.Clear]
 	[Inf.DefVar:"int", "stream"]
 	# Read the frist line of the README.MD file!
-	set stream [Filesystem.Open:"test.tmp","wr+!"];
+	set stream [Filesystem.Open:"C:/Users/Joscha/source/repos/TASI/README.MD","r"];
 
-	[FileStream.WriteLine:($stream),"Hello World!"]
+	[Console.WriteLine:[Filestream.ReadLine:($stream)]]
 
-	[Filesystem.Close:($stream)]
+	[Filesystem.Close:stream]
 
 	return;
 };

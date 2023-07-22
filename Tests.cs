@@ -279,10 +279,14 @@ namespace TASI
             LoadFile.RunCode("name FlushFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".flush_test.tmp\",\"?\"];[Filestream.Flush:($stream)];};");
         }
         [Test]
+        public static void CreateFileTest()
+        {
+            LoadFile.RunCode("Name CreateFileTest;Type Generic;Start {makeVar int stream; set stream [Filesystem.Create:\".create_file_test.tmp\"]; [Filesystem.Close:($stream)];};");
+        }
+        [Test]
         public static void DeleteFileTest()
         {
-            /// TODO: Implement!
-            Assert.IsTrue(true);
+            LoadFile.RunCode("Name DeleteFileTest;Type Generic; Start {makeVar int stream; set stream [Filesystem.Create:\".delete_file_test.tmp\"]; [Filesystem.Close:($stream)]; [Filesystem.Delete:\".delete_file_test.tmp\"];};");
         }
     }
     [TestFixture]

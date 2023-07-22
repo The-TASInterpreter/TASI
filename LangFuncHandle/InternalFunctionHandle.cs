@@ -77,6 +77,15 @@ namespace TASI
                 case "filesystem.delete":
                     File.Delete(input[0].StringValue);
                     return null;
+                case "filesystem.create":
+                    {
+                        FileStream new_stream = File.Create(input[0].StringValue);
+                        accessableObjects.global.AllFileStreams.Add(new_stream);
+
+                        int new_streamIndex = accessableObjects.global.AllFileStreams.IndexOf(new_stream);
+
+                        return new(Value.ValueType.@int, new_streamIndex);
+                    }
                 case "filestream.readline":
                     {
                         FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];

@@ -3,11 +3,11 @@ Type Generic;
 
 Start {
 	[Console.Clear]
-	[Inf.DefVar:"int", "stream"]
-	# Read the frist line of the README.MD file!
-	set stream [Filesystem.Open:"C:/Users/Joscha/source/repos/TASI/README.MD","r"];
+	makeVar int stream;
+	# Read the first line of the README.MD file!
+	set stream [Filesystem.Open:"C:/Users/Joscha/source/repos/TASI/README.MD", "r"];
 
-	[Console.WriteLine:[Filestream.ReadLine:($stream)]]
+	[Console.WriteLine:[Filestream.ReadLine:stream]]
 
 	[Filesystem.Close:stream]
 

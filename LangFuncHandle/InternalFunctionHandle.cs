@@ -86,6 +86,8 @@ namespace TASI
 
                         return new(Value.ValueType.@int, new_streamIndex);
                     }
+                case "filesystem.exists":
+                    return new(Value.ValueType.@bool, File.Exists(input[0].StringValue));
                 case "filestream.readline":
                     {
                         FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];

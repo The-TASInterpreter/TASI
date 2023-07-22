@@ -31,31 +31,30 @@ namespace TASI
                         Console.WriteLine(input[0].StringValue);
                     return null;
                 case "filesystem.open":
-                    FileMode mode = FileMode.OpenOrCreate;
-                    FileAccess access = FileAccess.Read;
+                    FileMode mode = FileMode.Open;
+                    FileAccess access = FileAccess.ReadWrite;
 
+                    
                     if (input[1].StringValue.Contains('w'))
-                        access = FileAccess.Write;
+                        access |= FileAccess.Write;
 
-                    else if (input[1].StringValue.Contains('r'))
-                        access = FileAccess.Read;
+                    if (input[1].StringValue.Contains('r'))
+                        access |= FileAccess.Read;
 
-                    else if (input[1].StringValue.Contains("rw"))
-                        access = FileAccess.ReadWrite;
-
-                    else if (input[1].StringValue.Contains('a'))
+                    if (input[1].StringValue.Contains('a'))
                         mode = FileMode.Append;
+
+                    if (input[1].StringValue.Contains("+!"))
+                        mode = FileMode.CreateNew;
 
                     else if (input[1].StringValue.Contains('+'))
                         mode = FileMode.Create;
 
-                    else if (input[1].StringValue.Contains("+!"))
-                        mode = FileMode.CreateNew;
 
-                    else if (input[1].StringValue.Contains("~"))
+                    if (input[1].StringValue.Contains("~"))
                         mode = FileMode.Truncate;
 
-                    else if (input[1].StringValue.Contains('?'))
+                    if (input[1].StringValue.Contains('?'))
                         mode = FileMode.OpenOrCreate;
 
 
@@ -66,9 +65,15 @@ namespace TASI
 
                     return new(Value.ValueType.@int, streamIndex);
                 case "filesystem.close":
-                    accessableObjects.global.AllFileStreams[(int)input[0].NumValue].Close();
+                    {
+                
+                        FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
-                    return null;
+                        fileStream.Close();
+                        accessableObjects.global.AllFileStreams.RemoveAt((int)input[0].NumValue);
+
+                        return null;
+                    }
                 case "filestream.readline":
                     {
                         FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];

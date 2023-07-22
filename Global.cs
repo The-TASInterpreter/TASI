@@ -258,6 +258,21 @@
             new Function("ReadLine", VarConstruct.VarType.@string, Namespaces[6], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
             }, new(), this);
+            new Function("Read", VarConstruct.VarType.@int, Namespaces[6], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
+            }, new(), this);
+            new Function("Flush", VarConstruct.VarType.@void, Namespaces[6], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
+            }, new(), this);
+            new Function("Write", VarConstruct.VarType.@void, Namespaces[6], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.@int, "Char")}
+            }, new(), this);
+            new Function("WriteLine", VarConstruct.VarType.@void, Namespaces[6], new List<List<VarConstruct>> {
+                new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.@string, "text")},
+                new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.num, "num")},
+                new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.@bool, "bool")},
+                new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.@int, "int")}
+            }, new(), this);
         }
     }
 }

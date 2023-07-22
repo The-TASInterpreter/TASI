@@ -248,7 +248,36 @@ namespace TASI
             Assert.AreEqual("Test\n", consoleOutput.Replace("\r\n", "\n"));
 
         }
-
+        [Test]
+        public static void ReadFileTest()
+        {
+            StringWriter sw = new();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name ReadFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\"LICENSE.txt\",\"r?\"]; [Console.WriteLine:[Filestream.ReadLine:($stream)]];};");
+            string consoleOutput = sw.ToString();
+            Assert.That(consoleOutput, Contains.Substring("MIT License"));
+        }
+        [Test]
+        public static void WriteFileTest()
+        {
+            StringWriter sw = new();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name WriteFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".write_test.tmp\",\"w?\"];[Filestream.WriteLine:($stream),\"Test Write!\"];};");
+        }
+        [Test]
+        public static void CloseFileTest()
+        {
+            StringWriter sw = new();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name CloseFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".close_test.tmp\",\"?\"];[Filesystem.Close:($stream)];};");
+        }
+        [Test]
+        public static void FlushFileTest()
+        {
+            StringWriter sw = new();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name FlushFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".flush_test.tmp\",\"?\"];[Filestream.Flush:($stream)];};");
+        }
     }
     [TestFixture]
     public class ThreadingTests
@@ -310,6 +339,7 @@ namespace TASI
 
 
         }
+       
         [Test]
         public static void WhileVarTest()
         {

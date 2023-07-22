@@ -31,21 +31,55 @@ namespace TASI
                         Console.WriteLine(input[0].StringValue);
                     return null;
                 case "filesystem.open":
-                    FileStream stream = File.Open(input[0].StringValue, FileMode.Open);
+                    FileMode mode = FileMode.Open;
+                    FileAccess access = FileAccess.ReadWrite;
+
+                    
+                    if (input[1].StringValue.Contains('w'))
+                        access |= FileAccess.Write;
+
+                    if (input[1].StringValue.Contains('r'))
+                        access |= FileAccess.Read;
+
+                    if (input[1].StringValue.Contains('a'))
+                        mode = FileMode.Append;
+
+                    if (input[1].StringValue.Contains("+!"))
+                        mode = FileMode.CreateNew;
+
+                    else if (input[1].StringValue.Contains('+'))
+                        mode = FileMode.Create;
+
+
+                    if (input[1].StringValue.Contains("~"))
+                        mode = FileMode.Truncate;
+
+                    if (input[1].StringValue.Contains('?'))
+                        mode = FileMode.OpenOrCreate;
+
+
+                    FileStream stream = File.Open(input[0].StringValue, mode, access);
                     accessableObjects.global.AllFileStreams.Add(stream);
 
                     int streamIndex = accessableObjects.global.AllFileStreams.IndexOf(stream);
 
                     return new(Value.ValueType.@int, streamIndex);
                 case "filesystem.close":
-                    accessableObjects.global.AllFileStreams[(int)input[0].NumValue].Close();
+                    {
+                
+                        FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
-                    return null;
+                        fileStream.Close();
+                        accessableObjects.global.AllFileStreams.RemoveAt((int)input[0].NumValue);
+
+                        return null;
+                    }
                 case "filestream.readline":
                     {
                         FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
                         if (!fileStream.CanRead)
+
                             throw new RuntimeCodeExecutionFailException("Tried to read from a stream that dosen't allow reading!", "InternalFuncException");
 
                         using StreamReader reader = new(fileStream);
@@ -53,6 +87,45 @@ namespace TASI
 
                         return new Value(Value.ValueType.@string, line);
 
+                    }
+                case "filestream.write":
+                    {
+                        FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
+
+                        if (!fileStream.CanWrite)
+                            throw new RuntimeCodeExecutionFailException("Tried to read from a stream that doesn't allow writing!", "InternalFuncException");
+
+                        using StreamWriter writer = new(fileStream);
+                        writer.Write((char)(int)input[1].NumValue);
+
+                        return null;
+                    }
+                case "filestream.writeline":
+                    {
+                        
+                        FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
+
+                        if (!fileStream.CanWrite)
+                            throw new RuntimeCodeExecutionFailException("Tried to read from a stream that doesn't allow writing!", "InternalFuncException");
+
+                        using StreamWriter writer = new(fileStream);
+
+                        if (input[1].IsNumeric)
+                            writer.WriteLine(input[1].NumValue);
+                        else
+                            writer.WriteLine(input[1].StringValue);
+                            
+                        return null;
+                        
+                    }
+                case "filestream.flush":
+                    {
+                        FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
+
+                        fileStream.Flush();
+
+                        return null;
+                     
                     }
                 case "filestream.read":
                     {

@@ -24,6 +24,12 @@
 	<ItemGroup Condition="'$(Configuration)' == 'Release'">
 		<Compile Remove="Tests.cs" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <None Update="LICENSE.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 
 
 </Project>

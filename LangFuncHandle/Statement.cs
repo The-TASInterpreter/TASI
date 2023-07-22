@@ -1,4 +1,8 @@
-﻿namespace TASI
+﻿using Newtonsoft.Json.Linq;
+using NUnit.Framework.Internal;
+using System.Xml.Linq;
+
+namespace TASI
 {
 
 
@@ -185,11 +189,25 @@
                     }
                     accessableObjects.accessableVars.Add(commandLine.commands[2].commandText.ToLower(), new Var(new VarConstruct(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
                     return null;
+                case "makeconst":
+                    {
+                        if (commandLine.commands.Count != 4 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement)
+                            throw new CodeSyntaxException("Invalid usage of makeconst. Correct usage:\nmakeconst < statement: var type > < statement: var name > < statement: value >;");
 
+                        if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType constVarType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
+                        if (FindVar(commandLine.commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                        if (commandLine.commands[1].commandText == "all")
+                        {
+                            accessableObjects.accessableVars.Add(commandLine.commands[2].commandText, new Var(new VarConstruct(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(constVarType)));
+                            return null;
+                        }
+                        Var newConstVar = new Var(new VarConstruct(Value.ConvertValueTypeToVarType(constVarType), commandLine.commands[2].commandText, isConst: true), new(constVarType));
+                        newConstVar.VarValue = new(constVarType, commandLine.commands[3].commandText);
 
+                        accessableObjects.accessableVars.Add(commandLine.commands[2].commandText, newConstVar);
 
-
-
+                        return null;
+                    }
                 default:
                     throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
             }
@@ -270,6 +288,7 @@
             if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
 
             Var? correctVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
+            if (correctVar.varConstruct.isConstant) throw new CodeSyntaxException($"The value of the constant \"{commandLine.commands[1].commandText}\" cannot be modified!");
             correctVar.VarValue = GetValueOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), accessableObjects);
         }
         public static Var? FindVar(string name, AccessableObjects accessableObjects, bool failAtNotFind = false)

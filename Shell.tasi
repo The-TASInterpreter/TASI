@@ -3,13 +3,13 @@ Type Generic;
 
 Start {
 	[Console.Clear]
-	makeVar int stream;
-	# Read the first line of the README.MD file!
-	set stream [Filesystem.Open:"C:/Users/Joscha/source/repos/TASI/README.MD", "r"];
+	makeVar int test;
+	makeglobalConst string c_message "Hello World!";
 
-	[Console.WriteLine:[Filestream.ReadLine:stream]]
-
-	[Filesystem.Close:stream]
+	# this will throw an error!
+	set message "Bye World!";
 
 	return;
 };
+
+

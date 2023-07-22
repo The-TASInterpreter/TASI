@@ -239,6 +239,9 @@
             new Function("DefVar", VarConstruct.VarType.@void, Namespaces[3], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "VarType"), new(VarConstruct.VarType.@string, "VarName")}
             }, new(), this);
+            new Function("MakeConst", VarConstruct.VarType.@void, Namespaces[3], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "VarName")}
+            }, new(), this);
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Convert"));
             AllLoadedFiles.Add("*internal");
             new Function("ToNum", VarConstruct.VarType.num, Namespaces[4], new List<List<VarConstruct>> {

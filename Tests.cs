@@ -426,6 +426,17 @@ namespace TASI
         {
             Assert.AreEqual("It worked!", LoadFile.RunCode("Name SetListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; setList randomList 2 \"It \" ; add randomList insideList; setList randomList 3 0 \"worked!\"; return (($randomList 2) + ($randomList 3 0));};").ObjectValue);
         }
+        [Test]
+        public static void MakeConstTest()
+        {
+            Assert.That(
+            Assert.Throws<CodeSyntaxException>(() =>
+            {
+                LoadFile.RunCode(
+                    "Name MakeConstTest; Type Generic; Start {makeConst int c_int 14;set c_int 23;};"
+                );
+            })?.Message, Contains.Substring("c_int"));
+        }
        
     }
 

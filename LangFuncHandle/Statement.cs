@@ -358,9 +358,16 @@
                             return foundValue.comesFromVarValue.VarValue;
                         return foundValue;
                     }
-                    if (double.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))
+                    
+
+                    if (int.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out int intResult))
                     {
-                        return new(Value.ValueType.num, result);
+                        return new(Value.ValueType.@int, intResult);
+                    }
+
+                    if (double.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double doubleResult))
+                    {
+                        return new(Value.ValueType.num, doubleResult);
                     }
                     commands[0].commandText = commands[0].commandText.ToLower();
                     return ((Var?)accessableObjects.accessableVars[commands[0].commandText] ?? throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"")).varValueHolder.value;
@@ -382,7 +389,7 @@
             for (int i = 0; i < indexes.Count; i++)
             {
                 if (lastValue.valueType != Value.ValueType.list) throw new CodeSyntaxException("You can only use list fetch return statements with a list-type variable");
-                int index = (int)GetValueOfCommandLine(new(new List<Command> { indexes[i] }), Value.ValueType.num, accessableObjects).NumValue;
+                int index = (int)GetValueOfCommandLine(new(new List<Command> { indexes[i] }), Value.ValueType.@int, accessableObjects).NumValue;
                 List<Value> listValue = lastValue.ListValue;
                 if (index < 0 || index >= listValue.Count) throw new CodeSyntaxException("Index out of bounds");
                 lastValue = listValue[index];

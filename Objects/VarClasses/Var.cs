@@ -26,7 +26,7 @@ namespace TASI
         {
             if (promised != null)
             {
-                    promised.Wait();
+                promised.Wait();
 
 
             }
@@ -53,7 +53,8 @@ namespace TASI
                         varValueHolder.value = result;
                         promised = null;
                         promiseCancel = null;
-                    } catch (OperationCanceledException) { return; }
+                    }
+                    catch (OperationCanceledException) { return; }
                 }, promiseCancel.Token);
 
                 promised.Start();
@@ -105,17 +106,22 @@ namespace TASI
                         varValueHolder.value = value;
                         return;
                     }
-                    switch (value.valueType)
+                    switch (varConstruct.type)
                     {
-                        case Value.ValueType.num:
-                            if (varConstruct.type != VarConstruct.VarType.num) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
+                        case VarConstruct.VarType.num:
+                            if (value.valueType != Value.ValueType.num) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects, or can't be converted to that type");
                             varValueHolder.value = value;
                             break;
-                        case Value.ValueType.@bool:
+                        case VarConstruct.VarType.@int:
+                            if (value.valueType != Value.ValueType.@int) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects, or can't be converted to that type");
+                                varValueHolder.value = value;
+
+                            break;
+                        case VarConstruct.VarType.@bool:
                             if (varConstruct.type != VarConstruct.VarType.@bool) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
                             varValueHolder.value = value;
                             break;
-                        case Value.ValueType.@string:
+                        case VarConstruct.VarType.@string:
                             if (varConstruct.type != VarConstruct.VarType.@string) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects");
                             varValueHolder.value = value;
                             break;

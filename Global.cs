@@ -14,6 +14,7 @@
         public List<Task> processFiles = new();
         public object processFileLock = new();
         public object iportFileLock = new();
+        public List<FileStream> allFileStreams = new();
     }
 
     public class GlobalContext
@@ -67,6 +68,17 @@
             set
             {
                 globalProjectShared.allLoadedFiles = value;
+            }
+        }
+        public List<FileStream> AllFileStreams
+        {
+            get
+            {
+                return globalProjectShared.allFileStreams;
+            }
+            set
+            {
+                globalProjectShared.allFileStreams = value;
             }
         }
         public List<Function> AllFunctions
@@ -201,7 +213,8 @@
             new Function("WriteLine", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@string, "text")},
                 new List<VarConstruct> { new(VarConstruct.VarType.num, "num")},
-                new List<VarConstruct> { new(VarConstruct.VarType.@bool, "bool")}
+                new List<VarConstruct> { new(VarConstruct.VarType.@bool, "bool")},
+                new List<VarConstruct> { new(VarConstruct.VarType.@int, "int")}
             }, new(), this);
             new Function("Write", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@string, "text")}
@@ -232,6 +245,19 @@
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "ConvertFrom"), new(VarConstruct.VarType.@bool, "errorOnParseFail")}
             }, new(), this);
 
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Filesystem"));
+            AllLoadedFiles.Add("*internal");
+            new Function("Open", VarConstruct.VarType.@int, Namespaces[5], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "FilePath"), new(VarConstruct.VarType.@string, "Mode") }
+            }, new(), this);
+            new Function("Close", VarConstruct.VarType.@void, Namespaces[5], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
+            }, new(), this);
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Filestream"));
+            AllLoadedFiles.Add("*internal");
+            new Function("ReadLine", VarConstruct.VarType.@string, Namespaces[6], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
+            }, new(), this);
         }
     }
 }

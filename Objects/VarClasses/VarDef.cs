@@ -4,7 +4,7 @@
     {
         public enum VarType
         {
-            num, @string, @bool, @void, list, all, @object
+            num, @string, @bool, @void, @int, list, all, @object
         }
         private TASIObjectDefinition? objectDefinition;
 

@@ -323,6 +323,7 @@ bool aBool;
 Btw.: all available types in TASI are:
 
 - num - an internal double number with general purpose number use.
+- int - a signed integer for general use, such as file streams.
 - string - a text with general purpose text use.
 - bool - a true or false value which is internaly just another double that's either 1 or 0
 - void - void variables don't store values and just symbolise nothing.

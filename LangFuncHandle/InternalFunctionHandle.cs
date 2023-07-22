@@ -74,6 +74,9 @@ namespace TASI
 
                         return null;
                     }
+                case "filesystem.delete":
+                    File.Delete(input[0].StringValue);
+                    return null;
                 case "filestream.readline":
                     {
                         FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];

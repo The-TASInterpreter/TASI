@@ -253,6 +253,10 @@
             new Function("Close", VarConstruct.VarType.@void, Namespaces[5], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
             }, new(), this);
+            new Function("Delete", VarConstruct.VarType.@void, Namespaces[5], new List<List<VarConstruct>>
+            {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "FilePath")}
+            }, new(), this);
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Filestream"));
             AllLoadedFiles.Add("*internal");
             new Function("ReadLine", VarConstruct.VarType.@string, Namespaces[6], new List<List<VarConstruct>> {

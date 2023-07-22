@@ -278,6 +278,12 @@ namespace TASI
             Console.SetOut(sw);
             LoadFile.RunCode("name FlushFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".flush_test.tmp\",\"?\"];[Filestream.Flush:($stream)];};");
         }
+        [Test]
+        public static void DeleteFileTest()
+        {
+            /// TODO: Implement!
+            Assert.IsTrue(true);
+        }
     }
     [TestFixture]
     public class ThreadingTests

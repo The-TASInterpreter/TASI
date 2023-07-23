@@ -1,0 +1,51 @@
+﻿name SampleObject;
+type Object;
+
+object StreamWriter
+{
+	field public num numVal; #field statements is for defining fields inside objects
+	field private string stringVal;
+	
+	constructor {num numVal, string stringVal} 
+	{
+		set <this.numVal> numVal; #<> contains the syntax for accessing object fields
+		set <this.stringVal> stringVal; 
+	};
+
+	method StreamWriter ReturnThisStreamWriter {num input; string inputString} 
+	{
+		set <this.numVal> input;
+		set <this.stringVal> inputString
+		if (input == 5.0) 
+		{
+			set <this.numVal> <this.[ReturnThisStreamWriter:(input + 1), inputString].numVal>
+		};
+	};
+
+
+};
+
+object WriterStream
+{
+	field private :SampleObject.StreamWriter streamWriter; #':'Marks a custom object type. A custom object type must contain the namespace it originates from
+
+
+
+
+	accessor public :SampleObject.StreamWriter AStreamWriter
+	{
+		get  #Gets and sets can be customised, but they can also have default behaviour. 
+		{
+			return <this.streamWriter>;
+		};
+		set streamWriter; #Default behaviour for setter. Statement is set/get <variable name for default behaviour>;
+
+	};
+
+	conversion :SampleObject.StreamWriter #Some code for automatically converting this object into a StreamWriter object
+	{
+		
+	};
+
+
+};

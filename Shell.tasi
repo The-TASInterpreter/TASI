@@ -1,21 +1,27 @@
 ﻿Name TasiShell;
 Type Generic;
-
-enum FILEACCESS {
-	READ = 1,
-	WRITE = 2
-} =/=> {
-	makeConst int FILEACCESS_READ 1
-	makeConst int FILEACCESS_WRITE 2
-}
+Import "unsafe.shell"; 
 
 Start {
 
-	makeConst int FILEACCESS_READ 1
-	makeConst int FILEACCESS_WRITE 2
 
 
 	[Console.Clear]
+
+	# this will throw an error!
+	set message "Bye World!";
+
+	# this will throw an error!
+	set message "Bye World!";
+
+	# this will throw an error!
+	set message "Bye World!";
+
+	# this will throw an error!
+	set message "Bye World!";
+
+	# this will throw an error!
+	set message "Bye World!";
 
 	return;
 };

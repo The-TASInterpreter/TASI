@@ -201,6 +201,24 @@ namespace TASI
                         return new(Value.ValueType.num, accessableObjects.global.RandomGenerator.NextDouble());
 
                     throw new CodeSyntaxException("Invalid usage of the \"Random.Next\" function. It dosn't take any paramters!");
+                case "shell.execute":
+                    
+                        
+                        Process process = new Process();
+                        process.StartInfo.FileName = "cmd.exe";
+                        process.StartInfo.Arguments = "/c " + input[0].StringValue;
+                        process.StartInfo.RedirectStandardOutput = true;
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.CreateNoWindow = true;
+
+                        process.Start();
+
+                        string output = process.StandardOutput.ReadToEnd();
+
+                        process.WaitForExit();
+
+                        return new Value(Value.ValueType.@string, output);
+                    
 
                 default: throw new InternalInterpreterException("Internal: No definition for " + funcName);
             }

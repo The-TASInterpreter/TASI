@@ -309,6 +309,11 @@
             new Function("NextNum", VarConstruct.VarType.num, Namespaces[7], new List<List<VarConstruct>> {
                 new List<VarConstruct> {},
             }, new(), this);
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Shell", false));
+            AllLoadedFiles.Add("unsafe.shell");
+            new Function("Execute", VarConstruct.VarType.all, Namespaces[8], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "cmd")},
+            }, new(), this);
         }
     }
 }

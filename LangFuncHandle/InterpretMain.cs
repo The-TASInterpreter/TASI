@@ -77,7 +77,7 @@
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<VarConstruct> result = new();
-            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand,  ";", global, commands.Last().commandLine));
+            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand, ";", global, commands.Last().commandLine));
 
             foreach (Command command in commands)
             {
@@ -131,6 +131,18 @@
             }
             return result;
         }
+        private static readonly NamespaceInfo.NamespaceIntend[] hasStart = new NamespaceInfo.NamespaceIntend[]
+        {
+            NamespaceInfo.NamespaceIntend.generic,
+            NamespaceInfo.NamespaceIntend.nonedef
+        };
+        private static readonly NamespaceInfo.NamespaceIntend[] hasFunctions = new NamespaceInfo.NamespaceIntend[]
+        {
+            NamespaceInfo.NamespaceIntend.generic,
+            NamespaceInfo.NamespaceIntend.nonedef,
+            NamespaceInfo.NamespaceIntend.@internal,
+            NamespaceInfo.NamespaceIntend.library,
+        };
 
         public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands, string currentFile, Global global) //This function will interpret the headers of the file and return the start code.
         {
@@ -148,16 +160,18 @@
                 {
                     if (command.commandType == Command.CommandTypes.EndCommand)
                     {
-                        switch (commandLine.commands[0].commandText.ToLower())
+                        string currentStatement = commandLine.commands[0].commandText.ToLower();
+                        if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null)
                         {
-                            case "name":
+                            if (currentStatement == "name")
+                            {
                                 if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
                                 if (thisNamespace.Name != null) throw new CodeSyntaxException("Name can't be defined twice.");
                                 thisNamespace.Name = commandLine.commands[1].commandText;
-                                break;
 
-                            case "type":
+                            } else if (currentStatement == "type")
+                            {
                                 if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 if (thisNamespace.namespaceIntend != NamespaceInfo.NamespaceIntend.nonedef) throw new CodeSyntaxException("Type can't be defined twice.");
@@ -167,122 +181,125 @@
                                     Tutorial.TutorialPhase1(commands);
                                 if (!Enum.TryParse<NamespaceInfo.NamespaceIntend>(commandLine.commands[1].commandText.ToLower(), out NamespaceInfo.NamespaceIntend result)) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 thisNamespace.namespaceIntend = result;
-                                break;
-                            case "start":
-                                if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null)
-                                {
-                                    Tutorial.TutorialPhaseMinusOne();
-                                    throw new CodeSyntaxException("You can't start while not having defined namespace name and type.\nYou can use the name and type statement to do this.");
-                                }
-                                if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.library) throw new CodeSyntaxException("Library type namespaces can't have a start.");
+                                
+                            } else
+                            {
+                                throw new CodeSyntaxException("You need to first define name and type of the namespace, before you can use any other statements. Do that with the name and type statements:\nname <namespace name>;\ntype <namespace type>;");
+                            }
+                            statementMode = false;
 
-                                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
-                                if (startCode != null) throw new CodeSyntaxException("Start can't be defined twice.");
-                                startCode = commandLine.commands[1].codeContainerCommands;
-                                break;
-                            case "function":
-                                if (commandLine.commands.Count != 5) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+                            continue;
+                        }
+                        else
+                            switch (currentStatement)
+                            {
+                                
+                                case "name" or "type":
+                                    throw new CodeSyntaxException($"{currentStatement} has already been defined in this namespace.");
+                                    
+                                case "function":
+                                    if (!hasFunctions.Contains(thisNamespace.namespaceIntend)) throw new CodeSyntaxException($"{thisNamespace.namespaceIntend}-type namespaces can't have a function.");
+
+                                    if (commandLine.commands.Count != 5) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+                                    if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
 
 
-                                if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType functionReturnType)) throw new CodeSyntaxException("function return type is invalid.");
-                                Function? thisFunction = null;
-                                foreach (Function function in thisNamespace.namespaceFuncitons) //Check if function with name already exist
-                                {
-                                    if (function.funcName == commandLine.commands[2].commandText.ToLower()) thisFunction = function;
-                                }
-                                string functionName = commandLine.commands[2].commandText.ToLower();
-                                List<VarConstruct> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
-
-                                if (thisFunction != null) //If function with name already exist, check if input combination already exist.
-                                {
-                                    foreach (List<VarConstruct> varDefs in thisFunction.functionArguments)
+                                    if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType functionReturnType)) throw new CodeSyntaxException("function return type is invalid.");
+                                    Function? thisFunction = null;
+                                    foreach (Function function in thisNamespace.namespaceFuncitons) //Check if function with name already exist
                                     {
-                                        bool isEqu = true;
-                                        if (functionInputVars.Count != varDefs.Count)
-                                            continue;
-                                        for (int i = 0; i < varDefs.Count; i++)
-                                        {
-                                            VarConstruct varDef = varDefs[i];
-                                            if (varDef.type != functionInputVars[i].type)
-                                            {
-                                                isEqu = false;
-                                                continue;
-                                            }
-                                        }
-                                        if (isEqu) throw new CodeSyntaxException($"The function \"{thisFunction.functionLocation}\" with the exact same input-types has already been defined.");
+                                        if (function.funcName == commandLine.commands[2].commandText.ToLower()) thisFunction = function;
                                     }
-                                    thisFunction.functionArguments.Add(functionInputVars);
-                                }
-                                else
-                                    new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
-                                break;
-                            case "import":
-                                string pathLocation;
-                                switch (commandLine.commands.Count)
-                                {
-                                    case 2:
-                                        if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
-                                        pathLocation = commandLine.commands[1].commandText.ToLower();
-                                        break;
-                                    case 3:
-                                        if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandText.ToLower() != "base" || commandLine.commands[2].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
-                                        pathLocation = Path.Combine( global.MainFilePath, commandLine.commands[2].commandText.ToLower());
-                                        break;
-                                    default:
-                                        throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import < string: path >;\nor\nimport base < string: path >;");
-                                }
-                                lock (global.IportFileLock)
-                                {
-                                    if (!global.AllLoadedFiles.Any(x => ComparePaths(x, pathLocation)))
+                                    string functionName = commandLine.commands[2].commandText.ToLower();
+                                    List<VarConstruct> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
+
+                                    if (thisFunction != null) //If function with name already exist, check if input combination already exist.
                                     {
-                                        alreadyImportedNamespaces.Add(pathLocation);
-                                        string pathLocationCopy = pathLocation;
-                                        global.AllLoadedFiles.Add(pathLocationCopy);
-                                        global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "", global));
-                                        global.ProcessFiles.Add(Task.Run(() =>
+                                        foreach (List<VarConstruct> varDefs in thisFunction.functionArguments)
                                         {
-                                            var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocationCopy, global, false), pathLocationCopy, global);
-                                            global.Namespaces[global.AllLoadedFiles.FindIndex(x => ComparePaths(x, pathLocation))] = importNamespace.Item2;
-
-                                            thisNamespace.accessableNamespaces.Add(importNamespace.Item2);
-
-                                        }));
+                                            bool isEqu = true;
+                                            if (functionInputVars.Count != varDefs.Count)
+                                                continue;
+                                            for (int i = 0; i < varDefs.Count; i++)
+                                            {
+                                                VarConstruct varDef = varDefs[i];
+                                                if (varDef.type != functionInputVars[i].type)
+                                                {
+                                                    isEqu = false;
+                                                    continue;
+                                                }
+                                            }
+                                            if (isEqu) throw new CodeSyntaxException($"The function \"{thisFunction.functionLocation}\" with the exact same input-types has already been defined.");
+                                        }
+                                        thisFunction.functionArguments.Add(functionInputVars);
                                     }
                                     else
+                                        new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
+                                    break;
+                                case "import":
+                                    string pathLocation;
+                                    switch (commandLine.commands.Count)
                                     {
-
-                                        if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new CodeSyntaxException($"The namespace \"{pathLocation} has already been imported.");
-
-                                        thisNamespace.accessableNamespaces.Add(global.Namespaces[global.AllLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
-                                        alreadyImportedNamespaces.Add(pathLocation);
+                                        case 2:
+                                            if (commandLine.commands[1].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
+                                            pathLocation = commandLine.commands[1].commandText.ToLower();
+                                            break;
+                                        case 3:
+                                            if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandText.ToLower() != "base" || commandLine.commands[2].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
+                                            pathLocation = Path.Combine(global.MainFilePath, commandLine.commands[2].commandText.ToLower());
+                                            break;
+                                        default:
+                                            throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import < string: path >;\nor\nimport base < string: path >;");
                                     }
-                                }
-                                break;
-                            case "makeglobalvar":
-                                if ((commandLine.commands.Count != 3 && commandLine.commands.Count != 4) || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var name>;");
+                                    lock (global.IportFileLock)
+                                    {
+                                        if (!global.AllLoadedFiles.Any(x => ComparePaths(x, pathLocation)))
+                                        {
+                                            alreadyImportedNamespaces.Add(pathLocation);
+                                            string pathLocationCopy = pathLocation;
+                                            global.AllLoadedFiles.Add(pathLocationCopy);
+                                            global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "", global));
+                                            global.ProcessFiles.Add(Task.Run(() =>
+                                            {
+                                                var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocationCopy, global, false), pathLocationCopy, global);
+                                                global.Namespaces[global.AllLoadedFiles.FindIndex(x => ComparePaths(x, pathLocation))] = importNamespace.Item2;
+
+                                                thisNamespace.accessableNamespaces.Add(importNamespace.Item2);
+
+                                            }));
+                                        }
+                                        else
+                                        {
+
+                                            if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new CodeSyntaxException($"The namespace \"{pathLocation} has already been imported.");
+
+                                            thisNamespace.accessableNamespaces.Add(global.Namespaces[global.AllLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
+                                            alreadyImportedNamespaces.Add(pathLocation);
+                                        }
+                                    }
+                                    break;
+                                case "makeglobalvar":
+                                    if ((commandLine.commands.Count != 3 && commandLine.commands.Count != 4) || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var name>;");
 
 
 
-                                if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
-                                Value? setToValue = null;
-                                if (commandLine.commands.Count == 4)
-                                {
-                                    setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", global), global));
-                                }
+                                    if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
+                                    if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                    Value? setToValue = null;
+                                    if (commandLine.commands.Count == 4)
+                                    {
+                                        setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", global), global));
+                                    }
 
-                                if (commandLine.commands[1].commandText == "all")
-                                    thisNamespace.publicNamespaceVars.Add(commandLine.commands[2].commandText, new Var(new(VarConstruct.VarType.all, commandLine.commands[2].commandText), setToValue ?? new(varType)));
-                                else
-                                    thisNamespace.publicNamespaceVars.Add(commandLine.commands[2].commandText, new Var(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), setToValue ?? new(varType)));
-                                break;
+                                    if (commandLine.commands[1].commandText == "all")
+                                        thisNamespace.publicNamespaceVars.Add(commandLine.commands[2].commandText, new Var(new(VarConstruct.VarType.all, commandLine.commands[2].commandText), setToValue ?? new(varType)));
+                                    else
+                                        thisNamespace.publicNamespaceVars.Add(commandLine.commands[2].commandText, new Var(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), setToValue ?? new(varType)));
+                                    break;
 
-                            default: throw new CodeSyntaxException($"\"{commandLine.commands[0].commandText}\" isn't a recognized statement in header interpret mode.");
+                                default: throw new CodeSyntaxException($"\"{commandLine.commands[0].commandText}\" isn't a recognized statement in header interpret mode.");
 
-                        }
-
+                            }
                         statementMode = false;
                         continue;
                     }

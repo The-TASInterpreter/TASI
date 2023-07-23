@@ -293,8 +293,16 @@ namespace TASI
         {
             LoadFile.RunCode("Name DeleteFileTest;Type Generic; Start {makeVar int stream; set stream [Filesystem.Create:\".delete_file_test.tmp\"]; [Filesystem.Close:($stream)]; [Filesystem.Delete:\".delete_file_test.tmp\"];};");
         }
-        
-
+        [Test]
+        public static void NextRandomTest()
+        {
+            LoadFile.RunCode("Name NextRandomTest;Type Generic; Start {[Random.Next];makeVar int min;set min 0;makeVar int max;set max 10;[Random.Next:($min)];[Random.Next:($min),($max)]};");
+        }
+        [Test]
+        public static void NextRandomNumTest()
+        {
+            LoadFile.RunCode("Name NextRandomTest;Type Generic; Start {[Random.NextNum];};");
+        }
     }
     [TestFixture]
     public class ThreadingTests

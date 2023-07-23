@@ -8,20 +8,7 @@ Start {
 
 	[Console.Clear]
 
-	# this will throw an error!
-	set message "Bye World!";
-
-	# this will throw an error!
-	set message "Bye World!";
-
-	# this will throw an error!
-	set message "Bye World!";
-
-	# this will throw an error!
-	set message "Bye World!";
-
-	# this will throw an error!
-	set message "Bye World!";
+	[Console.WriteLine:[Shell.Execute:"echo Hello World!"]]
 
 	return;
 };

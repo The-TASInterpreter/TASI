@@ -224,12 +224,12 @@ namespace TASI
         public static void FunctionConsoleReadLine()
         {
             Global global = new();
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", global), global);
+            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global);
 
             StringReader sr = new StringReader("Test!");
             Console.SetIn(sr);
             FunctionCall functionCall = new(new Command(Command.CommandTypes.FunctionCall, "Console.ReadLine", accessableObjects.global), accessableObjects.global);
-            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", accessableObjects.global), accessableObjects.global);
+            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, accessableObjects.global), accessableObjects.global);
             Assert.AreEqual("Test!", functionCall.DoFunctionCall(accessableObjects).StringValue);
 
         }
@@ -237,12 +237,12 @@ namespace TASI
         public static void FunctionConsoleWriteLine()
         {
             Global global = new();
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", global), global);
+            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global);
 
             StringWriter sw = new();
             Console.SetOut(sw);
             FunctionCall functionCall = new(new Command(Command.CommandTypes.FunctionCall, "Console.WriteLine:\"Test\"", accessableObjects.global), accessableObjects.global);
-            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", accessableObjects.global), accessableObjects.global);
+            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, accessableObjects.global), accessableObjects.global);
             functionCall.DoFunctionCall(accessableObjects);
             string consoleOutput = sw.ToString();
             Assert.AreEqual("Test\n", consoleOutput.Replace("\r\n", "\n"));
@@ -450,6 +450,17 @@ namespace TASI
         public static void SetListTest()
         {
             Assert.AreEqual("It worked!", LoadFile.RunCode("Name SetListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; setList randomList 2 \"It \" ; add randomList insideList; setList randomList 3 0 \"worked!\"; return (($randomList 2) + ($randomList 3 0));};").ObjectValue);
+        }
+        [Test]
+        public static void MakeConstTest()
+        {
+            Assert.That(
+            Assert.Throws<CodeSyntaxException>(() =>
+            {
+                LoadFile.RunCode(
+                    "Name MakeConstTest; Type Generic; Start {makeConst int c_int 14;set c_int 23;};"
+                );
+            })?.Message, Contains.Substring("c_int"));
         }
        
     }

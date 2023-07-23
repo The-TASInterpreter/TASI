@@ -13,6 +13,7 @@ namespace TASI
         public object? value;
         public ValueType? valueType;
         public bool isReturnValue;
+        public bool isConstant;
         public Var? comesFromVarValue = null;
 
         public Value(SpecialReturns specialReturn)
@@ -152,6 +153,18 @@ namespace TASI
                     ValueType.num or ValueType.@bool or ValueType.@int => true,
                     _ => false,
                 };
+            }
+        }
+
+        public bool IsConstant
+        {
+            get
+            {
+                return isConstant;
+            }
+            set
+            {
+                isConstant = value;
             }
         }
 

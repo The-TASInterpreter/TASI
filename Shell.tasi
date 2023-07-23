@@ -15,7 +15,15 @@ Start {
 	makeConst int FILEACCESS_WRITE 2
 
 
+
 	[Console.Clear]
+	makeVar int test;
+	makeglobalConst string c_message "Hello World!";
+
+	# this will throw an error!
+	set message "Bye World!";
 
 	return;
 };
+
+

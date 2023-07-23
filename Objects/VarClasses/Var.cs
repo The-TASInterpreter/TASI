@@ -62,9 +62,9 @@ namespace TASI
 
         }
 
-        public Var(Var var, bool makeLink = false)
+        public Var(Var var, bool makeLink = false, bool makeConst = false)
         {
-            varConstruct = new(var.varConstruct.type, var.varConstruct.name, var.varConstruct.isLink);
+            varConstruct = new(var.varConstruct.type, var.varConstruct.name, var.varConstruct.isLink, var.varConstruct.isConstant);
             if (makeLink)
                 varValueHolder = var.varValueHolder;
             else

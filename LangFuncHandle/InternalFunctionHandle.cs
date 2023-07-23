@@ -169,6 +169,14 @@ namespace TASI
                     }
                     accessableObjects.accessableVars.Add(input[1].StringValue, new Var(new VarConstruct(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType)));
                     return null;
+                case "inf.makeconst":
+                    {     
+                        Var var = (Var)(accessableObjects.accessableVars[input[0].StringValue] ?? throw new CodeSyntaxException($"The variable \"{input[0]}\" cannot be found."));
+
+                        var.varConstruct.isConstant = true;
+                        return null;
+                    }
+
                 case "convert.tonum":
                     if (!double.TryParse(input[0].StringValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))
                         if (input[1].BoolValue)

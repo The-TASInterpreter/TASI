@@ -1,7 +1,38 @@
 ﻿
 
+using TASI.Objects.TASIObject;
+
 namespace TASI
 {
+
+    public class Accessor
+    {
+        public enum AccessorType
+        {
+            offset, method, accessorBase
+        }
+        public AccessorType accessorType;
+        public int? offset;
+        public MethodCall? methodCall;
+        public Command? accessorBase;
+
+        public Accessor(int offset)
+        {
+            accessorType = AccessorType.offset;
+            this.offset = offset;
+        }
+        public Accessor(MethodCall methodCall)
+        {
+            accessorType = AccessorType.method;
+            this.methodCall = methodCall;
+        }
+        public Accessor(Command accessorBase)
+        {
+            accessorType = AccessorType.accessorBase;
+            this.accessorBase = accessorBase;
+        }
+    }
+
     public class Command
     {
         public string commandText;
@@ -13,9 +44,10 @@ namespace TASI
         public FunctionCall? functionCall;
         public CalculationType? calculation;
         public string commandFile = "";
+        public List<int>? accessorOffsets;
         public void initCodeContainerFunctions(NamespaceInfo namespaceInfo, Global global)
         {
-            foreach(Command command in codeContainerCommands)
+            foreach (Command command in codeContainerCommands)
             {
                 if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(namespaceInfo, global);
                 if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(namespaceInfo, global);
@@ -25,10 +57,10 @@ namespace TASI
         }
 
 
-        
+
         public enum CommandTypes
         {
-            FunctionCall, Statement, Calculation, String, CodeContainer, EndCommand
+            FunctionCall, Statement, Calculation, String, CodeContainer, EndCommand, ObjectAccessor
         }
         /// <summary>
         /// For creating code containers
@@ -36,7 +68,7 @@ namespace TASI
         /// <param name="codeContainerCommands"></param>
         /// <param name="commandLine"></param>
         /// <param name="commandEnd"></param>
-        public Command(List<Command> codeContainerCommands, Global global, int commandLine = - 1)
+        public Command(List<Command> codeContainerCommands, Global global, int commandLine = -1)
         {
             commandFile = global.CurrentFile;
             commandType = CommandTypes.CodeContainer;
@@ -51,10 +83,11 @@ namespace TASI
                 commandEnd = commandLine;
             }
 
-            
+
             this.codeContainerCommands = codeContainerCommands;
-            
+
         }
+
 
         /// <summary>
         /// General purpose command creation

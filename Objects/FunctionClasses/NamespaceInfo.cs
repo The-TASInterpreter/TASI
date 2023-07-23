@@ -18,6 +18,7 @@ namespace TASI
         public Hashtable publicNamespaceVars = new();
         public List<NamespaceInfo> accessableNamespaces = new();
         public NamespaceIntend namespaceIntend;
+        public bool autoImport;
 
         public string? Name
         {
@@ -35,14 +36,15 @@ namespace TASI
         }
 
 
-        public NamespaceInfo(NamespaceIntend namespaceIntend, string? name, Global? global = null)
+        public NamespaceInfo(NamespaceIntend namespaceIntend, string? name, bool autoImport = false, Global? global = null)
         {
             TASI_Main.interpretInitLog.Log($"Creating new Namespace. Intend: {namespaceIntend}; Name: {name}");
             this.namespaceIntend = namespaceIntend;
             Name = name;
             accessableNamespaces.Add(this);
             if (global != null)
-                accessableNamespaces.AddRange(global.Namespaces.Where(x => x.namespaceIntend == NamespaceIntend.@internal)); //Import all internal namespaces
+                accessableNamespaces.AddRange(global.Namespaces.Where(x => x.autoImport)); //Import all internal namespaces that have auto import activated
+            this.autoImport = autoImport;
         }
 
         public NamespaceInfo(string? name, List<NamespaceInfo> accessableNamespaces, NamespaceIntend namespaceIntend)

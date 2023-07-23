@@ -137,7 +137,7 @@
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<Command>? startCode = null;
-            NamespaceInfo thisNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, null, global);
+            NamespaceInfo thisNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, null, false, global);
             List<string> alreadyImportedNamespaces = new();
             global.Namespaces.Add(thisNamespace);
 
@@ -240,7 +240,7 @@
                                         alreadyImportedNamespaces.Add(pathLocation);
                                         string pathLocationCopy = pathLocation;
                                         global.AllLoadedFiles.Add(pathLocationCopy);
-                                        global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "", global));
+                                        global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "", false,global));
                                         global.ProcessFiles.Add(Task.Run(() =>
                                         {
                                             var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocationCopy, global, false), pathLocationCopy, global);
@@ -266,11 +266,11 @@
 
 
                                 if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false,global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                                 Value? setToValue = null;
                                 if (commandLine.commands.Count == 4)
                                 {
-                                    setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", global), global));
+                                    setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false,global), global));
                                 }
 
                                 if (commandLine.commands[1].commandText == "all")

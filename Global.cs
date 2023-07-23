@@ -15,6 +15,7 @@
         public object processFileLock = new();
         public object iportFileLock = new();
         public List<FileStream> allFileStreams = new();
+        public Random randomGenerator = new();
     }
 
     public class GlobalContext
@@ -92,7 +93,17 @@
                 globalProjectShared.allFunctions = value;
             }
         }
-
+        public Random RandomGenerator
+        {
+            get
+            {
+                return globalProjectShared.randomGenerator;
+            }
+            set
+            {
+                globalProjectShared.randomGenerator = value;
+            }
+        }
 
 
 
@@ -256,6 +267,18 @@
             new Function("Close", VarConstruct.VarType.@void, Namespaces[5], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
             }, new(), this);
+            new Function("Delete", VarConstruct.VarType.@void, Namespaces[5], new List<List<VarConstruct>>
+            {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "FilePath")}
+            }, new(), this);
+            new Function("Create", VarConstruct.VarType.@int, Namespaces[5], new List<List<VarConstruct>>
+            {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "FilePath")}
+            }, new(), this);
+            new Function("Exists", VarConstruct.VarType.@bool, Namespaces[5], new List<List<VarConstruct>>
+            {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "FilePath")}
+            }, new(), this);
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Filestream", true));
             AllLoadedFiles.Add("*internal");
             new Function("ReadLine", VarConstruct.VarType.@string, Namespaces[6], new List<List<VarConstruct>> {
@@ -275,6 +298,16 @@
                 new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.num, "num")},
                 new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.@bool, "bool")},
                 new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.@int, "int")}
+            }, new(), this);
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Random", true));
+            AllLoadedFiles.Add("*internal");
+            new Function("Next", VarConstruct.VarType.@int, Namespaces[7], new List<List<VarConstruct>> {
+                new List<VarConstruct> {},
+                new List<VarConstruct> {new(VarConstruct.VarType.@int, "min")},
+                new List<VarConstruct> {new(VarConstruct.VarType.@int, "min"), new(VarConstruct.VarType.@int, "max")}
+            }, new(), this) ;
+            new Function("NextNum", VarConstruct.VarType.num, Namespaces[7], new List<List<VarConstruct>> {
+                new List<VarConstruct> {},
             }, new(), this);
         }
     }

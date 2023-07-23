@@ -278,6 +278,31 @@ namespace TASI
             Console.SetOut(sw);
             LoadFile.RunCode("name FlushFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".flush_test.tmp\",\"?\"];[Filestream.Flush:($stream)];};");
         }
+        [Test]
+        public static void FileExistsTest()
+        {
+            Assert.IsTrue((LoadFile.RunCode("Name FileExistsTest;Type Generic; Start {return [Filesystem.Exists:\"LICENSE.txt\"];};")?? throw new InvalidDataException("Test Code returned null!")).BoolValue);
+        }
+        [Test]
+        public static void CreateFileTest()
+        {
+            LoadFile.RunCode("Name CreateFileTest;Type Generic;Start {makeVar int stream; set stream [Filesystem.Create:\".create_file_test.tmp\"]; [Filesystem.Close:($stream)];};");
+        }
+        [Test]
+        public static void DeleteFileTest()
+        {
+            LoadFile.RunCode("Name DeleteFileTest;Type Generic; Start {makeVar int stream; set stream [Filesystem.Create:\".delete_file_test.tmp\"]; [Filesystem.Close:($stream)]; [Filesystem.Delete:\".delete_file_test.tmp\"];};");
+        }
+        [Test]
+        public static void NextRandomTest()
+        {
+            LoadFile.RunCode("Name NextRandomTest;Type Generic; Start {[Random.Next];makeVar int min;set min 0;makeVar int max;set max 10;[Random.Next:($min)];[Random.Next:($min),($max)]};");
+        }
+        [Test]
+        public static void NextRandomNumTest()
+        {
+            LoadFile.RunCode("Name NextRandomTest;Type Generic; Start {[Random.NextNum];};");
+        }
     }
     [TestFixture]
     public class ThreadingTests

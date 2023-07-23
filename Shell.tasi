@@ -1,13 +1,21 @@
 ﻿Name TasiShell;
 Type Generic;
 
-Start {
-	[Console.Clear]
-	makeVar int test;
-	makeglobalConst string c_message "Hello World!";
+enum FILEACCESS {
+	READ = 1,
+	WRITE = 2
+} =/=> {
+	makeConst int FILEACCESS_READ 1
+	makeConst int FILEACCESS_WRITE 2
+}
 
-	# this will throw an error!
-	set message "Bye World!";
+Start {
+
+	makeConst int FILEACCESS_READ 1
+	makeConst int FILEACCESS_WRITE 2
+
+
+	[Console.Clear]
 
 	return;
 };

@@ -74,6 +74,20 @@ namespace TASI
 
                         return null;
                     }
+                case "filesystem.delete":
+                    File.Delete(input[0].StringValue);
+                    return null;
+                case "filesystem.create":
+                    {
+                        FileStream new_stream = File.Create(input[0].StringValue);
+                        accessableObjects.global.AllFileStreams.Add(new_stream);
+
+                        int new_streamIndex = accessableObjects.global.AllFileStreams.IndexOf(new_stream);
+
+                        return new(Value.ValueType.@int, new_streamIndex);
+                    }
+                case "filesystem.exists":
+                    return new(Value.ValueType.@bool, File.Exists(input[0].StringValue));
                 case "filestream.readline":
                     {
                         FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
@@ -170,11 +184,23 @@ namespace TASI
                         else
                             return new(Value.ValueType.num, double.NaN);
 
-
-
                     return new(Value.ValueType.num, result);
 
+                case "random.next":
+                    if (input.Count == 0)
+                        return new(Value.ValueType.@int, accessableObjects.global.RandomGenerator.Next());
+                    else if (input.Count == 1 && input[0].valueType == Value.ValueType.@int)
+                        return new(Value.ValueType.@int, accessableObjects.global.RandomGenerator.Next((int)input[0].NumValue));
+                    else if (input.Count == 2 && input[0].valueType == Value.ValueType.@int && input[1].valueType == Value.ValueType.@int)
+                        return new(Value.ValueType.@int, accessableObjects.global.RandomGenerator.Next((int)input[0].NumValue, (int)input[1].NumValue));
 
+                    throw new CodeSyntaxException("Invalid usage of the \"Random.Next\" function. Correct usage: Random.Next [<int: min>] [<int: max>];");
+
+                case "random.nextnum":
+                    if (input.Count == 0)
+                        return new(Value.ValueType.num, accessableObjects.global.RandomGenerator.NextDouble());
+
+                    throw new CodeSyntaxException("Invalid usage of the \"Random.Next\" function. It dosn't take any paramters!");
 
                 default: throw new InternalInterpreterException("Internal: No definition for " + funcName);
             }

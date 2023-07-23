@@ -1,4 +1,6 @@
-﻿namespace TASI
+﻿using System.Runtime.CompilerServices;
+
+namespace TASI
 {
     internal class InterpretMain
     {
@@ -70,6 +72,48 @@
         }
 
         */
+        
+
+        public static TASIObjectDefinition InterpretObjectDefinition(string objectName, List<Command> objectCode, AccessableObjects accessableObjects)
+        {
+            TASIObjectDefinition result = new();
+            List<Command> currentStatement = new(6);
+            HashSet<string> allFieldNames = new();
+            for (int i = 0; i < objectCode.Count; i++)
+            {
+                if (objectCode[i].commandType != Command.CommandTypes.EndCommand)
+                {
+                    currentStatement.Add(objectCode[i]);
+                    continue;
+                }
+                if (objectCode.Count == 0) //Probably double semicolon (;;)
+                    continue;
+
+                switch (objectCode[i].commandText.ToLower())
+                {
+                    case "field":
+                        if (objectCode.Count != 4) throw new CodeSyntaxException("Invalid usage of field statement. Correct usage: field <visibility> <type> <name>;");
+
+                        if (!Enum.TryParse(objectCode[1].commandText, out FieldDefinition.FieldVisability visability))
+                        {
+                            throw new CodeSyntaxException("Invalid visability value. Valid values are: public, private");
+                        }
+
+                        if (allFieldNames.Contains(objectCode[3].commandText.ToLower())) throw new CodeSyntaxException($"The field \"{objectCode[3].commandText.ToLower()}\" already exists in this object. Keep in mind, that capitalisation is disregarded");
+
+                        if (objectCode[2].commandText[0] == ':') //Is pointer
+                        { 
+                        
+                        }
+
+
+                        
+                        break;
+                }
+                currentStatement.Clear();
+            }
+            return null;
+        }
 
 
         public static List<VarConstruct> InterpretVarDef(List<Command> commands, Global global)
@@ -170,7 +214,8 @@
                                 if (thisNamespace.Name != null) throw new CodeSyntaxException("Name can't be defined twice.");
                                 thisNamespace.Name = commandLine.commands[1].commandText;
 
-                            } else if (currentStatement == "type")
+                            }
+                            else if (currentStatement == "type")
                             {
                                 if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
@@ -181,8 +226,9 @@
                                     Tutorial.TutorialPhase1(commands);
                                 if (!Enum.TryParse<NamespaceInfo.NamespaceIntend>(commandLine.commands[1].commandText.ToLower(), out NamespaceInfo.NamespaceIntend result)) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 thisNamespace.namespaceIntend = result;
-                                
-                            } else
+
+                            }
+                            else
                             {
                                 throw new CodeSyntaxException("You need to first define name and type of the namespace, before you can use any other statements. Do that with the name and type statements:\nname <namespace name>;\ntype <namespace type>;");
                             }
@@ -193,10 +239,24 @@
                         else
                             switch (currentStatement)
                             {
-                                
+
                                 case "name" or "type":
                                     throw new CodeSyntaxException($"{currentStatement} has already been defined in this namespace.");
-                                    
+
+                                case "start":
+                                    if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null)
+                                    {
+                                        Tutorial.TutorialPhaseMinusOne();
+                                        throw new CodeSyntaxException("You can't start while not having defined namespace name and type.\nYou can use the name and type statement to do this.");
+                                    }
+                                    if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.library) throw new CodeSyntaxException("Library type namespaces can't have a start.");
+
+                                    if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
+                                    if (commandLine.commands[1].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
+                                    if (startCode != null) throw new CodeSyntaxException("Start can't be defined twice.");
+                                    startCode = commandLine.commands[1].codeContainerCommands;
+                                    break;
+
                                 case "function":
                                     if (!hasFunctions.Contains(thisNamespace.namespaceIntend)) throw new CodeSyntaxException($"{thisNamespace.namespaceIntend}-type namespaces can't have a function.");
 

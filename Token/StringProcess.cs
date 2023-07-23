@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using NUnit.Framework.Constraints;
+using System.Text;
 
 namespace TASI
 {
@@ -29,15 +30,16 @@ namespace TASI
     }
     public class StringProcess
     {
+        public const char LineChar = 'Ⅼ';
         private static StringBuilder handleLineCharSB = new();
         public static int HandleLineChar(string input, out int endChar, int startChar, Global global)
         {
             endChar = startChar;
-            if (input[endChar] == 'Ⅼ')
+            if (input[endChar] == LineChar)
                 endChar++;
             StringBuilder nextLine = handleLineCharSB;
             nextLine.Clear();
-            while (input[endChar] != 'Ⅼ')
+            while (input[endChar] != LineChar)
             {
                 nextLine.Append(input[endChar]);
                 endChar++;
@@ -82,6 +84,10 @@ namespace TASI
                         result.Add(new(Command.CommandTypes.EndCommand, ";", global, line, line));
                         break;
 
+                    case '<':
+
+                        break;
+
                     case '(':
                         //Would be nice to do that smoother some day
                         sb.Clear();
@@ -103,7 +109,7 @@ namespace TASI
                                 case '\"':
                                     sb.Append($"\"{HandleString(input, endChar, out endChar, out currentLine, global).commandText}\"");
                                     break;
-                                case 'Ⅼ':
+                                case LineChar:
                                     line = HandleLineChar(input, out endChar, endChar, global);
                                     sb.Append($"Ⅼ{line}Ⅼ");
                                     break;
@@ -139,7 +145,7 @@ namespace TASI
                                     sb.Append($"\"{HandleString(input, endChar, out endChar, out currentLine, global).commandText}\"");
 
                                     break;
-                                case 'Ⅼ':
+                                case LineChar:
                                     line = HandleLineChar(input, out endChar, endChar, global);
                                     sb.Append($"Ⅼ{line}Ⅼ");
                                     break;
@@ -160,7 +166,7 @@ namespace TASI
                         break;
                     case '}':
                         return result;
-                    case 'Ⅼ':
+                    case LineChar:
                         line = HandleLineChar(input, out endChar, endChar, global);
                         break;
                     default:
@@ -179,7 +185,7 @@ namespace TASI
                         {
 
 
-                            if (input[endChar] == 'Ⅼ')
+                            if (input[endChar] == LineChar)
                             {
                                 line = HandleLineChar(input, out endChar, endChar, global);
                                 endChar++;
@@ -210,13 +216,69 @@ namespace TASI
             { 'n', '\n' },
             { '\"', '\"' },
             { 't', '\t' },
-            { 'l', 'Ⅼ' },
+            { 'l', LineChar },
             {'h', '#' }
 
 
         };
 
         private static StringBuilder handleStringSB = new();
+
+        /*
+        public static Command HandleObjectAccessorChain(string input, int start, out int endChar, out int endLine, Global global, int startLine = -1)
+        {
+            endChar = start;
+            if (input[endChar] == '<')
+            {
+                endChar++;
+            }
+            int methodDeph = 0;
+            List<Accessor> accessors = new();
+            StringBuilder sb = new();
+            string offset;
+            bool workingOnAccessor = true;
+            Accessor currentAccessor = null;
+            for (; methodDeph != 0 || input[endChar] == '>'; endChar++)
+            {
+                
+                switch (input[endChar])
+                {
+                    case '.':
+                        offset = sb.ToString();
+                        
+                        if (offset == string.Empty || !workingOnAccessor)
+                            throw new CodeSyntaxException("Object accessor chain can't have an empty accessor");
+                        workingOnAccessor = false;
+                        break;
+                    case ' ' or '\t':
+                        break;
+                    case '[':
+                        
+                        endChar++;
+                        for (methodDeph = 1; methodDeph != 0; endChar++)
+                        {
+                            if (input[endChar] == '[')
+                                methodDeph++;
+                            if (input[endChar] == ']')
+                            {
+                                methodDeph--;
+                                if (methodDeph == 0)
+                                    break;
+                            }
+                            if (input[endChar] == '\"')
+                            {
+                                sb.Append($"\"{HandleString(input, endChar, out endChar, out endLine, global, startLine).commandText}\"");
+                                continue;
+                            }
+                            
+                            sb.Append(input[endChar]);
+                        }
+                        currentAccessor = new();
+                        
+                }
+            }
+        }
+        */
         public static Command HandleString(string input, int start, out int endCharIDX, out int endLine, Global global, int startLine = -1)
         {
 
@@ -243,7 +305,7 @@ namespace TASI
                 }
                 switch (input[endCharIDX])
                 {
-                    case 'Ⅼ':
+                    case LineChar:
                         endLine = HandleLineChar(input, out endCharIDX, endCharIDX, global);
                         continue;
                     case '\\':

@@ -4,6 +4,39 @@ namespace TASI
 {
     public class NamespaceInfo
     {
+        /// <summary>
+        /// This will search this namespace for the input name.
+        /// </summary>
+        /// <param name="name">includes : and . of the syntax</param>
+        /// <returns></returns>
+        public TASIObjectDefinition SearchCustomType(string name)
+        {
+            name = name[1..];
+            string[] split = name.Split('.');
+            if (split.Length != 2)
+            {
+                if (split.Length > 2)
+                {
+                    throw new CodeSyntaxException("A custom type reference can only include Namespace and Type. EG:\n:TypeNamespace.Type");
+                }
+                else
+                {
+                    throw new CodeSyntaxException("A custom type reference must include Namespace and Type. EG:\n:TypeNamespace.Type");
+                }
+            }
+            NamespaceInfo? foundNamespace = accessableNamespaces.FirstOrDefault(x => x.Name == split[0]);
+            if (foundNamespace == null) 
+            {
+                throw new CodeSyntaxException($"The namespace \"{split[0]}\" doesn't exist or wasn't imported");
+            }
+            TASIObjectDefinition? foundType = foundNamespace.objects.FirstOrDefault(x => x.objectType == split[1]);
+            if (foundType == null)
+            {
+                throw new CodeSyntaxException($"The namespace \"{split[0]}\" doesn't have a type definition for \"{split[1]}\"");
+            }
+            return null;
+        }
+
         public enum NamespaceIntend
         {
             nonedef, // Not defined intend. Should only occur internaly.
@@ -19,6 +52,7 @@ namespace TASI
         public Hashtable publicNamespaceVars = new();
         public List<NamespaceInfo> accessableNamespaces = new();
         public NamespaceIntend namespaceIntend;
+        public List<TASIObjectDefinition>? objects = new();
 
         public string? Name
         {

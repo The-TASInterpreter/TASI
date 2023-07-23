@@ -258,6 +258,9 @@
             new Function("ReadLine", VarConstruct.VarType.@string, Namespaces[6], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
             }, new(), this);
+
+
+             
         }
     }
 }

@@ -14,6 +14,7 @@ namespace TASI
         public bool inLoop = false;
         public CancellationTokenSource? cancellationTokenSource;
         public Global global;
+        public List<TASIObjectDefinition> accessableObjectDefinitions = new();
         public AccessableObjects(Hashtable accessableVars, NamespaceInfo importedNamespaces, Global global)
         {
             this.accessableVars = accessableVars;

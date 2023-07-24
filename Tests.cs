@@ -114,6 +114,9 @@ namespace TASI
         {
             AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
+            
+            Assert.AreEqual("\"\"", Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "\"\\\"\" + \"\\\"\"", accessableObjects.global), accessableObjects).StringValue); // "\"" + "\""
+
 
             Assert.AreEqual("2apples", Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "2 + \"apples\"", accessableObjects.global), accessableObjects).StringValue);
 
@@ -336,6 +339,23 @@ namespace TASI
         [TestFixture]
     public class GeneralCodeTests
     {
+
+        [Test]
+        public static void EscapeAdditionTest()
+        {
+
+
+
+            StringWriter sw = new StringWriter();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name EscapeAdditionTest;Type Generic;start {[Console.WriteLine:([EscapeAdditionTest.ReturnInput:\"\\\"\"] + \"\\\"\")]};function string ReturnInput {string input} {return input;};");
+            string consoleOutput = sw.ToString();
+            Assert.That(consoleOutput, Contains.Substring("\"\""));
+
+
+        }
+
+
         [Test]
         public static void HelloWorldTest()
         {
@@ -344,9 +364,9 @@ namespace TASI
 
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
-            LoadFile.RunCode("name HelloWorldTest;Type Generic;Start {[Console.WriteLine:\"Hello World!\"];};");
+            LoadFile.RunCode("name HelloWorldTest;Type Generic;Start {[Console.WriteLine:\"\\\"Hello World!\\\"\"];};");
             string consoleOutput = sw.ToString();
-            Assert.That(consoleOutput, Contains.Substring("Hello World!"));
+            Assert.That(consoleOutput, Contains.Substring("\"Hello World!\""));
 
 
         }

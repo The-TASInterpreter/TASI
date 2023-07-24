@@ -84,11 +84,14 @@ namespace TASI
 
                     case '(':
                         //Would be nice to do that smoother some day
+
                         sb.Clear();
                         endChar++;
                         startLine = line;
                         for (int calcDeph = 1; calcDeph != 0; endChar++)
                         {
+                            if (endChar >= input.Length) throw new CodeSyntaxException("Expected ']'");
+
                             switch (input[endChar])
                             {
                                 case ')':
@@ -123,6 +126,7 @@ namespace TASI
                         startLine = line;
                         for (int methodDeph = 1; methodDeph != 0; endChar++)
                         {
+                            if (endChar >= input.Length) throw new CodeSyntaxException("Expected ']'");
                             switch (input[endChar])
                             {
                                 case ']':

@@ -84,11 +84,14 @@ namespace TASI
 
                     case '(':
                         //Would be nice to do that smoother some day
+
                         sb.Clear();
                         endChar++;
                         startLine = line;
                         for (int calcDeph = 1; calcDeph != 0; endChar++)
                         {
+                            if (endChar >= input.Length) throw new CodeSyntaxException("Expected ']'");
+
                             switch (input[endChar])
                             {
                                 case ')':
@@ -101,7 +104,7 @@ namespace TASI
                                     sb.Append('(');
                                     break;
                                 case '\"':
-                                    sb.Append($"\"{HandleString(input, endChar, out endChar, out currentLine, global).commandText}\"");
+                                    sb.Append($"\"{HandleString(input, endChar, out endChar, out currentLine, global, -1, false).commandText}\"");
                                     break;
                                 case 'Ⅼ':
                                     line = HandleLineChar(input, out endChar, endChar, global);
@@ -123,6 +126,7 @@ namespace TASI
                         startLine = line;
                         for (int methodDeph = 1; methodDeph != 0; endChar++)
                         {
+                            if (endChar >= input.Length) throw new CodeSyntaxException("Expected ']'");
                             switch (input[endChar])
                             {
                                 case ']':
@@ -136,7 +140,10 @@ namespace TASI
                                     break;
                                 case '\"':
 
-                                    sb.Append($"\"{HandleString(input, endChar, out endChar, out currentLine, global).commandText}\"");
+
+                                    sb.Append($"\"{HandleString(input, endChar, out endChar, out currentLine, global, -1, false).commandText}\"");
+
+
                                     break;
                                 case 'Ⅼ':
                                     line = HandleLineChar(input, out endChar, endChar, global);
@@ -210,13 +217,14 @@ namespace TASI
             { '\"', '\"' },
             { 't', '\t' },
             { 'l', 'Ⅼ' },
-            {'h', '#' }
+            {'h', '#' },
+            {'\\', '\\' }
 
 
         };
 
         private static StringBuilder handleStringSB = new();
-        public static Command HandleString(string input, int start, out int endCharIDX, out int endLine, Global global, int startLine = -1)
+        public static Command HandleString(string input, int start, out int endCharIDX, out int endLine, Global global, int startLine = -1, bool replaceEscape = true)
         {
 
 
@@ -237,7 +245,16 @@ namespace TASI
 
                     if (!backslashReplace.TryGetValue(input[endCharIDX], out char replace))
                         throw new CodeSyntaxException($"Invalid string escape char: '{input[endCharIDX]}'");
-                    resultString.Append(replace);
+                    if (replaceEscape)
+                    {
+                        resultString.Append(replace);
+                    }
+                    else
+                    {
+                        resultString.Append('\\');
+
+                        resultString.Append(replace);
+                    }
                     continue;
                 }
                 switch (input[endCharIDX])

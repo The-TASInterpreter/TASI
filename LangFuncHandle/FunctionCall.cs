@@ -1,5 +1,6 @@
 ﻿
 using System.Collections;
+using System.Text;
 using static TASI.Command;
 
 namespace TASI
@@ -36,17 +37,17 @@ namespace TASI
         {
             functionName = "";
             List<string> functionArguments = new();
-            string currentArgument = "";
             bool doingName = true;
             int squareDeph = 0;
             int braceDeph = 0;
             bool inString = false;
-            bool lastBackslash = false;
-
+            string currentArgumentString;
+            StringBuilder currentArgument = new();
 
             //split function name from arguments and arguments with comma
-            foreach (char c in command.commandText)
+            for (int i = 0; i < command.commandText.Length; i++)
             {
+                char c = command.commandText[i];
                 if (doingName)
                 {
                     if (c == ':')
@@ -60,26 +61,17 @@ namespace TASI
                 }
                 else
                 {
-                    if (inString)
-                    {
 
-                        if (!lastBackslash && c == '\"')
-                            inString = false;
-                        if (c == '\\')
-                            lastBackslash = true;
-                        else
-                            lastBackslash = false;
-                        currentArgument += c;
-                        continue;
-                    }
 
 
                     switch (c)
                     {
                         case '\"':
-                            inString = true;
-                            lastBackslash = false;
-                            break;
+                            currentArgument.Append('\"');
+                            currentArgument.Append(StringProcess.HandleString(command.commandText, i, out i, out _, global, -1, false).commandText);
+                            currentArgument.Append('\"');
+
+                            continue;
 
                         case '[':
                             squareDeph += 1;
@@ -100,19 +92,22 @@ namespace TASI
                         case ',':
                             if (braceDeph == 0 && squareDeph == 0 && !inString) // Only check for base layer commas
                             {
-                                if (currentArgument.Replace(" ", "") == "") // If argument minus Space is nothing
+                                currentArgumentString = currentArgument.ToString();
+                                if (currentArgumentString.Replace(" ", "") == "") // If argument minus Space is nothing
                                     throw new CodeSyntaxException("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
-                                functionArguments.Add(currentArgument);
-                                currentArgument = "";
+                                functionArguments.Add(currentArgumentString);
+                                currentArgument.Clear();
                                 continue;
                             }
                             break;
                     }
-                    currentArgument += c;
+                    currentArgument.Append(c);
 
                 }
             }
             //Check if syntax are valid
+            currentArgumentString = currentArgument.ToString();
+
             if (inString)
                 throw new CodeSyntaxException("Expected \"");
             if (braceDeph != 0)
@@ -120,10 +115,10 @@ namespace TASI
             if (squareDeph != 0)
                 throw new CodeSyntaxException("Expected ]");
 
-            if (currentArgument.Replace(" ", "") == "" && functionArguments.Count != 0) // If argument minus Space is nothing
+            if (currentArgumentString.Replace(" ", "") == "" && functionArguments.Count != 0) // If argument minus Space is nothing
                 throw new CodeSyntaxException("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
-            if (functionArguments.Count != 0 || (currentArgument.Replace(" ", "") != ""))
-                functionArguments.Add(currentArgument);
+            if (functionArguments.Count != 0 || (currentArgumentString.Replace(" ", "") != ""))
+                functionArguments.Add(currentArgumentString);
             argumentCommands = new(functionArguments.Count);
             foreach (string argument in functionArguments) //Convert string arguments to commands
                 argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument, global, command.commandLine), -1));

@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace TASI
+﻿namespace TASI
 {
     internal class InterpretMain
     {
@@ -72,9 +70,9 @@ namespace TASI
         }
 
         */
-        
 
-        public static TASIObjectDefinition InterpretObjectDefinition(string objectName, List<Command> objectCode, AccessableObjects accessableObjects)
+
+        public static TASIObjectDefinition InterpretObjectDefinition(string objectName, List<Command> objectCode, NamespaceInfo currentNamespace)
         {
             TASIObjectDefinition result = new();
             List<Command> currentStatement = new(6);
@@ -102,12 +100,19 @@ namespace TASI
                         if (allFieldNames.Contains(objectCode[3].commandText.ToLower())) throw new CodeSyntaxException($"The field \"{objectCode[3].commandText.ToLower()}\" already exists in this object. Keep in mind, that capitalisation is disregarded");
 
                         if (objectCode[2].commandText[0] == ':') //Is pointer
-                        { 
-                        
+                        {
+                            result.fields.Add(new(visability, currentNamespace.SearchCustomType(objectCode[2].commandText), objectCode[3].commandText.ToLower()));
+                        }
+                        else //Is simple
+                        {
+                            if (!Enum.TryParse(objectCode[2].commandText, out Value.ValueType simpleType))
+                                throw new CodeSyntaxException($"Unknown simple type: \"{objectCode[2].commandText}\". If you want to use a custom type, put a colon (:) in front of the type.");
+
+                            result.fields.Add(new(visability, simpleType, objectCode[3].commandText.ToLower()));
                         }
 
 
-                        
+
                         break;
                 }
                 currentStatement.Clear();

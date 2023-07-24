@@ -23,7 +23,8 @@ namespace TASI
         public FieldVisability visability;
         public FieldType type;
         public Method? method;
-        public TASIObjectDefinition pointer;
+        public TASIObjectDefinition? pointer;
+        public Value.ValueType? simpleType;
         public string name;
         /// <summary>
         /// This will assume that the field type is a Method
@@ -33,6 +34,20 @@ namespace TASI
         public FieldDefinition(FieldVisability visability, Method method, string name)
         {
             this.method = method;
+            this.visability = visability;
+            type = FieldType.method;
+            this.name = name;
+        }
+
+        /// <summary>
+        /// This will assume that the field type is a simple
+        /// </summary>
+        /// <param name="visability"></param>
+        /// <param name="simpleType"></param>
+        /// <param name="name"></param>
+        public FieldDefinition(FieldVisability visability, Value.ValueType simpleType, string name)
+        {
+            this.simpleType = simpleType;
             this.visability = visability;
             type = FieldType.method;
             this.name = name;

@@ -95,6 +95,8 @@ namespace TASI
                         startLine = line;
                         for (int calcDeph = 1; calcDeph != 0; endChar++)
                         {
+                            if (input.Length)
+
                             switch (input[endChar])
                             {
                                 case ')':

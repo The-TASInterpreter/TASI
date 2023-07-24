@@ -24,17 +24,14 @@ namespace TASI
                     throw new CodeSyntaxException("A custom type reference must include Namespace and Type. EG:\n:TypeNamespace.Type");
                 }
             }
-            NamespaceInfo? foundNamespace = accessableNamespaces.FirstOrDefault(x => x.Name == split[0]);
-            if (foundNamespace == null) 
+            NamespaceInfo foundNamespace = accessableNamespaces.FirstOrDefault(x => x.Name == split[0]) ?? throw new CodeSyntaxException($"The namespace \"{split[0]}\" doesn't exist or wasn't imported");
+            if (foundNamespace.objects == null)
             {
-                throw new CodeSyntaxException($"The namespace \"{split[0]}\" doesn't exist or wasn't imported");
+                throw new CodeSyntaxException($"The namespace \"{split[0]}\" doesn't support objects");
             }
-            TASIObjectDefinition? foundType = foundNamespace.objects.FirstOrDefault(x => x.objectType == split[1]);
-            if (foundType == null)
-            {
-                throw new CodeSyntaxException($"The namespace \"{split[0]}\" doesn't have a type definition for \"{split[1]}\"");
-            }
-            return null;
+
+            return foundNamespace.objects.FirstOrDefault(x => x.objectType == split[1]) ?? throw new CodeSyntaxException($"The namespace \"{split[0]}\" doesn't have a type definition for \"{split[1]}\"");
+
         }
 
         public enum NamespaceIntend

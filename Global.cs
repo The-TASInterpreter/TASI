@@ -311,7 +311,10 @@
             }, new(), this);
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Shell", false));
             AllLoadedFiles.Add("unsafe.shell");
-            new Function("Execute", VarConstruct.VarType.all, Namespaces[8], new List<List<VarConstruct>> {
+            new Function("Execute", VarConstruct.VarType.@string, Namespaces[8], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "cmd")},
+            }, new(), this);
+            new Function("Run", VarConstruct.VarType.@void, Namespaces[8], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "cmd")},
             }, new(), this);
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "String", true));

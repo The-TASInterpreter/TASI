@@ -10,7 +10,7 @@ Start {
 
 	makeVar string code;
 	set code "print('Hello from Python!' + chr(90))";
-	[Console.WriteLine:[Shell.Execute:[String.Replace:"echo Add-Type -TypeDefinition '{CODE}' -Language CSharp; [HelloWorld]::Main() | powershell","{CODE}",($code)]]];
+	[Shell.Run:"powershell.exe"];
 
 	return;
 };

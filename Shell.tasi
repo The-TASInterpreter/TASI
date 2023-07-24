@@ -1,15 +1,23 @@
 ﻿Name TasiShell;
 Type Generic;
 
+enum FILEACCESS {
+	READ = 1,
+	WRITE = 2
+} =/=> {
+	makeConst int FILEACCESS_READ 1
+	makeConst int FILEACCESS_WRITE 2
+}
+
 Start {
+
+	makeConst int FILEACCESS_READ 1
+	makeConst int FILEACCESS_WRITE 2
+
+
 	[Console.Clear]
-	makeVar int stream;
-	# Read the first line of the README.MD file!
-	set stream [Filesystem.Open:"C:/Users/Joscha/source/repos/TASI/README.MD", "r"];
-
-	[Console.WriteLine:[Filestream.ReadLine:stream]]
-
-	[Filesystem.Close:stream]
 
 	return;
 };
+
+

@@ -114,6 +114,9 @@ namespace TASI
         {
             AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
+            
+            Assert.AreEqual("\"\"", Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "\"\\\"\" + \"\\\"\"", accessableObjects.global), accessableObjects).StringValue); // "\"" + "\""
+
 
             Assert.AreEqual("2apples", Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "2 + \"apples\"", accessableObjects.global), accessableObjects).StringValue);
 
@@ -224,12 +227,12 @@ namespace TASI
         public static void FunctionConsoleReadLine()
         {
             Global global = new();
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", global), global);
+            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global);
 
             StringReader sr = new StringReader("Test!");
             Console.SetIn(sr);
             FunctionCall functionCall = new(new Command(Command.CommandTypes.FunctionCall, "Console.ReadLine", accessableObjects.global), accessableObjects.global);
-            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", accessableObjects.global), accessableObjects.global);
+            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, accessableObjects.global), accessableObjects.global);
             Assert.AreEqual("Test!", functionCall.DoFunctionCall(accessableObjects).StringValue);
 
         }
@@ -237,18 +240,72 @@ namespace TASI
         public static void FunctionConsoleWriteLine()
         {
             Global global = new();
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", global), global);
+            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global);
 
             StringWriter sw = new();
             Console.SetOut(sw);
             FunctionCall functionCall = new(new Command(Command.CommandTypes.FunctionCall, "Console.WriteLine:\"Test\"", accessableObjects.global), accessableObjects.global);
-            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", accessableObjects.global), accessableObjects.global);
+            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, accessableObjects.global), accessableObjects.global);
             functionCall.DoFunctionCall(accessableObjects);
             string consoleOutput = sw.ToString();
             Assert.AreEqual("Test\n", consoleOutput.Replace("\r\n", "\n"));
 
         }
-
+        [Test]
+        public static void ReadFileTest()
+        {
+            StringWriter sw = new();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name ReadFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\"LICENSE.txt\",\"r?\"]; [Console.WriteLine:[Filestream.ReadLine:($stream)]];};");
+            string consoleOutput = sw.ToString();
+            Assert.That(consoleOutput, Contains.Substring("MIT License"));
+        }
+        [Test]
+        public static void WriteFileTest()
+        {
+            StringWriter sw = new();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name WriteFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".write_test.tmp\",\"w?\"];[Filestream.WriteLine:($stream),\"Test Write!\"];};");
+        }
+        [Test]
+        public static void CloseFileTest()
+        {
+            StringWriter sw = new();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name CloseFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".close_test.tmp\",\"?\"];[Filesystem.Close:($stream)];};");
+        }
+        [Test]
+        public static void FlushFileTest()
+        {
+            StringWriter sw = new();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name FlushFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".flush_test.tmp\",\"?\"];[Filestream.Flush:($stream)];};");
+        }
+        [Test]
+        public static void FileExistsTest()
+        {
+            Assert.IsTrue((LoadFile.RunCode("Name FileExistsTest;Type Generic; Start {return [Filesystem.Exists:\"LICENSE.txt\"];};")?? throw new InvalidDataException("Test Code returned null!")).BoolValue);
+        }
+        [Test]
+        public static void CreateFileTest()
+        {
+            LoadFile.RunCode("Name CreateFileTest;Type Generic;Start {makeVar int stream; set stream [Filesystem.Create:\".create_file_test.tmp\"]; [Filesystem.Close:($stream)];};");
+        }
+        [Test]
+        public static void DeleteFileTest()
+        {
+            LoadFile.RunCode("Name DeleteFileTest;Type Generic; Start {makeVar int stream; set stream [Filesystem.Create:\".delete_file_test.tmp\"]; [Filesystem.Close:($stream)]; [Filesystem.Delete:\".delete_file_test.tmp\"];};");
+        }
+        [Test]
+        public static void NextRandomTest()
+        {
+            LoadFile.RunCode("Name NextRandomTest;Type Generic; Start {[Random.Next];makeVar int min;set min 0;makeVar int max;set max 10;[Random.Next:($min)];[Random.Next:($min),($max)]};");
+        }
+        [Test]
+        public static void NextRandomNumTest()
+        {
+            LoadFile.RunCode("Name NextRandomTest;Type Generic; Start {[Random.NextNum];};");
+        }
     }
     [TestFixture]
     public class ThreadingTests
@@ -282,6 +339,23 @@ namespace TASI
         [TestFixture]
     public class GeneralCodeTests
     {
+
+        [Test]
+        public static void EscapeAdditionTest()
+        {
+
+
+
+            StringWriter sw = new StringWriter();
+            Console.SetOut(sw);
+            LoadFile.RunCode("name EscapeAdditionTest;Type Generic;start {[Console.WriteLine:([EscapeAdditionTest.ReturnInput:\"\\\"\"] + \"\\\"\")]};function string ReturnInput {string input} {return input;};");
+            string consoleOutput = sw.ToString();
+            Assert.That(consoleOutput, Contains.Substring("\"\""));
+
+
+        }
+
+
         [Test]
         public static void HelloWorldTest()
         {
@@ -290,9 +364,9 @@ namespace TASI
 
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
-            LoadFile.RunCode("name HelloWorldTest;Type Generic;Start {[Console.WriteLine:\"Hello World!\"];};");
+            LoadFile.RunCode("name HelloWorldTest;Type Generic;Start {[Console.WriteLine:\"\\\"Hello World!\\\"\"];};");
             string consoleOutput = sw.ToString();
-            Assert.That(consoleOutput, Contains.Substring("Hello World!"));
+            Assert.That(consoleOutput, Contains.Substring("\"Hello World!\""));
 
 
         }
@@ -310,6 +384,7 @@ namespace TASI
 
 
         }
+       
         [Test]
         public static void WhileVarTest()
         {
@@ -395,6 +470,17 @@ namespace TASI
         public static void SetListTest()
         {
             Assert.AreEqual("It worked!", LoadFile.RunCode("Name SetListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; setList randomList 2 \"It \" ; add randomList insideList; setList randomList 3 0 \"worked!\"; return (($randomList 2) + ($randomList 3 0));};").ObjectValue);
+        }
+        [Test]
+        public static void MakeConstTest()
+        {
+            Assert.That(
+            Assert.Throws<CodeSyntaxException>(() =>
+            {
+                LoadFile.RunCode(
+                    "Name MakeConstTest; Type Generic; Start {makeConst int c_int 14;set c_int 23;};"
+                );
+            })?.Message, Contains.Substring("c_int"));
         }
        
     }

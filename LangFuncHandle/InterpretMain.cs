@@ -198,7 +198,7 @@
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<Command>? startCode = null;
-            NamespaceInfo thisNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, null, global);
+            NamespaceInfo thisNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, null, false, global);
             List<string> alreadyImportedNamespaces = new();
             global.Namespaces.Add(thisNamespace);
 

@@ -218,7 +218,8 @@ namespace TASI
                         process.WaitForExit();
 
                         return new Value(Value.ValueType.@string, output);
-                    
+                case "string.replace":
+                    return new Value(Value.ValueType.@string, input[0].StringValue.Replace(input[1].StringValue, input[2].StringValue));
 
                 default: throw new InternalInterpreterException("Internal: No definition for " + funcName);
             }

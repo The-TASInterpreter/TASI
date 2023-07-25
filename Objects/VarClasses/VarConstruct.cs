@@ -2,6 +2,21 @@
 {
     public class VarConstruct
     {
+
+        public static bool operator ==(VarConstruct a, VarConstruct b)
+        {
+            if (a.type != b.type)
+                return false;
+            if (a.type == VarType.@object && !ReferenceEquals(a.ObjectDefinition, b.ObjectDefinition))
+                return false;
+            return true;
+        }
+        public static bool operator !=(VarConstruct a, VarConstruct b)
+        {
+            
+            return !(a == b);
+        }
+
         public enum VarType
         {
             num, @string, @bool, @void, @int, list, all, @object
@@ -11,7 +26,7 @@
         
 
 
-        public TASIObjectDefinition ObjectDefinitions
+        public TASIObjectDefinition ObjectDefinition
         {
             get
             {

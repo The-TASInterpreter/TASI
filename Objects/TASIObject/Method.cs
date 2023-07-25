@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TASI.Objects.TASIObject
+﻿namespace TASI.Objects.TASIObject
 {
     public class Method
     {
-        TASIObjectDefinition parentType;
-        NamespaceInfo parentNamespace;
-        string methodName;
-        
-        public VarConstruct.VarType returnType;
+        public TASIObjectDefinition parentType;
+        public NamespaceInfo parentNamespace;
+        public string methodName;
+
+        public VarConstruct returnType;
         public List<List<VarConstruct>> methodArguments;
         public List<List<Command>> methodCode;
+        public string MethodLocation
+        {
+            get
+            {
+                return $"{parentNamespace.Name}.{parentType.objectType}.{methodName}";
+            }
+        }
 
-        public Method(TASIObjectDefinition parentType, NamespaceInfo parentNamespace, string methodName, VarConstruct.VarType returnType, List<List<VarConstruct>> methodArguments, List<List<Command>> methodCode)
+        public Method(TASIObjectDefinition parentType, NamespaceInfo parentNamespace, string methodName, VarConstruct returnType, List<List<VarConstruct>> methodArguments, List<List<Command>> methodCode)
         {
             this.parentType = parentType ?? throw new ArgumentNullException(nameof(parentType));
             this.parentNamespace = parentNamespace ?? throw new ArgumentNullException(nameof(parentNamespace));

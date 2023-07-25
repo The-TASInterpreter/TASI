@@ -1,4 +1,6 @@
-﻿namespace TASI
+﻿using TASI.Objects.TASIObject;
+
+namespace TASI
 {
     internal class InterpretMain
     {
@@ -72,9 +74,10 @@
         */
 
 
-        public static TASIObjectDefinition InterpretObjectDefinition(string objectName, List<Command> objectCode, NamespaceInfo currentNamespace)
+        public static TASIObjectDefinition InterpretObjectDefinition(string objectName, List<Command> objectCode, NamespaceInfo currentNamespace, Global global)
         {
             TASIObjectDefinition result = new();
+            result.objectType = objectName;
             List<Command> currentStatement = new(6);
             HashSet<string> allFieldNames = new();
             for (int i = 0; i < objectCode.Count; i++)
@@ -86,13 +89,13 @@
                 }
                 if (objectCode.Count == 0) //Probably double semicolon (;;)
                     continue;
-
+                FieldDefinition.FieldVisability visability;
                 switch (objectCode[i].commandText.ToLower())
                 {
                     case "field":
                         if (objectCode.Count != 4) throw new CodeSyntaxException("Invalid usage of field statement. Correct usage: field <visibility> <type> <name>;");
 
-                        if (!Enum.TryParse(objectCode[1].commandText, out FieldDefinition.FieldVisability visability))
+                        if (!Enum.TryParse(objectCode[1].commandText, out visability))
                         {
                             throw new CodeSyntaxException("Invalid visability value. Valid values are: public, private");
                         }
@@ -110,9 +113,62 @@
 
                             result.fields.Add(new(visability, simpleType, objectCode[3].commandText.ToLower()));
                         }
+                        break;
+                    case "method":
+                        if (objectCode.Count != 6) throw new CodeSyntaxException("Invalid usage of method statement. Correct usage: method <visibility> <return type> <name> {<arguments>} {<code>};");
+                        if (!Enum.TryParse(objectCode[1].commandText, out visability))
+                        {
+                            throw new CodeSyntaxException("Invalid visability value. Valid values are: public, private");
+                        }
+                        VarConstruct returnType;
+                        if (objectCode[2].commandText[0] == ':') //Is pointer
+                        {
+                            returnType = new(currentNamespace.SearchCustomType(objectCode[2].commandText));
+                        }
+                        else //Is simple
+                        {
+                            if (!Enum.TryParse(objectCode[2].commandText, out VarConstruct.VarType simpleType))
+                                throw new CodeSyntaxException($"Unknown simple type: \"{objectCode[2].commandText}\". If you want to use a custom type, put a colon (:) in front of the type.");
+
+                            returnType = new(simpleType, "", false, false);
+                        }
+
+                        string methodName = objectCode[3].commandText;
+                        List<VarConstruct> inputVars = InterpretVarDef(objectCode[4].codeContainerCommands, global);
 
 
+                        FieldDefinition? thisMethodField = result.fields.FirstOrDefault(x => x.type == FieldDefinition.FieldType.method && x.name == methodName);
 
+                        if (thisMethodField == null)
+                        { // Method name in this type doesn't exist yet, so create
+                            result.fields.Add(new(
+                                visability, 
+                                new Objects.TASIObject.Method(result, currentNamespace, methodName, returnType, new List<List<VarConstruct>>() { inputVars }, new List<List<Command>>() { objectCode[5].codeContainerCommands }),
+                                methodName));
+                        } 
+                        else
+                        {
+                            Method thisMethod = thisMethodField.method;
+                            foreach (List<VarConstruct> varDefs in thisMethod.methodArguments)
+                            {
+                                bool isEqu = true;
+                                if (inputVars.Count != varDefs.Count)
+                                    continue;
+                                for (int j = 0; j < varDefs.Count; j++)
+                                {
+                                    VarConstruct varDef = varDefs[j];
+                                    if (varDef == inputVars[j])
+                                    {
+                                        isEqu = false;
+                                        continue;
+                                    }
+                                }
+                                if (isEqu) throw new CodeSyntaxException($"The function \"{thisMethod.MethodLocation}\" with the exact same input-types has already been defined.");
+                            }
+                            thisMethod.methodArguments.Add(inputVars);
+                            thisMethod.methodCode.Add(objectCode[4].codeContainerCommands);
+                            
+                        }
                         break;
                 }
                 currentStatement.Clear();
@@ -288,7 +344,7 @@
                                             for (int i = 0; i < varDefs.Count; i++)
                                             {
                                                 VarConstruct varDef = varDefs[i];
-                                                if (varDef.type != functionInputVars[i].type)
+                                                if (varDef == functionInputVars[i])
                                                 {
                                                     isEqu = false;
                                                     continue;
@@ -324,7 +380,7 @@
                                             alreadyImportedNamespaces.Add(pathLocation);
                                             string pathLocationCopy = pathLocation;
                                             global.AllLoadedFiles.Add(pathLocationCopy);
-                                            global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "", global));
+                                            global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "",false, global));
                                             global.ProcessFiles.Add(Task.Run(() =>
                                             {
                                                 var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocationCopy, global, false), pathLocationCopy, global);
@@ -350,11 +406,11 @@
 
 
                                     if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                    if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                    if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "",false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                                     Value? setToValue = null;
                                     if (commandLine.commands.Count == 4)
                                     {
-                                        setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", global), global));
+                                        setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global));
                                     }
 
                                     if (commandLine.commands[1].commandText == "all")

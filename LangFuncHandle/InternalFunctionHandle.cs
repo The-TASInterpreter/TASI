@@ -201,6 +201,44 @@ namespace TASI
                         return new(Value.ValueType.num, accessableObjects.global.RandomGenerator.NextDouble());
 
                     throw new CodeSyntaxException("Invalid usage of the \"Random.Next\" function. It dosn't take any paramters!");
+                case "shell.execute":
+                    {
+
+                        Process process = new Process();
+                        process.StartInfo.FileName = "cmd.exe";
+                        process.StartInfo.Arguments = "/c " + input[0].StringValue;
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.RedirectStandardOutput = true;
+                        process.StartInfo.CreateNoWindow = true;
+
+
+                        process.Start();
+
+                        string output = process.StandardOutput.ReadToEnd();
+
+                        process.WaitForExit();
+
+                        return new Value(Value.ValueType.@string, output);
+                    }
+                case "shell.run":
+                    {
+
+                        Process i_process = new Process();
+                        i_process.StartInfo.FileName = "cmd.exe";
+                        i_process.StartInfo.Arguments = "/c " + input[0].StringValue;
+                        i_process.StartInfo.UseShellExecute = false;
+                        i_process.StartInfo.RedirectStandardInput = false;
+                        i_process.StartInfo.RedirectStandardOutput = false;
+                        i_process.StartInfo.CreateNoWindow = false;
+
+                        i_process.Start();
+
+                        i_process.WaitForExit();
+
+                        return null;
+                    }
+                case "string.replace":
+                    return new Value(Value.ValueType.@string, input[0].StringValue.Replace(input[1].StringValue, input[2].StringValue));
 
                 default: throw new InternalInterpreterException("Internal: No definition for " + funcName);
             }

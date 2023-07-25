@@ -1,23 +1,16 @@
 ﻿Name TasiShell;
 Type Generic;
-
-enum FILEACCESS {
-	READ = 1,
-	WRITE = 2
-} =/=> {
-	makeConst int FILEACCESS_READ 1
-	makeConst int FILEACCESS_WRITE 2
-}
+Import "unsafe.shell"; 
 
 Start {
 
-	makeConst int FILEACCESS_READ 1
-	makeConst int FILEACCESS_WRITE 2
 
 
 	[Console.Clear]
 
+	makeVar string code;
+	set code "print('Hello from Python!' + chr(90))";
+	[Shell.Run:"powershell.exe"];
+
 	return;
 };
-
-

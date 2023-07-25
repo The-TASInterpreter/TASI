@@ -309,6 +309,19 @@
             new Function("NextNum", VarConstruct.VarType.num, Namespaces[7], new List<List<VarConstruct>> {
                 new List<VarConstruct> {},
             }, new(), this);
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Shell", false));
+            AllLoadedFiles.Add("unsafe.shell");
+            new Function("Execute", VarConstruct.VarType.@string, Namespaces[8], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "cmd")},
+            }, new(), this);
+            new Function("Run", VarConstruct.VarType.@void, Namespaces[8], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "cmd")},
+            }, new(), this);
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "String", true));
+            AllLoadedFiles.Add("*internal");
+            new Function("Replace", VarConstruct.VarType.@string, Namespaces[9], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "str"), new(VarConstruct.VarType.@string, "org"), new(VarConstruct.VarType.@string, "new")},
+            }, new(), this);
         }
     }
 }

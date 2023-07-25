@@ -139,7 +139,7 @@
                         continue;
                     }
                     //Statenent is complete
-                    if (commandLine.commands.Count != 2 && commandLine.commands.Count != 3 && commandLine.commands[0].commandType == Command.CommandTypes.Statement && commandLine.commands[0].commandText == "link") throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
+                    if ((commandLine.commands.Count != 2 && commandLine.commands.Count != 3) || commandLine.commands[0].commandType == Command.CommandTypes.Statement && commandLine.commands[0].commandText == "link") throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
                     if (commandLine.commands.Count == 3) // Is link
                     {
                         if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
@@ -297,6 +297,7 @@
                                             if (isEqu) throw new CodeSyntaxException($"The function \"{thisFunction.functionLocation}\" with the exact same input-types has already been defined.");
                                         }
                                         thisFunction.functionArguments.Add(functionInputVars);
+                                        thisFunction.functionCode.Add(commandLine.commands[4].codeContainerCommands);
                                     }
                                     else
                                         new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);

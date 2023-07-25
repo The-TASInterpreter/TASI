@@ -339,6 +339,22 @@ namespace TASI
         [TestFixture]
     public class GeneralCodeTests
     {
+        [Test]
+        public static void OverloadingTest()
+        {
+
+
+
+
+            var output = LoadFile.RunCode("name OverloadingTest;Type Generic;start {return ([OverloadingTest.ReturnInput:\"A\"] + [OverloadingTest.ReturnInput:\"B\",\"C\"]);};function string ReturnInput {string input} {return input;}; function string ReturnInput {string input; string input2} {return (input + input2);};");
+            Assert.AreEqual("ABC", output.StringValue);
+
+
+        }
+
+
+
+
 
         [Test]
         public static void EscapeAdditionTest()

@@ -309,7 +309,7 @@ namespace TASI
         [Test]
         public static void UnsafeShellExecuteTest()
         {
-            Assert.That(LoadFile.RunCode("Name ShellExecuteTest;Type Generic;Import \"unsafe.shell\"; Start {return [Shell.Execute:\"echo test123\"];};")!.StringValue, Contains.Substring(""));
+            Assert.That(LoadFile.RunCode("Name ShellExecuteTest;Type Generic;Import \"unsafe.shell\"; Start {return [Shell.Execute:\"echo test123\"];};")!.StringValue, Contains.Substring("test123"));
         }
         [Test]
         public static void UnsafeShellRunTest()

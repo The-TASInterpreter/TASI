@@ -12,7 +12,7 @@ object StreamWriter
 		set <this.stringVal> stringVal; 
 	};
 
-	method StreamWriter ReturnThisStreamWriter {num input; string inputString} 
+	method public :SampleObject.StreamWriter ReturnThisStreamWriter {num input; string inputString} 
 	{
 		set <this.numVal> input;
 		set <this.stringVal> inputString

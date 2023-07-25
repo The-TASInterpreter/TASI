@@ -35,6 +35,15 @@
         public bool isLink;
         public bool isConstant;
 
+        public VarConstruct(TASIObjectDefinition objectDefinition)
+        {
+            this.name = "";
+            this.type = VarType.@object;
+            this.isLink = false;
+            this.isConstant = false;
+            this.objectDefinition = objectDefinition;
+        }
+
         public VarConstruct(VarType type, string name, bool isLink = false, bool isConst = false)
         {
             this.name = name.ToLower();

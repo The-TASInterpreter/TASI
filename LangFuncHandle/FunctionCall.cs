@@ -8,8 +8,8 @@ namespace TASI
     public class FunctionCall
     {
         private Function? callFunction;
-        public List<Value> inputValues;
-        public List<CommandLine> argumentCommands;
+        public List<Value>? inputValues;
+        public List<CommandLine>? argumentCommands;
         private string functionName;
 
         public Function CallFunction
@@ -230,10 +230,13 @@ namespace TASI
 
         public Value DoFunctionCall(AccessableObjects accessableObjects)
         {
-            inputValues = new();
-            foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
+            if (inputValues == null)
             {
-                inputValues.Add(Statement.GetValueOfCommandLine(commandLine, accessableObjects));
+                inputValues = new();
+                foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
+                {
+                    inputValues.Add(Statement.GetValueOfCommandLine(commandLine, accessableObjects));
+                }
             }
 
             FunctionCallInputHelp? functionCallInputHelp = CheckIfFunctionCallHasValidArgTypesAndReturnCode(inputValues);

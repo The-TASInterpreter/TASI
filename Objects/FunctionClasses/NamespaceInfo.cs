@@ -36,11 +36,11 @@ namespace TASI
 
         public enum NamespaceIntend
         {
-            nonedef, // Not defined intend. Should only occur internaly.
-            supervisor, // A special namespace, used for handeling permissions, preimporting Librarys and starting a project.
+            nonedef, // Not defined intend. Should only occur internally.
+            supervisor, // A special namespace, used for handling permissions, preimporting Librarys and starting a project.
             generic, // A normal program, with a start, that will have all permissions when started alone.
-            @internal, // An internal namspace hard-coded in.
-            library, // An also normal program, which doesn't have a start and will throw an error if tried to excecute normally.
+            @internal, // An internal namespace hard-coded in.
+            library, // An also normal program, which doesn't have a start and will throw an error if tried to execute normally.
             @object // A namespace just for defining objects/ custom types
         }
         private string? name;

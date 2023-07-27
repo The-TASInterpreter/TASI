@@ -305,10 +305,19 @@
                 new List<VarConstruct> {},
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "min")},
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "min"), new(VarConstruct.VarType.@int, "max")}
-            }, new(), this) ;
+            }, new(), this);
             new Function("NextNum", VarConstruct.VarType.num, Namespaces[7], new List<List<VarConstruct>> {
                 new List<VarConstruct> {},
             }, new(), this);
+
+            Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "ObjectAccess", false));
+            AllLoadedFiles.Add("Testing.Objects");
+            new Function("Create", VarConstruct.VarType.@int, Namespaces[7], new List<List<VarConstruct>> {
+                new List<VarConstruct> {},
+                new List<VarConstruct> {new(VarConstruct.VarType.@int, "min")},
+                new List<VarConstruct> {new(VarConstruct.VarType.@int, "min"), new(VarConstruct.VarType.@int, "max")}
+            }, new(), this);
+
         }
     }
 }

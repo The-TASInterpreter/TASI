@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using NUnit.Framework.Internal;
-using System.Xml.Linq;
+﻿
 
 namespace TASI
 {
@@ -11,7 +9,7 @@ namespace TASI
     {
         public static string[] staticStatements = { "set" };
 
-        public static Value? StaticStatement(CommandLine commandLine, AccessableObjects accessableObjects)
+        public static Value? StaticStatement(CommandLine commandLine, AccessibleObjects accessableObjects)
         {
             Value? returnValue;
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
@@ -35,7 +33,7 @@ namespace TASI
                     return null;
                 case "setlist":
                     if (commandLine.commands.Count < 4) throw new CodeSyntaxException("invalid use of setlist statement. Correct use: setlist <statement: name> <num/s: index> <value: value>");
-                    Value foundValue = GetValueOfListUsingIndex(commandLine.commands.GetRange(2, commandLine.commands.Count - 3), (Var)(accessableObjects.accessableVars[commandLine.commands[1].commandText.ToLower()] ?? throw new CodeSyntaxException($"The list \"{commandLine.commands[0].commandText}\" couldn't be found")), accessableObjects);
+                    Value foundValue = GetValueOfListUsingIndex(commandLine.commands.GetRange(2, commandLine.commands.Count - 3), (Var)(accessableObjects.accessibleVars[commandLine.commands[1].commandText.ToLower()] ?? throw new CodeSyntaxException($"The list \"{commandLine.commands[0].commandText}\" couldn't be found")), accessableObjects);
                     Value commandValue = GetValueOfCommandLine(new(new List<Command> { commandLine.commands.Last() }), accessableObjects);
                     if (foundValue.comesFromVarValue != null && commandValue.comesFromVarValue == null) //Is linked value so update both
                     {
@@ -45,7 +43,7 @@ namespace TASI
                     return null;
                 case "add":
                     if (commandLine.commands.Count < 3) throw new CodeSyntaxException("invalid use of add statement. Correct use: add <statement: name> (optional<num/s: index for nested list>) <value: value>;");
-                    foundValue = GetValueOfListUsingIndex(commandLine.commands.GetRange(2, commandLine.commands.Count - 3), (Var)(accessableObjects.accessableVars[commandLine.commands[1].commandText.ToLower()] ?? throw new CodeSyntaxException($"The list \"{commandLine.commands[1].commandText}\" couldn't be found")), accessableObjects);
+                    foundValue = GetValueOfListUsingIndex(commandLine.commands.GetRange(2, commandLine.commands.Count - 3), (Var)(accessableObjects.accessibleVars[commandLine.commands[1].commandText.ToLower()] ?? throw new CodeSyntaxException($"The list \"{commandLine.commands[1].commandText}\" couldn't be found")), accessableObjects);
                     commandValue = GetValueOfCommandLine(new(new List<Command> { commandLine.commands.Last() }), accessableObjects);
                     if (foundValue.comesFromVarValue != null && commandValue.comesFromVarValue == null) //Is linked value so update both
                     {
@@ -155,10 +153,10 @@ namespace TASI
                     if (commandLine.commands.Count != 3 && commandLine.commands.Count != 4) throw new CodeSyntaxException("Invalid use of promise stratement. Valid use: promise <statement: var name> <code container: init> <code container: execute code>;\nOr\npromise <statement: var name> <code container: execute code>;");
 
                     foundVar = FindVar(commandLine.commands[1].commandText, accessableObjects, true);
-                    AccessableObjects newPromise = new AccessableObjects(new(), accessableObjects.currentNamespace, accessableObjects.global.CreateNewContext(accessableObjects.global.CurrentFile));
-                    foreach(Var var in accessableObjects.accessableVars.Values)
+                    AccessibleObjects newPromise = new AccessibleObjects(new(), accessableObjects.currentNamespace, accessableObjects.global.CreateNewContext(accessableObjects.global.CurrentFile));
+                    foreach(Var var in accessableObjects.accessibleVars.Values)
                     {
-                        newPromise.accessableVars.Add(var.varConstruct.name, new Var(var, true));
+                        newPromise.accessibleVars.Add(var.varConstruct.name, new Var(var, true));
                     }
 
                     if (commandLine.commands.Count == 4)
@@ -184,10 +182,10 @@ namespace TASI
                     if (FindVar(commandLine.commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                     if (commandLine.commands[1].commandText == "all")
                     {
-                        accessableObjects.accessableVars.Add(commandLine.commands[2].commandText, new Var(new VarConstruct(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(varType)));
+                        accessableObjects.accessibleVars.Add(commandLine.commands[2].commandText, new Var(new VarConstruct(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(varType)));
                         return null;
                     }
-                    accessableObjects.accessableVars.Add(commandLine.commands[2].commandText.ToLower(), new Var(new VarConstruct(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
+                    accessableObjects.accessibleVars.Add(commandLine.commands[2].commandText.ToLower(), new Var(new VarConstruct(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), new(varType)));
                     return null;
                 case "makeconst":
                     {
@@ -198,13 +196,13 @@ namespace TASI
                         if (FindVar(commandLine.commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                         if (commandLine.commands[1].commandText == "all")
                         {
-                            accessableObjects.accessableVars.Add(commandLine.commands[2].commandText, new Var(new VarConstruct(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(constVarType)));
+                            accessableObjects.accessibleVars.Add(commandLine.commands[2].commandText, new Var(new VarConstruct(VarConstruct.VarType.all, commandLine.commands[2].commandText), new(constVarType)));
                             return null;
                         }
                         Var newConstVar = new Var(new VarConstruct(Value.ConvertValueTypeToVarType(constVarType), commandLine.commands[2].commandText, isConst: true), new(constVarType));
                         newConstVar.VarValue = new(constVarType, commandLine.commands[3].commandText);
 
-                        accessableObjects.accessableVars.Add(commandLine.commands[2].commandText, newConstVar);
+                        accessableObjects.accessibleVars.Add(commandLine.commands[2].commandText, newConstVar);
 
                         return null;
                     }
@@ -212,7 +210,7 @@ namespace TASI
                     throw new CodeSyntaxException($"Unknown statement: \"{commandLine.commands[0].commandText}\"");
             }
         }
-        public static Value GetValueOfCommandLine(CommandLine commandLine, Value.ValueType expectedType, AccessableObjects accessableObjects)
+        public static Value GetValueOfCommandLine(CommandLine commandLine, Value.ValueType expectedType, AccessibleObjects accessableObjects)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -248,7 +246,7 @@ namespace TASI
                     throw new CodeSyntaxException($"Unexpected type ({commandLine.commands[0].commandType})");
             }
         }
-        public static Value GetValueOfCommandLine(CommandLine commandLine, AccessableObjects accessableObjects)
+        public static Value GetValueOfCommandLine(CommandLine commandLine, AccessibleObjects accessableObjects)
         {
 
             switch (commandLine.commands[0].commandType)//Check var type thats provided
@@ -282,7 +280,7 @@ namespace TASI
         }
 
 
-        private static void StaticStatementSet(CommandLine commandLine, AccessableObjects accessableObjects)
+        private static void StaticStatementSet(CommandLine commandLine, AccessibleObjects accessableObjects)
         {
             if (commandLine.commands.Count < 3) throw new CodeSyntaxException("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
             if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid syntax for set command\nExpected: set <variable(Statement)> <value>;");
@@ -291,9 +289,9 @@ namespace TASI
             if (correctVar.varConstruct.isConstant) throw new CodeSyntaxException($"The value of the constant \"{commandLine.commands[1].commandText}\" cannot be modified!");
             correctVar.VarValue = GetValueOfCommandLine(new CommandLine(commandLine.commands.GetRange(2, commandLine.commands.Count - 2), commandLine.lineIDX), accessableObjects);
         }
-        public static Var? FindVar(string name, AccessableObjects accessableObjects, bool failAtNotFind = false)
+        public static Var? FindVar(string name, AccessibleObjects accessableObjects, bool failAtNotFind = false)
         {
-            Var? foundVar = (Var?)accessableObjects.accessableVars[name.ToLower()];
+            Var? foundVar = (Var?)accessableObjects.accessibleVars[name.ToLower()];
             if (foundVar != null)
                 return foundVar;
             if (failAtNotFind)
@@ -302,7 +300,7 @@ namespace TASI
                 return null;
 
         }
-        public static Value ReturnStatement(List<Command> commands, AccessableObjects accessableObjects)
+        public static Value ReturnStatement(List<Command> commands, AccessibleObjects accessableObjects)
         {
             Value returnValueFromVar;
             if (commands[0].commandType != Command.CommandTypes.Statement)
@@ -372,7 +370,7 @@ namespace TASI
 
                     if (commands.Count != 1)
                     {
-                        Value foundValue = GetValueOfListUsingIndex(commands.GetRange(1, commands.Count - 1), (Var)(accessableObjects.accessableVars[commands[0].commandText.ToLower()] ?? throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"")), accessableObjects);
+                        Value foundValue = GetValueOfListUsingIndex(commands.GetRange(1, commands.Count - 1), (Var)(accessableObjects.accessibleVars[commands[0].commandText.ToLower()] ?? throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"")), accessableObjects);
                         if (foundValue.comesFromVarValue != null)
                             return foundValue.comesFromVarValue.VarValue;
                         return foundValue;
@@ -389,7 +387,7 @@ namespace TASI
                         return new(Value.ValueType.num, doubleResult);
                     }
                     commands[0].commandText = commands[0].commandText.ToLower();
-                    return ((Var?)accessableObjects.accessableVars[commands[0].commandText] ?? throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"")).varValueHolder.value;
+                    return ((Var?)accessableObjects.accessibleVars[commands[0].commandText] ?? throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"")).varValueHolder.value;
 
 
                     //Var not found
@@ -401,7 +399,7 @@ namespace TASI
 
 
         }
-        public static Value GetValueOfListUsingIndex(List<Command> indexes, Var listVar, AccessableObjects accessableObjects)
+        public static Value GetValueOfListUsingIndex(List<Command> indexes, Var listVar, AccessibleObjects accessableObjects)
         {
             if (listVar == null || listVar.VarValue.valueType != Value.ValueType.list) throw new CodeSyntaxException($"Unknown or non-list variable \"{indexes[0].commandText}\"");
             Value lastValue = listVar.VarValue;

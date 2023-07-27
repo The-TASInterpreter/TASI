@@ -418,11 +418,11 @@ namespace TASI
 
 
                                     if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                    if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                    if (Statement.FindVar(commandLine.commands[2].commandText, new AccessibleObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                                     Value? setToValue = null;
                                     if (commandLine.commands.Count == 4)
                                     {
-                                        setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global));
+                                        setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessibleObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global));
                                     }
 
                                     if (commandLine.commands[1].commandText == "all")
@@ -492,15 +492,15 @@ namespace TASI
 
 
 
-        public static Value? InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
+        public static Value? InterpretNormalMode(List<Command> commands, AccessibleObjects accessableObjects)
         {
             foreach (NamespaceInfo namespaceInfo in accessableObjects.currentNamespace.accessableNamespaces)
             {
                 foreach (Var var in namespaceInfo.publicNamespaceVars)
                 {
-                    if (accessableObjects.accessableVars.Contains(var)) continue;
-                    if (accessableObjects.accessableVars.ContainsKey(var.varConstruct.name)) throw new CodeSyntaxException($"A global variable with the name \"{var.varConstruct.name}\" already exists. So you can't use this name again.");
-                    accessableObjects.accessableVars.Add(var.varConstruct.name, var);
+                    if (accessableObjects.accessibleVars.Contains(var)) continue;
+                    if (accessableObjects.accessibleVars.ContainsKey(var.varConstruct.name)) throw new CodeSyntaxException($"A global variable with the name \"{var.varConstruct.name}\" already exists. So you can't use this name again.");
+                    accessableObjects.accessibleVars.Add(var.varConstruct.name, var);
                 }
             }
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal functions to the code.

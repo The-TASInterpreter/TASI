@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace TASI
 {
-    public class AccessableObjects
+    public class AccessibleObjects
     {
-        public Hashtable accessableVars = new();   //List<Var> accessableVars = new();
+        public Hashtable accessibleVars = new();   //List<Var> accessibleVars = new();
         public NamespaceInfo currentNamespace;
         public bool inLoop = false;
         public CancellationTokenSource? cancellationTokenSource;
         public Global global;
-        public List<TASIObjectDefinition> accessableObjectDefinitions = new();
-        public AccessableObjects(Hashtable accessableVars, NamespaceInfo importedNamespaces, Global global)
+        public List<TASIObjectDefinition> accessibleObjectDefinitions = new();
+        public AccessibleObjects(Hashtable accessibleVars, NamespaceInfo importedNamespaces, Global global)
         {
-            this.accessableVars = accessableVars;
+            this.accessibleVars = accessibleVars;
             this.currentNamespace = importedNamespaces;
             this.global = global;
         }

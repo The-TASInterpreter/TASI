@@ -4,7 +4,7 @@ namespace TASI
 {
     public class Calculation
     {
-        public static Value DoCalculation(Command command, AccessableObjects accessableObjects)
+        public static Value DoCalculation(Command command, AccessibleObjects accessableObjects)
         {
             if (command.commandType != Command.CommandTypes.Calculation) throw new InternalInterpreterException("Internal: Do calculation only works with num calculation tokens");
             Value returnValue = (command.calculation ?? throw new InternalInterpreterException("Internal: Calculation was not parsed.")).GetValue(accessableObjects);
@@ -48,7 +48,7 @@ namespace TASI
             return;
         }
 
-        public Value GetValue(AccessableObjects accessableObjects)
+        public Value GetValue(AccessibleObjects accessableObjects)
         {
             switch (type)
             {

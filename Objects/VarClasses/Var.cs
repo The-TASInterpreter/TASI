@@ -32,7 +32,7 @@ namespace TASI
             }
         }
 
-        public void Promise(Command command, AccessableObjects accessableObjects)
+        public void Promise(Command command, AccessibleObjects accessableObjects)
         {
 
             lock (taskLock)

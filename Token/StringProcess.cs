@@ -1,4 +1,4 @@
-﻿using NUnit.Framework.Constraints;
+﻿
 using System.Text;
 
 namespace TASI
@@ -94,19 +94,19 @@ namespace TASI
                         sb.Clear();
                         endChar++;
                         startLine = line;
-                        for (int calcDeph = 1; calcDeph != 0; endChar++)
+                        for (int calcDepth = 1; calcDepth != 0; endChar++)
                         {
                             if (endChar >= input.Length) throw new CodeSyntaxException("Expected ']'");
 
                             switch (input[endChar])
                             {
                                 case ')':
-                                    calcDeph--;
-                                    if (calcDeph != 0)
+                                    calcDepth--;
+                                    if (calcDepth != 0)
                                         sb.Append(')');
                                     break;
                                 case '(':
-                                    calcDeph++;
+                                    calcDepth++;
                                     sb.Append('(');
                                     break;
                                 case '\"':
@@ -130,18 +130,18 @@ namespace TASI
                         sb.Clear();
                         endChar++;
                         startLine = line;
-                        for (int methodDeph = 1; methodDeph != 0; endChar++)
+                        for (int methodDepth = 1; methodDepth != 0; endChar++)
                         {
                             if (endChar >= input.Length) throw new CodeSyntaxException("Expected ']'");
                             switch (input[endChar])
                             {
                                 case ']':
-                                    methodDeph--;
-                                    if (methodDeph != 0)
+                                    methodDepth--;
+                                    if (methodDepth != 0)
                                         sb.Append(']');
                                     break;
                                 case '[':
-                                    methodDeph++;
+                                    methodDepth++;
                                     sb.Append('[');
                                     break;
                                 case '\"':
@@ -207,7 +207,7 @@ namespace TASI
                 }
             }
             if (!canEndAtDataEnd)
-                throw new CodeSyntaxException("Invalid code container formating (You probably forgot a '}')");
+                throw new CodeSyntaxException("Invalid code container formatting (You probably forgot a '}')");
             return result;
         }
         private static readonly HashSet<char> ignoreChars = new()
@@ -229,21 +229,22 @@ namespace TASI
 
         private static StringBuilder handleStringSB = new();
 
-        /*
+        
         public static Command HandleObjectAccessorChain(string input, int start, out int endChar, out int endLine, Global global, int startLine = -1)
         {
             endChar = start;
+            endLine = startLine;
             if (input[endChar] == '<')
             {
                 endChar++;
             }
-            int methodDeph = 0;
+            int methodDepth = 0;
             List<Accessor> accessors = new();
             StringBuilder sb = new();
             string offset;
             bool workingOnAccessor = true;
             Accessor currentAccessor = null;
-            for (; methodDeph != 0 || input[endChar] == '>'; endChar++)
+            for (; methodDepth != 0 || input[endChar] == '>'; endChar++)
             {
                 
                 switch (input[endChar])
@@ -260,14 +261,14 @@ namespace TASI
                     case '[':
                         
                         endChar++;
-                        for (methodDeph = 1; methodDeph != 0; endChar++)
+                        for (methodDepth = 1; methodDepth != 0; endChar++)
                         {
                             if (input[endChar] == '[')
-                                methodDeph++;
+                                methodDepth++;
                             if (input[endChar] == ']')
                             {
-                                methodDeph--;
-                                if (methodDeph == 0)
+                                methodDepth--;
+                                if (methodDepth == 0)
                                     break;
                             }
                             if (input[endChar] == '\"')
@@ -278,12 +279,13 @@ namespace TASI
                             
                             sb.Append(input[endChar]);
                         }
-                        currentAccessor = new();
+                        break;
                         
                 }
             }
+            return null;
         }
-        */
+        
         
         public static Command HandleString(string input, int start, out int endCharIDX, out int endLine, Global global, int startLine = -1, bool replaceEscape = true)
         {
@@ -347,344 +349,7 @@ namespace TASI
             return V2(line, out int _, out int _, global);
 
         }
-        /*
-        public static List<Command> ConvertLineToCommandOld(string line, int CurrentLine = 1)
-        {
-
-            return V2(line, out int _, out int _);
-            TASI_Main.interpretInitLog.Log($"Finding syntax of line text:\n{line}");
-            List<Command> commands = new List<Command>();
-            bool stringMode = false;
-            bool functionMode = false;
-            bool skipBecauseString = false;
-            bool silentLineCharMode = false;
-
-            bool syntaxMode = false;
-            bool CalculationMode = false;
-            bool commentMode = false;
-            int functionModeDeph = 0;
-            int codeContainerLineStart = -1;
-            int codeContainerDeph = 0;
-            bool codeContainerMode = false;
-            bool stringModeBackslash = false;
-            string commandText = string.Empty;
-            bool lineCharMode = false;
-            string lineCharLine = "";
-            Global.CurrentLine = CurrentLine;
-            char lastChar = ' ';
-
-            foreach (char c in line) //Thats some shit code and imma have to fix it some time, but it basically is the main syntax analysis function.
-            {
-                if (silentLineCharMode)
-                {
-                    if (c == 'Ⅼ')
-                    {
-                        silentLineCharMode = false;
-                        CurrentLine = Convert.ToInt32(lineCharLine);
-                        lineCharLine = "";
-                        Global.CurrentLine = CurrentLine;
-                    }
-                    lineCharLine += c;
-                }
-                else
-                {
-                    if (c == 'Ⅼ' && !lineCharMode && !silentLineCharMode)
-                    {
-                        lineCharLine = "";
-                        silentLineCharMode = true;
-                    }
-                }
-
-
-
-                if (lineCharMode)
-                {
-                    if (c == 'Ⅼ')
-                    {
-
-                        lineCharMode = false;
-                        CurrentLine = Convert.ToInt32(lineCharLine);
-                        lineCharLine = "";
-                        Global.CurrentLine = CurrentLine;
-                        continue;
-                    }
-                    lineCharLine += c;
-                    continue;
-                }
-
-
-
-                if (codeContainerMode)
-                {
-                    if (skipBecauseString)
-                    {
-                        if (c == '\"' && lastChar != '\\')
-                        {
-                            skipBecauseString = false;
-                            commandText += c;
-                            continue;
-                        }
-                        else
-                        {
-                            commandText += c;
-                            lastChar = c;
-                            continue;
-                        }
-                    }
-                    if (c == '\"')
-                    {
-                        commandText += c;
-                        lastChar = c;
-                        skipBecauseString = true;
-                        continue;
-                    }
-                    if (c == '}')
-                    {
-                        codeContainerDeph--;
-
-                        if (codeContainerDeph == 0)
-                        {
-                            TASI_Main.interpretInitLog.Log($"Code container found:\n{commandText}");
-                            codeContainerMode = false;
-                            commands.Add(new Command(Command.CommandTypes.CodeContainer, commandText, codeContainerLineStart, CurrentLine));
-                            commandText = string.Empty;
-                            continue;
-                        }
-                        commandText += c;
-                    }
-                    else if (c == '{')
-                    {
-                        commandText += c;
-                        codeContainerDeph++;
-                    }
-                    else
-                    {
-                        commandText += c;
-                    }
-                    continue;
-                }
-
-                if (stringMode)
-                {
-
-                    if (c == '\\')
-                    {
-                        if (stringModeBackslash)
-                        {
-                            stringModeBackslash = false;
-                            commandText += c;
-                            continue;
-                        }
-                        stringModeBackslash = true;
-                        continue;
-                    }
-                    if (c != '\"' || stringModeBackslash)
-                    {
-                        stringModeBackslash = false;
-                        commandText += c;
-                        continue;
-                    }
-                    else
-                    {
-                        TASI_Main.interpretInitLog.Log($"String found:\n{commandText}");
-
-                        commands.Add(new Command(Command.CommandTypes.String, commandText, CurrentLine));
-                        commandText = string.Empty;
-                        stringMode = false;
-                        continue;
-                    }
-                }
-
-                if (functionMode)
-                {
-                    if (skipBecauseString)
-                    {
-                        if (c == '\"' && lastChar != '\\')
-                        {
-                            skipBecauseString = false;
-                            commandText += c;
-                            continue;
-                        }
-                        else
-                        {
-                            commandText += c;
-                            lastChar = c;
-                            continue;
-                        }
-                    }
-                    if (c == '\"')
-                    {
-                        commandText += c;
-                        lastChar = c;
-                        skipBecauseString = true;
-                        continue;
-                    }
-                    if (c == ']')
-                    {
-                        functionModeDeph--;
-
-                        if (functionModeDeph == 0)
-                        {
-                            TASI_Main.interpretInitLog.Log($"Unknown function found:\n{commandText}");
-                            functionMode = false;
-                            commands.Add(new Command(Command.CommandTypes.FunctionCall, commandText, CurrentLine));
-                            commandText = string.Empty;
-                            continue;
-                        }
-                        commandText += c;
-                    }
-                    else if (c == '[')
-                    {
-                        commandText += c;
-                        functionModeDeph++;
-                    }
-                    else
-                    {
-                        commandText += c;
-                    }
-                    continue;
-                }
-
-                if (CalculationMode)
-                {
-                    if (skipBecauseString)
-                    {
-                        if (c == '\"' && lastChar != '\\')
-                        {
-                            skipBecauseString = false;
-                            commandText += c;
-                            continue;
-                        }
-                        else
-                        {
-                            commandText += c;
-                            lastChar = c;
-                            continue;
-                        }
-                    }
-                    if (c == '\"')
-                    {
-                        commandText += c;
-                        lastChar = c;
-                        skipBecauseString = true;
-                        continue;
-                    }
-                    if (c == ')')
-                    {
-                        functionModeDeph--;
-
-                        if (functionModeDeph == 0)
-                        {
-                            TASI_Main.interpretInitLog.Log($"Num calc found:\n{commandText}");
-                            CalculationMode = false;
-                            commands.Add(new Command(Command.CommandTypes.Calculation, commandText, CurrentLine));
-                            commandText = string.Empty;
-                            continue;
-                        }
-                        commandText += c;
-                    }
-                    else if (c == '(')
-                    {
-                        commandText += c;
-                        functionModeDeph++;
-                    }
-                    else
-                    {
-                        commandText += c;
-                    }
-                    continue;
-                }
-
-                if (syntaxMode)
-                {
-                    if (c == ' ' || specialCommandChars.Contains(c))
-                    {
-                        TASI_Main.interpretInitLog.Log($"Statement found:\n{commandText}");
-                        commands.Add(new Command(Command.CommandTypes.Statement, commandText, CurrentLine));
-                        syntaxMode = false;
-                        commandText = string.Empty;
-                        if (specialCommandChars.Contains(c))
-                        {
-                            goto checkChars;
-                        }
-                        continue;
-                    }
-                    commandText += c;
-                    continue;
-                }
-
-            checkChars:
-                switch (c)
-                {
-                    case 'Ⅼ':
-                        lineCharMode = true;
-                        silentLineCharMode = false;
-                        continue;
-                    case '^':
-                        TASI_Main.interpretInitLog.Log($"Comment found; Skiping line");
-                        commentMode = true;
-                        break;
-                    case '\"':
-                        stringMode = true;
-                        break;
-                    case '[':
-                        functionModeDeph = 1;
-                        functionMode = true;
-                        break;
-                    case '(':
-                        functionModeDeph = 1;
-                        CalculationMode = true;
-                        break;
-                    case '{':
-                        codeContainerLineStart = CurrentLine;
-                        TASI_Main.interpretInitLog.Log($"CodeContainer found \"{c}\"");
-                        codeContainerDeph = 1;
-                        codeContainerMode = true;
-                        break;
-                    case ';':
-                        TASI_Main.interpretInitLog.Log($"EndCommand found (;)");
-                        commands.Add(new Command(Command.CommandTypes.EndCommand, Convert.ToString(';'), CurrentLine));
-                        break;
-
-                    default:
-                        if (c == ' ' || c == '\t')
-                            continue;
-                        else
-                        {
-                            syntaxMode = true;
-                            commandText += c;
-                            continue;
-                        }
-
-                }
-                if (commentMode) break;
-
-
-
-
-
-                stringModeBackslash = false;
-                lastChar = c;
-            }
-            if (syntaxMode && commandText != String.Empty) // if syntax mode has not ended yet
-                commands.Add(new Command(Command.CommandTypes.Statement, commandText, CurrentLine));
-
-
-
-            if (stringMode)
-                throw new CodeSyntaxException("Invalid string formating. E.U.0001");
-            if (codeContainerMode)
-                throw new CodeSyntaxException("Invalid code container formating.");
-            if (functionMode)
-                if (skipBecauseString)
-                    throw new CodeSyntaxException("Invalid function formating.\nYou probably just forgot to close an argument string. E.U.0002");
-                else
-                    throw new CodeSyntaxException("Invalid function formating. E.U.0002");
-            if (CalculationMode)
-                throw new CodeSyntaxException("Invalid calculation formating. E.U.0003");
-            return commands;
-        }
-        */
+        
 
     }
 }

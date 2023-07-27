@@ -87,7 +87,7 @@ namespace TASI
         [Test]
         public static void CalculationNumTest()
         {
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
+            AccessibleObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
 
             Assert.AreEqual(4.5, Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "((4 + 6) * 2 - (3 - 2)) / (1 + 1) % 5", accessableObjects.global), accessableObjects).NumValue);
@@ -112,7 +112,7 @@ namespace TASI
         [Test]
         public static void CalculationStringTest()
         {
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
+            AccessibleObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
             
             Assert.AreEqual("\"\"", Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "\"\\\"\" + \"\\\"\"", accessableObjects.global), accessableObjects).StringValue); // "\"" + "\""
@@ -134,7 +134,7 @@ namespace TASI
         [Test]
         public static void CalculationBoolTest()
         {
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
+            AccessibleObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
 
             Assert.AreEqual(true, Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "1", accessableObjects.global), accessableObjects).BoolValue);
@@ -175,9 +175,9 @@ namespace TASI
         [Test]
         public static void CalculationReturnStatementTests()
         {
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
-            accessableObjects.accessableVars.Add("helloworld", new Var(new VarConstruct(VarConstruct.VarType.@string, "helloWorld"), new(Value.ValueType.@string, "Hello World!")));
-            accessableObjects.accessableVars.Add("num-pi", new Var(new VarConstruct(VarConstruct.VarType.num, "num-pi"), new(Value.ValueType.num, -3.141)));
+            AccessibleObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
+            accessableObjects.accessibleVars.Add("helloworld", new Var(new VarConstruct(VarConstruct.VarType.@string, "helloWorld"), new(Value.ValueType.@string, "Hello World!")));
+            accessableObjects.accessibleVars.Add("num-pi", new Var(new VarConstruct(VarConstruct.VarType.num, "num-pi"), new(Value.ValueType.num, -3.141)));
 
             Assert.AreEqual(true, Calculation.DoCalculation(new(Command.CommandTypes.Calculation, "helloWorld == \"Hello World!\"", accessableObjects.global), accessableObjects).BoolValue);
 
@@ -192,7 +192,7 @@ namespace TASI
         [Test]
         public static void CalculationExceptionTests()
         {
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
+            AccessibleObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
 
             Assert.Throws<CodeSyntaxException>(() =>
@@ -227,7 +227,7 @@ namespace TASI
         public static void FunctionConsoleReadLine()
         {
             Global global = new();
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global);
+            AccessibleObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global);
 
             StringReader sr = new StringReader("Test!");
             Console.SetIn(sr);
@@ -240,7 +240,7 @@ namespace TASI
         public static void FunctionConsoleWriteLine()
         {
             Global global = new();
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global);
+            AccessibleObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global);
 
             StringWriter sw = new();
             Console.SetOut(sw);
@@ -314,26 +314,26 @@ namespace TASI
         public static void PromiseTest()
         {
             Global global = new Global();
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
+            AccessibleObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
-            accessableObjects.accessableVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.num, "promisetestvar"), new(Value.ValueType.num, "")));
+            accessableObjects.accessibleVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.num, "promisetestvar"), new(Value.ValueType.num, "")));
             Statement.StaticStatement(new(StringProcess.ConvertLineToCommand("promise promiseTestVar {} { makeVar num i; while (i < 6969) { set i (i + 1); }; return i; }", global)), accessableObjects);
-            //Assert.AreEqual("", ((Var)accessableObjects.accessableVars["promisetestvar"]).varValueHolder.value.value); //This is the worst way to test, please don't send me to hell :3
-            Assert.AreEqual( 6969, ((Var)accessableObjects.accessableVars["promisetestvar"]).VarValue.ObjectValue);
+            //Assert.AreEqual("", ((Var)accessableObjects.accessibleVars["promisetestvar"]).varValueHolder.value.value); //This is the worst way to test, please don't send me to hell :3
+            Assert.AreEqual( 6969, ((Var)accessableObjects.accessibleVars["promisetestvar"]).VarValue.ObjectValue);
         }
         [Test]
         public static void PromiseOutsideTest()
         {
             Global global = new Global();
-            AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
+            AccessibleObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
-            accessableObjects.accessableVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.@string, "promisetestvar"), new(Value.ValueType.@string, "")));
-            accessableObjects.accessableVars.Add("outside", new Var(new VarConstruct(VarConstruct.VarType.@string, "outside"), new(Value.ValueType.@string, "notChange")));
+            accessableObjects.accessibleVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.@string, "promisetestvar"), new(Value.ValueType.@string, "")));
+            accessableObjects.accessibleVars.Add("outside", new Var(new VarConstruct(VarConstruct.VarType.@string, "outside"), new(Value.ValueType.@string, "notChange")));
              
             Statement.StaticStatement(new(StringProcess.ConvertLineToCommand("promise promiseTestVar {} { while (outside == \"notChange\" ) {}; return outside; }", global)), accessableObjects);
             Thread.Sleep(50);
-            ((Var)accessableObjects.accessableVars["outside"]).VarValue.ObjectValue = "change";
-            Assert.AreEqual("change", ((Var)accessableObjects.accessableVars["promisetestvar"]).VarValue.ObjectValue);
+            ((Var)accessableObjects.accessibleVars["outside"]).VarValue.ObjectValue = "change";
+            Assert.AreEqual("change", ((Var)accessableObjects.accessibleVars["promisetestvar"]).VarValue.ObjectValue);
         }
     }
 

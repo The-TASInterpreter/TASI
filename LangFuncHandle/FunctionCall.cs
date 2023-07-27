@@ -228,7 +228,7 @@ namespace TASI
 
         }
 
-        public Value DoFunctionCall(AccessableObjects accessableObjects)
+        public Value DoFunctionCall(AccessibleObjects accessableObjects)
         {
             inputValues = new();
             foreach (CommandLine commandLine in argumentCommands) // Exicute arguments

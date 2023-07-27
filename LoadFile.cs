@@ -42,7 +42,7 @@ namespace TASI
             global ??= new();
             List<Command> tokenisedCode = StringProcess.ConvertLineToCommand(code, global);
             var codeHeaderInformation = InterpretMain.InterpretHeaders(tokenisedCode, "", global);
-            AccessableObjects initialAccessableObjects = new(new(), codeHeaderInformation.Item2, global);
+            AccessibleObjects initialAccessableObjects = new(new(), codeHeaderInformation.Item2, global);
 
             foreach (NamespaceInfo namespaceInfo in global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
             {

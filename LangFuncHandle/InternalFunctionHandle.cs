@@ -1,14 +1,11 @@
-﻿using NUnit.Framework;
-using NUnit.Framework.Constraints;
-using System.Diagnostics;
-using System.Runtime.Serialization.Formatters;
+﻿
 
 namespace TASI
 {
     internal class InternalFunctionHandle
     {
 
-        public static Value? HandleInternalFunc(string funcName, List<Value> input, AccessableObjects accessableObjects)
+        public static Value? HandleInternalFunc(string funcName, List<Value> input, AccessibleObjects accessableObjects)
         {
             switch (funcName)
             {
@@ -164,14 +161,14 @@ namespace TASI
                     if (!Enum.TryParse<Value.ValueType>(input[0].StringValue, true, out Value.ValueType varType) && input[0].StringValue != "all") throw new CodeSyntaxException($"The vartype \"{input[0].StringValue}\" doesn't exist.");
                     if (input[0].StringValue == "all")
                     {
-                        accessableObjects.accessableVars.Add(input[1].StringValue, new Var(new VarConstruct(VarConstruct.VarType.all, input[1].StringValue), new(varType)));
+                        accessableObjects.accessibleVars.Add(input[1].StringValue, new Var(new VarConstruct(VarConstruct.VarType.all, input[1].StringValue), new(varType)));
                         return null;
                     }
-                    accessableObjects.accessableVars.Add(input[1].StringValue, new Var(new VarConstruct(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType)));
+                    accessableObjects.accessibleVars.Add(input[1].StringValue, new Var(new VarConstruct(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType)));
                     return null;
                 case "inf.makeconst":
                     {     
-                        Var var = (Var)(accessableObjects.accessableVars[input[0].StringValue] ?? throw new CodeSyntaxException($"The variable \"{input[0]}\" cannot be found."));
+                        Var var = (Var)(accessableObjects.accessibleVars[input[0].StringValue] ?? throw new CodeSyntaxException($"The variable \"{input[0]}\" cannot be found."));
 
                         var.varConstruct.isConstant = true;
                         return null;

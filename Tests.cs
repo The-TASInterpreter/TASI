@@ -336,7 +336,35 @@ namespace TASI
             Assert.AreEqual("change", ((Var)accessableObjects.accessableVars["promisetestvar"]).VarValue.ObjectValue);
         }
     }
-        [TestFixture]
+
+    [TestFixture]
+    public class ObjectTests
+    {
+        [Test]
+        public static void ObjectDefineTest()
+        {
+            Global global = new();
+            try
+            {
+                LoadFile.RunCode("name ObjectDefineTest; type object; object Sample { field public  num numField; method private string sumMethod {} { return \"yeah\";};};", global);
+            } catch (NullReferenceException)
+            {
+
+            }
+            Assert.That(global.Namespaces.Last().Name, Is.EqualTo("ObjectDefineTest".ToLower()));
+            Assert.That(global.Namespaces.Last().namespaceIntend, Is.EqualTo(NamespaceInfo.NamespaceIntend.@object));
+            Assert.That(global.Namespaces.Last().objects.Count, Is.EqualTo(1));
+            Assert.That(global.Namespaces.Last().objects[0].fields.Count, Is.EqualTo(2));
+            Assert.That(global.Namespaces.Last().objects[0].fields[0].type, Is.EqualTo(FieldDefinition.FieldType.simple));
+            Assert.That(global.Namespaces.Last().objects[0].fields[1].type, Is.EqualTo(FieldDefinition.FieldType.method));
+        }
+    }
+
+
+    [TestFixture]
+
+
+
     public class GeneralCodeTests
     {
         [Test]

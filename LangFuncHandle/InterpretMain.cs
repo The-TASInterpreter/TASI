@@ -87,54 +87,58 @@ namespace TASI
                     currentStatement.Add(objectCode[i]);
                     continue;
                 }
-                if (objectCode.Count == 0) //Probably double semicolon (;;)
+                if (currentStatement.Count == 0) //Probably double semicolon (;;)
                     continue;
                 FieldDefinition.FieldVisability visability;
-                switch (objectCode[i].commandText.ToLower())
+                switch (currentStatement[0].commandText.ToLower())
                 {
                     case "field":
-                        if (objectCode.Count != 4) throw new CodeSyntaxException("Invalid usage of field statement. Correct usage: field <visibility> <type> <name>;");
+                        if (currentStatement.Count != 4) throw new CodeSyntaxException("Invalid usage of field statement. Correct usage: field <visibility> <type> <name>;");
 
-                        if (!Enum.TryParse(objectCode[1].commandText, out visability))
+                        if (!Enum.TryParse(currentStatement[1].commandText, out visability))
                         {
                             throw new CodeSyntaxException("Invalid visability value. Valid values are: public, private");
                         }
 
-                        if (allFieldNames.Contains(objectCode[3].commandText.ToLower())) throw new CodeSyntaxException($"The field \"{objectCode[3].commandText.ToLower()}\" already exists in this object. Keep in mind, that capitalisation is disregarded");
+                        if (allFieldNames.Contains(currentStatement[3].commandText.ToLower())) throw new CodeSyntaxException($"The field \"{currentStatement[3].commandText.ToLower()}\" already exists in this object. Keep in mind, that capitalisation is disregarded");
 
-                        if (objectCode[2].commandText[0] == ':') //Is pointer
+                        if (currentStatement[2].commandText[0] == ':') //Is pointer
                         {
-                            result.fields.Add(new(visability, currentNamespace.SearchCustomType(objectCode[2].commandText), objectCode[3].commandText.ToLower()));
+                            result.fields.Add(new(visability, currentNamespace.SearchCustomType(currentStatement[2].commandText), currentStatement[3].commandText.ToLower()));
                         }
                         else //Is simple
                         {
-                            if (!Enum.TryParse(objectCode[2].commandText, out Value.ValueType simpleType))
-                                throw new CodeSyntaxException($"Unknown simple type: \"{objectCode[2].commandText}\". If you want to use a custom type, put a colon (:) in front of the type.");
+                            if (!Enum.TryParse(currentStatement[2].commandText, out Value.ValueType simpleType))
+                                throw new CodeSyntaxException($"Unknown simple type: \"{currentStatement[2].commandText}\". If you want to use a custom type, put a colon (:) in front of the type.");
 
-                            result.fields.Add(new(visability, simpleType, objectCode[3].commandText.ToLower()));
+                            result.fields.Add(new(visability, simpleType, currentStatement[3].commandText.ToLower()));
                         }
                         break;
                     case "method":
-                        if (objectCode.Count != 6) throw new CodeSyntaxException("Invalid usage of method statement. Correct usage: method <visibility> <return type> <name> {<arguments>} {<code>};");
-                        if (!Enum.TryParse(objectCode[1].commandText, out visability))
+                        if (currentStatement.Count != 6) throw new CodeSyntaxException("Invalid usage of method statement. Correct usage: method <visibility> <return type> <name> {<arguments>} {<code>};");
+                        if (!Enum.TryParse(currentStatement[1].commandText, out visability))
                         {
                             throw new CodeSyntaxException("Invalid visability value. Valid values are: public, private");
                         }
                         VarConstruct returnType;
-                        if (objectCode[2].commandText[0] == ':') //Is pointer
+                        if (currentStatement[2].commandText[0] == ':') //Is pointer
                         {
                             returnType = new(currentNamespace.SearchCustomType(objectCode[2].commandText));
                         }
                         else //Is simple
                         {
-                            if (!Enum.TryParse(objectCode[2].commandText, out VarConstruct.VarType simpleType))
-                                throw new CodeSyntaxException($"Unknown simple type: \"{objectCode[2].commandText}\". If you want to use a custom type, put a colon (:) in front of the type.");
+                            if (!Enum.TryParse(currentStatement[2].commandText, out VarConstruct.VarType simpleType))
+                                throw new CodeSyntaxException($"Unknown simple type: \"{currentStatement[2].commandText}\". If you want to use a custom type, put a colon (:) in front of the type.");
 
                             returnType = new(simpleType, "", false, false);
                         }
 
-                        string methodName = objectCode[3].commandText;
-                        List<VarConstruct> inputVars = InterpretVarDef(objectCode[4].codeContainerCommands, global);
+                        string methodName = currentStatement[3].commandText.ToLower();
+
+                        if (allFieldNames.Contains(currentStatement[3].commandText.ToLower())) throw new CodeSyntaxException($"The field \"{currentStatement[3].commandText.ToLower()}\" already exists in this object. Keep in mind, that capitalisation is disregarded");
+
+
+                        List<VarConstruct> inputVars = InterpretVarDef(currentStatement[4].codeContainerCommands, global);
 
 
                         FieldDefinition? thisMethodField = result.fields.FirstOrDefault(x => x.type == FieldDefinition.FieldType.method && x.name == methodName);
@@ -143,7 +147,7 @@ namespace TASI
                         { // Method name in this type doesn't exist yet, so create
                             result.fields.Add(new(
                                 visability, 
-                                new Objects.TASIObject.Method(result, currentNamespace, methodName, returnType, new List<List<VarConstruct>>() { inputVars }, new List<List<Command>>() { objectCode[5].codeContainerCommands }),
+                                new Objects.TASIObject.Method(result, currentNamespace, methodName, returnType, new List<List<VarConstruct>>() { inputVars }, new List<List<Command>>() { currentStatement[5].codeContainerCommands }),
                                 methodName));
                         } 
                         else
@@ -166,19 +170,25 @@ namespace TASI
                                 if (isEqu) throw new CodeSyntaxException($"The function \"{thisMethod.MethodLocation}\" with the exact same input-types has already been defined.");
                             }
                             thisMethod.methodArguments.Add(inputVars);
-                            thisMethod.methodCode.Add(objectCode[4].codeContainerCommands);
+                            thisMethod.methodCode.Add(currentStatement[4].codeContainerCommands);
                             
                         }
                         break;
+                    
+
                 }
                 currentStatement.Clear();
             }
-            return null;
+            return result;
         }
 
 
         public static List<VarConstruct> InterpretVarDef(List<Command> commands, Global global)
         {
+            if (commands.Count == 0)
+                return new();
+
+
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<VarConstruct> result = new();
@@ -241,14 +251,17 @@ namespace TASI
             NamespaceInfo.NamespaceIntend.generic,
             NamespaceInfo.NamespaceIntend.nonedef
         };
-        private static readonly NamespaceInfo.NamespaceIntend[] hasFunctions = new NamespaceInfo.NamespaceIntend[]
+        private static readonly NamespaceInfo.NamespaceIntend[] hasFunction = new NamespaceInfo.NamespaceIntend[]
         {
             NamespaceInfo.NamespaceIntend.generic,
             NamespaceInfo.NamespaceIntend.nonedef,
             NamespaceInfo.NamespaceIntend.@internal,
             NamespaceInfo.NamespaceIntend.library,
         };
-
+        private static readonly NamespaceInfo.NamespaceIntend[] hasObject = new NamespaceInfo.NamespaceIntend[]
+        {
+            NamespaceInfo.NamespaceIntend.@object
+        };
         public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands, string currentFile, Global global) //This function will interpret the headers of the file and return the start code.
         {
             bool statementMode = false;
@@ -298,6 +311,9 @@ namespace TASI
                             continue;
                         }
                         else
+                        {
+
+
                             switch (currentStatement)
                             {
 
@@ -305,12 +321,8 @@ namespace TASI
                                     throw new CodeSyntaxException($"{currentStatement} has already been defined in this namespace.");
 
                                 case "start":
-                                    if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null)
-                                    {
-                                        Tutorial.TutorialPhaseMinusOne();
-                                        throw new CodeSyntaxException("You can't start while not having defined namespace name and type.\nYou can use the name and type statement to do this.");
-                                    }
-                                    if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.library) throw new CodeSyntaxException("Library type namespaces can't have a start.");
+
+                                    if (!hasStart.Contains(thisNamespace.namespaceIntend)) throw new CodeSyntaxException($"{thisNamespace.namespaceIntend}-type namespaces can't have a start.");
 
                                     if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
                                     if (commandLine.commands[1].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of start statement.\nCorrect usage: start <code container: start code>;");
@@ -319,7 +331,7 @@ namespace TASI
                                     break;
 
                                 case "function":
-                                    if (!hasFunctions.Contains(thisNamespace.namespaceIntend)) throw new CodeSyntaxException($"{thisNamespace.namespaceIntend}-type namespaces can't have a function.");
+                                    if (!hasFunction.Contains(thisNamespace.namespaceIntend)) throw new CodeSyntaxException($"{thisNamespace.namespaceIntend}-type namespaces can't have a function.");
 
                                     if (commandLine.commands.Count != 5) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
                                     if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
@@ -380,7 +392,7 @@ namespace TASI
                                             alreadyImportedNamespaces.Add(pathLocation);
                                             string pathLocationCopy = pathLocation;
                                             global.AllLoadedFiles.Add(pathLocationCopy);
-                                            global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "",false, global));
+                                            global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global));
                                             global.ProcessFiles.Add(Task.Run(() =>
                                             {
                                                 var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocationCopy, global, false), pathLocationCopy, global);
@@ -406,7 +418,7 @@ namespace TASI
 
 
                                     if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                    if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "",false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                    if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                                     Value? setToValue = null;
                                     if (commandLine.commands.Count == 4)
                                     {
@@ -419,9 +431,16 @@ namespace TASI
                                         thisNamespace.publicNamespaceVars.Add(commandLine.commands[2].commandText, new Var(new(Value.ConvertValueTypeToVarType(varType), commandLine.commands[2].commandText), setToValue ?? new(varType)));
                                     break;
 
+                                case "object":
+                                    if (!hasObject.Contains(thisNamespace.namespaceIntend)) throw new CodeSyntaxException($"{thisNamespace.namespaceIntend}-type namespaces can't have objects.");
+                                    if (commandLine.commands.Count != 3) throw new CodeSyntaxException("Invalid usage of object statement. Correct usage:");
+                                    thisNamespace.objects.Add( InterpretObjectDefinition(commandLine.commands[1].commandText, commandLine.commands[2].codeContainerCommands, thisNamespace, global));
+                                    break;
+
                                 default: throw new CodeSyntaxException($"\"{commandLine.commands[0].commandText}\" isn't a recognized statement in header interpret mode.");
 
                             }
+                        }
                         statementMode = false;
                         continue;
                     }
@@ -444,11 +463,17 @@ namespace TASI
                 }
             }
 
+
+
             if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null)
             {
                 Tutorial.TutorialPhaseMinusOne();
                 throw new CodeSyntaxException("You need to enter name and type for this namespace. You can do that using the name and type statements.");
             }
+
+            if(startCode == null && hasStart.Contains(thisNamespace.namespaceIntend)) throw new CodeSyntaxException($"{thisNamespace.namespaceIntend}-type namespaces must define a start");
+
+
             if (global.Namespaces.Any(x => x != thisNamespace && x.Name == thisNamespace.Name)) throw new CodeSyntaxException($"A namespace with the name \"{thisNamespace.Name}\" has already been defined.");
 
 

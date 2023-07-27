@@ -1,6 +1,5 @@
 ﻿
 
-using TASI.Objects.TASIObject;
 
 namespace TASI
 {
@@ -49,7 +48,7 @@ namespace TASI
         {
             foreach (Command command in codeContainerCommands)
             {
-                if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(namespaceInfo, global);
+                if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallNameObject(namespaceInfo, global);
                 if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(namespaceInfo, global);
                 if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(namespaceInfo, global);
 

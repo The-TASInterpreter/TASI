@@ -31,13 +31,13 @@ namespace TASI
                 case Type.returnStatement:
                     foreach (Command command in returnStatement)
                     {
-                        if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace, global);
+                        if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallNameObject(currentNamespace, global);
                         if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace, global);
                         if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace, global);
                     }
                     break;
                 case Type.function:
-                    functionCall.SearchCallFunction(currentNamespace, global);
+                    functionCall.SearchCallNameObject(currentNamespace, global);
                     break;
 
 
@@ -55,7 +55,7 @@ namespace TASI
                 case Type.value: return value ?? throw new InternalInterpreterException("Internal: value is null.");
                 case Type.returnStatement: return Statement.ReturnStatement(returnStatement ?? throw new InternalInterpreterException("Internal: return statement list is null."), accessableObjects);
                 case Type.@operator: throw new InternalInterpreterException("Internal: Can't get the value of an operator.");
-                case Type.function: return (functionCall ?? throw new InternalInterpreterException("Internal: function call is null")).DoFunctionCall(accessableObjects);
+                case Type.function: return (functionCall ?? throw new InternalInterpreterException("Internal: function call is null")).DoCall(accessableObjects);
                 case Type.calculation:
                     List<Value> values = new();
                     string currentOperator = "";

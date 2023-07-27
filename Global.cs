@@ -129,17 +129,7 @@
                 globalContext.currentLine = value;
             }
         }
-        public List<FunctionCall> AllFunctionCalls
-        {
-            get
-            {
-                return globalProjectShared.allFunctionCalls;
-            }
-            set
-            {
-                globalProjectShared.allFunctionCalls = value;
-            }
-        }
+
         public string MainFilePath
         {
             get

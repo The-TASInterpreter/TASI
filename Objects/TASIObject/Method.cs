@@ -1,4 +1,4 @@
-﻿namespace TASI.Objects.TASIObject
+﻿namespace TASI
 {
     public class Method
     {

@@ -53,7 +53,7 @@ namespace TASI
                         foreach (Command overloadCode in functionCodeOverload)
                         {
                             global.CurrentLine = overloadCode.commandLine;
-                            if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo, global);
+                            if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallNameObject(namespaceInfo, global);
                             if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo, global);
                             if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo, global);
                         }
@@ -64,7 +64,7 @@ namespace TASI
             foreach (Command command in codeHeaderInformation.Item1)
             {
                 global.CurrentLine = command.commandLine;
-                if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(codeHeaderInformation.Item2, global);
+                if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallNameObject(codeHeaderInformation.Item2, global);
                 if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(codeHeaderInformation.Item2, global);
                 if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(codeHeaderInformation.Item2, global);
             }

@@ -1,16 +1,15 @@
 ﻿
 using System.Collections;
+using System.Runtime.CompilerServices;
 using System.Text;
 using static TASI.Command;
 
 namespace TASI
 {
-    public class FunctionCall
+    public class FunctionCall : Call
     {
         private Function? callFunction;
-        public List<Value> inputValues;
-        public List<CommandLine> argumentCommands;
-        private string functionName;
+
 
         public Function CallFunction
         {
@@ -18,7 +17,7 @@ namespace TASI
             {
                 if (callFunction == null)
                 {
-                    throw new InternalInterpreterException($"The function call call function \"{functionName}\" was not activated.");
+                    throw new InternalInterpreterException($"The function call call function \"{callName}\" was not activated.");
                 }
                 return callFunction;
 
@@ -27,126 +26,30 @@ namespace TASI
         }
 
 
-        public FunctionCall(Function callFunction, List<Value> inputVars)
+        public FunctionCall(Function callFunction, List<Value> inputVars) : base(inputVars)
         {
-            this.CallFunction = callFunction;
-            this.inputValues = new List<Value>(inputVars);
+            this.CallFunction = callFunction;        }
+
+        public FunctionCall(Command command, Global global) : base(command, global)
+        {
+            
         }
 
-        public FunctionCall(Command command, Global global)
-        {
-            functionName = "";
-            List<string> functionArguments = new();
-            bool doingName = true;
-            int squareDeph = 0;
-            int braceDeph = 0;
-            bool inString = false;
-            string currentArgumentString;
-            StringBuilder currentArgument = new();
-
-            //split function name from arguments and arguments with comma
-            for (int i = 0; i < command.commandText.Length; i++)
-            {
-                char c = command.commandText[i];
-                if (doingName)
-                {
-                    if (c == ':')
-                    {
-                        if (functionName == "")
-                            throw new CodeSyntaxException("Function call can't have an empty function path.");
-                        doingName = false;
-                        continue;
-                    }
-                    functionName += c;
-                }
-                else
-                {
-
-
-
-                    switch (c)
-                    {
-                        case '\"':
-                            currentArgument.Append('\"');
-                            currentArgument.Append(StringProcess.HandleString(command.commandText, i, out i, out _, global, -1, false).commandText);
-                            currentArgument.Append('\"');
-
-                            continue;
-
-                        case '[':
-                            squareDeph += 1;
-                            break;
-                        case ']':
-                            squareDeph -= 1;
-                            if (squareDeph < 0)
-                                throw new CodeSyntaxException("Unexpected ']'");
-                            break;
-                        case '{':
-                            braceDeph += 1;
-                            break;
-                        case '}':
-                            braceDeph -= 1;
-                            if (braceDeph < 0)
-                                throw new CodeSyntaxException("Unexpected '}'");
-                            break;
-                        case ',':
-                            if (braceDeph == 0 && squareDeph == 0 && !inString) // Only check for base layer commas
-                            {
-                                currentArgumentString = currentArgument.ToString();
-                                if (currentArgumentString.Replace(" ", "") == "") // If argument minus Space is nothing
-                                    throw new CodeSyntaxException("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
-                                functionArguments.Add(currentArgumentString);
-                                currentArgument.Clear();
-                                continue;
-                            }
-                            break;
-                    }
-                    currentArgument.Append(c);
-
-                }
-            }
-            //Check if syntax are valid
-            currentArgumentString = currentArgument.ToString();
-
-            if (inString)
-                throw new CodeSyntaxException("Expected \"");
-            if (braceDeph != 0)
-                throw new CodeSyntaxException("Expected }");
-            if (squareDeph != 0)
-                throw new CodeSyntaxException("Expected ]");
-
-            if (currentArgumentString.Replace(" ", "") == "" && functionArguments.Count != 0) // If argument minus Space is nothing
-                throw new CodeSyntaxException("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
-            if (functionArguments.Count != 0 || (currentArgumentString.Replace(" ", "") != ""))
-                functionArguments.Add(currentArgumentString);
-            argumentCommands = new(functionArguments.Count);
-            foreach (string argument in functionArguments) //Convert string arguments to commands
-                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument, global, command.commandLine), -1));
-            global.AllFunctionCalls.Add(this);
-
-
-
-
-
-
-            return;
-        }
-
-        public void SearchCallFunction(NamespaceInfo currentNamespace, Global global) //This is there, so header analysis can be done, without any errors.
+        public override void SearchCallNameObject(NamespaceInfo currentNamespace, Global global) //This is there, so header analysis can be done, without any errors.
         {
 
-            CallFunction = FindFunctionByPath(functionName.ToLower(), global.Namespaces, true, currentNamespace);
+            CallFunction = FindFunctionByPath(callName.ToLower(), global.Namespaces, true, currentNamespace);
             foreach (CommandLine commandLine in argumentCommands)
                 foreach (Command command in commandLine.commands)
                 {
-                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace, global);
+                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallNameObject(currentNamespace, global);
                     if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace, global);
                     if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace, global);
 
                 }
         }
 
-        public FunctionCallInputHelp? CheckIfFunctionCallHasValidArgTypesAndReturnCode(List<Value> inputVars)
+        public CallInputHelp? CheckIfFunctionCallHasValidArgTypesAndReturnCode(List<Value> inputVars)
         {
             bool matching;
             for (int j = 0; j < CallFunction.functionArguments.Count; j++)
@@ -228,23 +131,14 @@ namespace TASI
 
         }
 
-        public Value DoFunctionCall(AccessibleObjects accessableObjects)
+        public override Value DoCall(AccessibleObjects accessableObjects)
         {
-            inputValues = new();
-            foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
-            {
-                inputValues.Add(Statement.GetValueOfCommandLine(commandLine, accessableObjects));
-            }
+            GetInputValues(accessableObjects);
 
-            FunctionCallInputHelp? functionCallInputHelp = CheckIfFunctionCallHasValidArgTypesAndReturnCode(inputValues);
-
-            if (functionCallInputHelp == null)
-                throw new CodeSyntaxException($"The function \"{CallFunction.functionLocation}\" doesent support the provided input types. Use the syntax \"helpm <function call>;\"\nFor this function it would be: \"helpm [{CallFunction.functionLocation}];\"");
-
-
+            CallInputHelp? functionCallInputHelp = CheckIfFunctionCallHasValidArgTypesAndReturnCode(argumentValues) ?? throw new CodeSyntaxException($"The function \"{CallFunction.functionLocation}\" doesent support the provided input types. Use the syntax \"helpm <function call>;\"\nFor this function it would be: \"helpm [{CallFunction.functionLocation}];\"");
             if (CallFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
             {
-                Value? returnValue = InternalFunctionHandle.HandleInternalFunc(CallFunction.functionLocation, inputValues, accessableObjects);
+                Value? returnValue = InternalFunctionHandle.HandleInternalFunc(CallFunction.functionLocation, argumentValues, accessableObjects);
                 if (accessableObjects.global.DebugMode)
                 {
                     Console.WriteLine($"Did function call to {CallFunction.parentNamespace.namespaceIntend}-intend {CallFunction.functionLocation}.\nIt returns a {CallFunction.returnType}.\nIt returned a {returnValue.valueType}-type with a value of \"{returnValue.ObjectValue}\".");
@@ -253,19 +147,20 @@ namespace TASI
                 return returnValue;
 
             }
+            
             //return 
             Hashtable functionCallInput = new();
 
-            for (int i = 0; i < inputValues.Count; i++)
+            for (int i = 0; i < argumentValues.Count; i++)
             {
                 if (functionCallInputHelp.inputVarType[i].type == VarConstruct.VarType.all)
                     //new VarDef(inputValues[i].varDef.varType, functionCallInputHelp.inputVarType[i].varName), this.inputValues[i].ObjectValue
-                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var(new VarConstruct(VarConstruct.VarType.all, functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
+                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var(new VarConstruct(VarConstruct.VarType.all, functionCallInputHelp.inputVarType[i].name), new(argumentValues[i])));
                 else
-                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var(new VarConstruct(Value.ConvertValueTypeToVarType(inputValues[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")), functionCallInputHelp.inputVarType[i].name), new(inputValues[i])));
-                if (inputValues[i].comesFromVarValue != null)
+                    functionCallInput.Add(functionCallInputHelp.inputVarType[i].name, new Var(new VarConstruct(Value.ConvertValueTypeToVarType(argumentValues[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")), functionCallInputHelp.inputVarType[i].name), new(argumentValues[i])));
+                if (argumentValues[i].comesFromVarValue != null)
                 {
-                    ((Var?)functionCallInput[functionCallInputHelp.inputVarType[i].name] ?? throw new InternalInterpreterException("Internal: Something, that wasn't supposed to be null ever ended up to be null")).varValueHolder = inputValues[i].comesFromVarValue.varValueHolder;
+                    ((Var?)functionCallInput[functionCallInputHelp.inputVarType[i].name] ?? throw new InternalInterpreterException("Internal: Something, that wasn't supposed to be null ever ended up to be null")).varValueHolder = argumentValues[i].comesFromVarValue.varValueHolder;
                 }
             }
 
@@ -282,11 +177,11 @@ namespace TASI
 
     }
 
-    public class FunctionCallInputHelp
+    public class CallInputHelp
     {
         public List<Command> inputCode;
         public List<VarConstruct> inputVarType;
-        public FunctionCallInputHelp(List<Command> inputCode, List<VarConstruct> inputVarType)
+        public CallInputHelp(List<Command> inputCode, List<VarConstruct> inputVarType)
         {
             this.inputCode = inputCode;
             this.inputVarType = inputVarType;

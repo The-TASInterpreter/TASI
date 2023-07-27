@@ -1,4 +1,4 @@
-﻿using TASI.Objects.TASIObject;
+﻿
 
 namespace TASI
 {
@@ -147,7 +147,7 @@ namespace TASI
                         { // Method name in this type doesn't exist yet, so create
                             result.fields.Add(new(
                                 visability, 
-                                new Objects.TASIObject.Method(result, currentNamespace, methodName, returnType, new List<List<VarConstruct>>() { inputVars }, new List<List<Command>>() { currentStatement[5].codeContainerCommands }),
+                                new Method(result, currentNamespace, methodName, returnType, new List<List<VarConstruct>>() { inputVars }, new List<List<Command>>() { currentStatement[5].codeContainerCommands }),
                                 methodName));
                         } 
                         else
@@ -540,7 +540,7 @@ namespace TASI
                         if (command.functionCall == null)
                             throw new InternalInterpreterException("Internal: function call was not converted to a function call.");
 
-                        command.functionCall.DoFunctionCall(accessableObjects);
+                        command.functionCall.DoCall(accessableObjects);
                         break;
                     case Command.CommandTypes.EndCommand:
                         //Just ignore it

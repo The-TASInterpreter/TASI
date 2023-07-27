@@ -221,7 +221,7 @@ namespace TASI
                         throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
                     if (functionCall.CallFunction.returnType != Value.ConvertValueTypeToVarType(expectedType)) //Find out if function returns desired type
                         throw new CodeSyntaxException($"The function {functionCall.CallFunction.functionLocation} does not return the expected {expectedType} type.");
-                    return functionCall.DoFunctionCall(accessableObjects);
+                    return functionCall.DoCall(accessableObjects);
 
                 case Command.CommandTypes.Calculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation
@@ -256,7 +256,7 @@ namespace TASI
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a function call
                         throw new CodeSyntaxException($"Unexpected {commandLine.commands[1].commandType} after functioncall.");
 
-                    return functionCall.DoFunctionCall(accessableObjects);
+                    return functionCall.DoCall(accessableObjects);
 
                 case Command.CommandTypes.Calculation:
                     if (commandLine.commands.Count != 1) //There shouldnt be anything after a calculation

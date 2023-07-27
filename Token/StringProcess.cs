@@ -85,7 +85,8 @@ namespace TASI
                         break;
 
                     case '<':
-                        if (endChar + 1! < input.Length || input[endChar + 1] != ':') goto default;
+                        if (endChar + 1! < input.Length || input[endChar + 1] != ':') goto default; // to not confuse is smaller than with accessers
+
                         break;
 
                     case '(':
@@ -246,7 +247,8 @@ namespace TASI
             Accessor currentAccessor = null;
             for (; methodDepth != 0 || input[endChar] == '>'; endChar++)
             {
-                
+                if (endChar >= input.Length) throw new CodeSyntaxException("Expected '>'");
+
                 switch (input[endChar])
                 {
                     case '.':
@@ -259,10 +261,12 @@ namespace TASI
                     case ' ' or '\t':
                         break;
                     case '[':
-                        
+                        sb.Clear();
                         endChar++;
                         for (methodDepth = 1; methodDepth != 0; endChar++)
                         {
+                            if (endChar >= input.Length) throw new CodeSyntaxException("Expected ']'");
+
                             if (input[endChar] == '[')
                                 methodDepth++;
                             if (input[endChar] == ']')
@@ -273,12 +277,13 @@ namespace TASI
                             }
                             if (input[endChar] == '\"')
                             {
-                                sb.Append($"\"{HandleString(input, endChar, out endChar, out endLine, global, startLine).commandText}\"");
+                                sb.Append($"\"{HandleString(input, endChar, out endChar, out endLine, global, startLine, false).commandText}\"");
                                 continue;
                             }
                             
                             sb.Append(input[endChar]);
                         }
+                       // accessors.Add(new(new MethodCall()))
                         break;
                         
                 }

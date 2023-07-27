@@ -232,8 +232,8 @@ namespace TASI
             StringReader sr = new StringReader("Test!");
             Console.SetIn(sr);
             FunctionCall functionCall = new(new Command(Command.CommandTypes.FunctionCall, "Console.ReadLine", accessableObjects.global), accessableObjects.global);
-            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, accessableObjects.global), accessableObjects.global);
-            Assert.AreEqual("Test!", functionCall.DoFunctionCall(accessableObjects).StringValue);
+            functionCall.SearchCallNameObject(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, accessableObjects.global), accessableObjects.global);
+            Assert.AreEqual("Test!", functionCall.DoCall(accessableObjects).StringValue);
 
         }
         [Test]
@@ -245,8 +245,8 @@ namespace TASI
             StringWriter sw = new();
             Console.SetOut(sw);
             FunctionCall functionCall = new(new Command(Command.CommandTypes.FunctionCall, "Console.WriteLine:\"Test\"", accessableObjects.global), accessableObjects.global);
-            functionCall.SearchCallFunction(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, accessableObjects.global), accessableObjects.global);
-            functionCall.DoFunctionCall(accessableObjects);
+            functionCall.SearchCallNameObject(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, accessableObjects.global), accessableObjects.global);
+            functionCall.DoCall(accessableObjects);
             string consoleOutput = sw.ToString();
             Assert.AreEqual("Test\n", consoleOutput.Replace("\r\n", "\n"));
 

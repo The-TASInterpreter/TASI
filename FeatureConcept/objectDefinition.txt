@@ -8,17 +8,17 @@ object StreamWriter
 	
 	constructor {num numVal, string stringVal} 
 	{
-		set <this.numVal> numVal; #<> contains the syntax for accessing object fields
-		set <this.stringVal> stringVal; 
+		set <:this.numVal> numVal; #<> contains the syntax for accessing object fields
+		set <:this.stringVal> stringVal; 
 	};
 
 	method public :SampleObject.StreamWriter ReturnThisStreamWriter {num input; string inputString} 
 	{
-		set <this.numVal> input;
-		set <this.stringVal> inputString
+		set <:this.numVal> input;
+		set <:this.stringVal> inputString
 		if (input == 5.0) 
 		{
-			set <this.numVal> <this.[ReturnThisStreamWriter:(input + 1), inputString].numVal>
+			set <:this.numVal> <this.[ReturnThisStreamWriter:(input + 1), inputString].numVal>
 		};
 	};
 
@@ -36,7 +36,7 @@ object WriterStream
 	{
 		get  #Gets and sets can be customised, but they can also have default behaviour. 
 		{
-			return <this.streamWriter>;
+			return <:this.streamWriter>;
 		};
 		set streamWriter; #Default behaviour for setter. Statement is set/get <variable name for default behaviour>;
 

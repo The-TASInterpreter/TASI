@@ -85,7 +85,7 @@ namespace TASI
                         break;
 
                     case '<':
-
+                        if (endChar + 1! < input.Length || input[endChar + 1] != ':') goto default;
                         break;
 
                     case '(':

@@ -5,8 +5,8 @@ namespace TASI
     public class TASIObjectDefinition
     {
         public string objectType;
-        public List<FieldDefinition> fields;
-        public List<TASIObjectDefinition> baseTypes;
+        public List<FieldDefinition> fields = new();
+        public List<TASIObjectDefinition> baseTypes = new();
 
     }
 
@@ -49,7 +49,7 @@ namespace TASI
         {
             this.simpleType = simpleType;
             this.visability = visability;
-            type = FieldType.method;
+            type = FieldType.simple;
             this.name = name;
         }
 

@@ -28,7 +28,7 @@ Add Supervisor-Type namespaces
 
 Add a proper debugger
 
-
+After objects are done: Add precompiling to make object offsets static and known before the code is executed => Rquiers to implemment a pre execution type tracking system.
 
 
 BETTER SYNTAX => A step foreward

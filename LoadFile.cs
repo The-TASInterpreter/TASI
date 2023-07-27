@@ -37,9 +37,9 @@ namespace TASI
             return StringProcess.ConvertLineToCommand(sb.ToString(), global);
 
         }
-        public static Value? RunCode(string code)
+        public static Value? RunCode(string code, Global? global = null)
         {
-            Global global = new();
+            global ??= new();
             List<Command> tokenisedCode = StringProcess.ConvertLineToCommand(code, global);
             var codeHeaderInformation = InterpretMain.InterpretHeaders(tokenisedCode, "", global);
             AccessableObjects initialAccessableObjects = new(new(), codeHeaderInformation.Item2, global);

@@ -6,16 +6,24 @@ using System.Threading.Tasks;
 
 namespace TASI
 {
-    public class MethodCall : FunctionCall
+    public class MethodCall : Call
     {
         private Method? callMethod;
-        public List<Value> inputValues;
-        public List<CommandLine> argumentCommands;
 
-        public MethodCall(Command command, Global global) : base(command, global)
+        public MethodCall(Command command, Global global) : base(command, global) { }
+
+        public override void SearchCallNameObject(NamespaceInfo currentNamespace, Global global)
         {
-            
+            throw new NotImplementedException();
         }
+
+        public Value DoCall(AccessibleObjects accessibleObjects, Value objectValue)
+        {
+            GetInputValues(accessibleObjects);
+            accessibleObjects.accessibleVars.Add("this", new Var(new VarConstruct(objectValue.objectType), objectValue));
+            return null;
+        }
+
 
     }
 }

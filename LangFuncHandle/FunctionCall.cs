@@ -131,7 +131,7 @@ namespace TASI
 
         }
 
-        public override Value DoCall(AccessibleObjects accessableObjects)
+        public Value DoCall(AccessibleObjects accessableObjects)
         {
             GetInputValues(accessableObjects);
 

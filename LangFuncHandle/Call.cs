@@ -15,7 +15,6 @@ namespace TASI
         public string callName;
         public List<Value> argumentValues;
 
-        public abstract Value DoCall(AccessibleObjects accessibleObjects);
 
 
         public void GetInputValues(AccessibleObjects accessibleObjects)
@@ -52,7 +51,7 @@ namespace TASI
                     if (c == ':')
                     {
                         if (callName == "")
-                            throw new CodeSyntaxException("Function call can't have an empty function path.");
+                            throw new CodeSyntaxException("Call can't have an empty name path.");
                         doingName = false;
                         continue;
                     }

@@ -246,6 +246,14 @@ namespace TASI
             }
             return result;
         }
+
+        private static readonly NamespaceInfo.NamespaceIntend[] notUsable = new NamespaceInfo.NamespaceIntend[]
+        {
+            NamespaceInfo.NamespaceIntend.@internal,
+            NamespaceInfo.NamespaceIntend.supervisor,
+            NamespaceInfo.NamespaceIntend.nonedef,
+        };
+
         private static readonly NamespaceInfo.NamespaceIntend[] hasStart = new NamespaceInfo.NamespaceIntend[]
         {
             NamespaceInfo.NamespaceIntend.generic,
@@ -291,15 +299,18 @@ namespace TASI
                             }
                             else if (currentStatement == "type")
                             {
-                                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
+                                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;");
+
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 if (thisNamespace.namespaceIntend != NamespaceInfo.NamespaceIntend.nonedef) throw new CodeSyntaxException("Type can't be defined twice.");
+                               
                                 if (commandLine.commands[1].commandText.ToLower() == "tutorial0")
                                     Tutorial.TutorialPhase0();
                                 if (commandLine.commands[1].commandText.ToLower() == "tutorial1")
                                     Tutorial.TutorialPhase1(commands);
                                 if (!Enum.TryParse<NamespaceInfo.NamespaceIntend>(commandLine.commands[1].commandText.ToLower(), out NamespaceInfo.NamespaceIntend result)) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 thisNamespace.namespaceIntend = result;
+                                if (notUsable.Contains(result)) throw new CodeSyntaxException($"The {result}-type is not usable or only available for internal use");
 
                             }
                             else

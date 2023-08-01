@@ -147,7 +147,9 @@ namespace TASI
                                     break;
                                 case '\"':
 
+
                                     sb.Append($"\"{HandleString(input, endChar, out endChar, out currentLine, global, -1, false).commandText}\"");
+
 
                                     break;
                                 case LineChar:

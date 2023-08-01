@@ -416,7 +416,7 @@ namespace TASI
                                         else
                                         {
 
-                                            if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new CodeSyntaxException($"The namespace \"{pathLocation} has already been imported.");
+                                            if (alreadyImportedNamespaces.Any(a => ComparePaths(a, pathLocation))) throw new CodeSyntaxException($"The namespace \"{pathLocation}\" has already been imported.");
 
                                             thisNamespace.accessableNamespaces.Add(global.Namespaces[global.AllLoadedFiles.FindIndex(a => ComparePaths(a, pathLocation))]);
                                             alreadyImportedNamespaces.Add(pathLocation);

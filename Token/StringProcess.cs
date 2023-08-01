@@ -230,7 +230,23 @@ namespace TASI
 
         private static StringBuilder handleStringSB = new();
 
-        
+        public static List<string> SplitAtBaselevel(string input, char splitChar)
+        {
+            List<string> result = new List<string>();
+            StringBuilder currentItem = new();
+            for(int i = 0; i < input.Length; i++)
+            {
+
+                switch(input[i])
+                {
+                    case '\"':
+                        throw new NotImplementedException();
+
+                }
+            }
+            throw new NotImplementedException();
+
+        }
         public static Command HandleObjectAccessorChain(string input, int start, out int endChar, out int endLine, Global global, int startLine = -1)
         {
             endChar = start;
@@ -243,8 +259,7 @@ namespace TASI
             List<Accessor> accessors = new();
             StringBuilder sb = new();
             string offset;
-            bool workingOnAccessor = true;
-            Accessor currentAccessor = null;
+            bool baseAccessor = true;
             for (; methodDepth != 0 || input[endChar] == '>'; endChar++)
             {
                 if (endChar >= input.Length) throw new CodeSyntaxException("Expected '>'");
@@ -253,12 +268,10 @@ namespace TASI
                 {
                     case '.':
                         offset = sb.ToString();
+                        if (offset == string.Empty)
+                            throw new CodeSyntaxException("Object accessor chain can't have an empty accessor. (Check for double dots: <:base..accessor>");
+                        accessors.Add(new(offset));
                         
-                        if (offset == string.Empty || !workingOnAccessor)
-                            throw new CodeSyntaxException("Object accessor chain can't have an empty accessor");
-                        workingOnAccessor = false;
-                        break;
-                    case ' ' or '\t':
                         break;
                     case '[':
                         sb.Clear();
@@ -286,7 +299,20 @@ namespace TASI
                        // accessors.Add(new(new MethodCall()))
                         break;
                         
+                    default:
+                        if (ignoreChars.Contains(input[endChar]))
+                            break;
+                        while (input[endChar] != '.')
+                        {
+                            if (ignoreChars.Contains(input[endChar]))
+                            {
+                                continue;
+                            }
+                            sb.Append(input[endChar]);
+                        }
+                        break;
                 }
+                
             }
             return null;
         }

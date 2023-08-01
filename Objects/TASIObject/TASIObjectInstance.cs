@@ -9,12 +9,12 @@ namespace TASI
     internal class TASIObjectInstance
     {
         public static TASIObjectDefinition type;
-        public Dictionary<string, Value> simpleValues;
-        public Dictionary<string, TASIObjectInstance> pointers;
+        public Value[] values;
 
-        public TASIObjectInstance()
+
+        public TASIObjectInstance(TASIObjectDefinition type, MethodCall constructor)
         {
-
+            throw new NotImplementedException();
         }
         
 

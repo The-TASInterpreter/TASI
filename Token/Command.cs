@@ -11,14 +11,14 @@ namespace TASI
             offset, method, accessorBase
         }
         public AccessorType accessorType;
-        public int? offset;
+        public string? field;
         public MethodCall? methodCall;
         public Command? accessorBase;
 
-        public Accessor(int offset)
+        public Accessor(string field)
         {
             accessorType = AccessorType.offset;
-            this.offset = offset;
+            this.field = field;
         }
         public Accessor(MethodCall methodCall)
         {
@@ -43,7 +43,7 @@ namespace TASI
         public FunctionCall? functionCall;
         public CalculationType? calculation;
         public string commandFile = "";
-        public List<int>? accessorOffsets;
+        public List<Accessor> accessors;
         public void initCodeContainerFunctions(NamespaceInfo namespaceInfo, Global global)
         {
             foreach (Command command in codeContainerCommands)
@@ -85,6 +85,16 @@ namespace TASI
 
             this.codeContainerCommands = codeContainerCommands;
 
+        }
+
+        public Command(List<Accessor> accessors, Global global, int commandLine = -1, int commandEnd = -1)
+        {
+            commandFile = global.CurrentFile;
+            commandType = CommandTypes.ObjectAccessor;
+            commandText = string.Empty;
+            this.commandLine = commandLine;
+            this.commandEnd = commandEnd;
+            this.accessors = accessors;
         }
 
 

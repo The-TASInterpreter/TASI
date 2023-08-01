@@ -15,7 +15,7 @@ namespace TASI
         public bool isReturnValue;
         public bool isConstant;
         public Var? comesFromVarValue = null;
-
+        public TASIObjectDefinition objectType;
         public Value(SpecialReturns specialReturn)
         {
             valueType = null;

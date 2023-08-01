@@ -1,16 +1,21 @@
 ﻿Name TasiShell;
 Type Generic;
-Import "unsafe.shell"; 
+Import "unsafe.shell";
+
+operator int +{int x; int y}{
+	[Console.WriteLine:"Custom Operator!"];
+
+	return (($x) + ($y));
+};
 
 Start {
 
-
+	[Console.WriteLine:"Hello from TasiShell!"];
 
 	[Console.Clear]
 
-	makeVar string code;
-	set code "print('Hello from Python!' + chr(90))";
-	[Shell.Run:"powershell.exe"];
+	
 
-	return;
+	return (1 + 1);
 };
+

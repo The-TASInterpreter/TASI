@@ -218,6 +218,22 @@
                                 else
                                     new Function(functionName, functionReturnType, thisNamespace, new() { functionInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
                                 break;
+                            case "operator":
+                            
+                                if (commandLine.commands.Count != 5) throw new CodeSyntaxException("Invalid usage of operator statement.\nCorrect usage: function <statement: return type> <statement: operator> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+
+
+                                if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType operatorReturnType)) throw new CodeSyntaxException("function return type is invalid.");
+                                Function? thisOperator = null;
+                                
+                                string operatorName = CalculationType.operators.Contains(commandLine.commands[2].commandText.ToLower()) ? commandLine.commands[2].commandText.ToLower() : throw new CodeSyntaxException("Invalid operator name.");
+                                List<VarConstruct> operatorInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
+
+                                
+                                
+                                thisNamespace.customOperators.Add(operatorName, new Function("__operator", operatorReturnType, thisNamespace, new() { operatorInputVars }, commandLine.commands[4].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global));
+                                break;
                             case "import":
                                 string pathLocation;
                                 switch (commandLine.commands.Count)

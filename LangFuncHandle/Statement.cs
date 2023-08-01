@@ -17,6 +17,7 @@ namespace TASI
             if (commandLine.commands[0].commandType != Command.CommandTypes.Statement)
                 throw new InternalInterpreterException("Internal: StaticStatements must start with a Statement");
 
+
             switch (commandLine.commands[0].commandText.ToLower())
             {
                 case "loop":

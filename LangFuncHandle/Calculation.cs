@@ -68,7 +68,7 @@ namespace TASI
                                 if (currentOperator != "")
                                 {
 
-                                    values = new() { SimulateOperator(values, currentOperator) };
+                                    values = new() { SimulateOperator(values, currentOperator,accessableObjects) };
                                 }
                                 currentOperator = calculationType.@operator;
                                 break;
@@ -78,7 +78,7 @@ namespace TASI
                         }
                     }
                     if (currentOperator != "")
-                        values = new() { SimulateOperator(values, currentOperator) };
+                        values = new() { SimulateOperator(values, currentOperator, accessableObjects) };
                     if (values.Count == 1) return values[0];
                     if (values.Count == 0) throw new CodeSyntaxException("You can't end up with 0 values at the end of a num calculation (I don't even know how you managed to do this, but it's 100% your fault).");
                     throw new CodeSyntaxException("You can't end up with more than 1 value at the end of a num calculation.");
@@ -86,8 +86,22 @@ namespace TASI
             }
         }
 
-        public static Value SimulateOperator(List<Value> values, string @operator)
+        public static readonly string[] operators = { "+", "-", "*", "/", "and", "or", "!", "not", "%", "=", "==", "<", ">" };
+
+        public static Value SimulateOperator(List<Value> values, string @operator, AccessableObjects accessableObjects)
         {
+            if (operators.Contains(@operator.ToLower()) == false) throw new CodeSyntaxException($"\"{@operator}\" is not a valid operator.");  
+            
+            if (accessableObjects.currentNamespace.customOperators.ContainsKey(@operator.ToLower()))
+            {
+                FunctionCall? functionCall = new((Function?)accessableObjects.currentNamespace.customOperators[@operator.ToLower()] ?? throw new InternalInterpreterException("<todo: error>"), values);
+
+                //  functionCall.SearchCallFunction(accessableObjects.currentNamespace, accessableObjects.global);
+                return functionCall.DoFunctionCall(accessableObjects);
+            }
+           
+            
+
             switch (@operator.ToLower())
             {
                 case "+":
@@ -186,7 +200,6 @@ namespace TASI
             }
         }
 
-        public static readonly string[] operators = { "+", "-", "*", "/", "and", "or", "!", "not", "%", "=", "==", "<", ">" };
         public enum Type
         {
             @operator, returnStatement, value, calculation, function

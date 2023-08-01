@@ -233,6 +233,7 @@ namespace TASI
             inputValues = new();
             foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
             {
+                
                 inputValues.Add(Statement.GetValueOfCommandLine(commandLine, accessableObjects));
             }
 

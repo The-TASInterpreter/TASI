@@ -11,7 +11,6 @@ TASI has 6 token/command types, to which I will refer later in the documentation
 - End commands
 
 
-
 ## Code containers
 This token type is more or less the base of this language. Code containers kinda describe themselfes, just a container for code. This code can then be interpreted in different interpretation modes, but the most common one is the "InterpretNormalMode". A code container is build up out of curly brackets, "{" marks the beginning of a code container, while "}" marks the end. Here is an example for a code container token:
 ```

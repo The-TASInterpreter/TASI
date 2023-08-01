@@ -19,6 +19,8 @@ namespace TASI
         public List<NamespaceInfo> accessableNamespaces = new();
         public NamespaceIntend namespaceIntend;
         public bool autoImport;
+        public Hashtable customOperators = new();
+
 
         public string? Name
         {

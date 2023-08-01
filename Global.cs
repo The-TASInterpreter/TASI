@@ -322,6 +322,7 @@
             new Function("Replace", VarConstruct.VarType.@string, Namespaces[9], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "str"), new(VarConstruct.VarType.@string, "org"), new(VarConstruct.VarType.@string, "new")},
             }, new(), this);
+            
         }
     }
 }

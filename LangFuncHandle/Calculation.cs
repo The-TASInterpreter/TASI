@@ -222,10 +222,10 @@ namespace TASI
                     type = Type.function;
                     return;
                 case Command.CommandTypes.Statement:
-                    int foundAt = -1;
-                    if (operators.Any(x => { foundAt++; return x == command.commandText; }))
+                    string? foundOperator = operators.FirstOrDefault(x => x == command.commandText);
+                    if (foundOperator != null)
                     {
-                        @operator = operators[foundAt];
+                        @operator = foundOperator;
                         type = Type.@operator;
                         return;
                     }

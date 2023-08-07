@@ -2,24 +2,27 @@
 {
     internal class Tutorial
     {
-        public static bool TutorialPhaseMinusOne()
+        public static bool TutorialPhaseMinusOne(bool wasError = true)
         {
-            Console.Clear();
-            Console.WriteLine("You had some quite weird error, that's why I'll just assume, that you don't know what to do in this language.");
-            Console.WriteLine("If I just insulted you by saing that you don't know what you're doing, I'm sorry.");
-            Console.WriteLine("If you actually do know what you're doing, and don't want a tutorial in the language just press 'N'.");
-            Console.WriteLine("Otherwhise, if you do want a tutorial, press 'Y'.");
-            char userInput;
-            do
+            if (wasError)
             {
-                userInput = Console.ReadKey().KeyChar.ToString().ToUpper()[0];
-            } while (userInput != 'Y' && userInput != 'N');
-            if (userInput == 'N')
-                return false;
+                Console.Clear();
+                Console.WriteLine("You had some quite weird error, that's why I'll just assume, that you don't know what to do in this language.");
+                Console.WriteLine("If I just insulted you by saing that you don't know what you're doing, I'm sorry.");
+                Console.WriteLine("If you actually do know what you're doing, and don't want a tutorial in the language just press 'N'.");
+                Console.WriteLine("Otherwhise, if you do want a tutorial, press 'Y'.");
+                char userInput;
+                do
+                {
+                    userInput = Console.ReadKey().KeyChar.ToString().ToUpper()[0];
+                } while (userInput != 'Y' && userInput != 'N');
+                if (userInput == 'N')
+                    return false;
+            }
             Console.Clear();
             Console.WriteLine("Perfect, let's start with the tutorial:");
-            Console.WriteLine("We're gonna start by setting up the tutorial. Just create a basic text file and put \"type Tutorial0;\" (Without the quotation marks) in it. Why? I'll explain that later.");
-            Console.WriteLine("After saving that file, start the interpreter, click away the test and drag and drop the file into the console window and press 'enter'. (Very specific)");
+            Console.WriteLine("We're gonna start setting up the tutorial. Just create a basic text file and put \"type Tutorial0;\" (Without the quotation marks) in it. Why? I'll explain that later.");
+            Console.WriteLine("After saving that file, start the interpreter, drag and drop the file into the console window, and press 'enter'. (Very specific)");
             AnyKeyToContinue();
             return true;
 
@@ -62,7 +65,15 @@
                 AnyKeyToContinue();
             }
             Console.WriteLine("You did it! First try for sure.");
+            Console.WriteLine("The next thing is strings!\nStrings are a way to define and write text in your code. You start a string with \" and also end it with \". Here's an example:\n\"This is a string. It's just a basic way of writing text.\"");
+            Console.WriteLine("Strings can contain all kinds of letters like \"{\" and \"}\". But what id you wanted to put a \" inside a string without ending it?\nThis is what char escaping is used for. If you want to escape a char (like \") you need to put a \\ infront of it. HereÄs an example on how to do that:\n\"So this is what they call a \\\"string\\\"...\"");
+            Console.WriteLine("If you want to use \\ just do it like this: \"\\\\\"");
+            Console.WriteLine("There are also other escape characters like a newline with \\n or a tab with \\t.");
+            Console.WriteLine("Now it's your turn. Modify your \"type Tutorial0;\" to a \"type Tutorial1;\", remove the code containers and put some strings under the type. You need to include at least one string with a \" in it.");
+            AnyKeyToContinue();
         }
+
+
 
         public static void AnyKeyToContinue()
         {

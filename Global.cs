@@ -1,4 +1,6 @@
-﻿namespace TASI
+﻿using TASI.PluginManager;
+
+namespace TASI
 {
 
 
@@ -16,6 +18,7 @@
         public object iportFileLock = new();
         public List<FileStream> allFileStreams = new();
         public Random randomGenerator = new();
+        public List<ITASIPlugin> plugins = new();
     }
 
     public class GlobalContext
@@ -26,6 +29,19 @@
 
     public class Global
     {
+        public List<ITASIPlugin> Plugins
+        {
+            get
+            {
+                return globalProjectShared.plugins;
+
+            }
+            set
+            {
+                globalProjectShared.plugins = value;
+            }
+        }
+
         public string CurrentFile
         {
             get
@@ -306,7 +322,7 @@
                 new List<VarConstruct> {},
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "min")},
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "min"), new(VarConstruct.VarType.@int, "max")}
-            }, new(), this, mainInternalFunctionHandle) ;
+            }, new(), this, mainInternalFunctionHandle);
             new Function("NextNum", VarConstruct.VarType.num, Namespaces[7], new List<List<VarConstruct>> {
                 new List<VarConstruct> {},
             }, new(), this, mainInternalFunctionHandle);
@@ -323,7 +339,7 @@
             new Function("Replace", VarConstruct.VarType.@string, Namespaces[9], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "str"), new(VarConstruct.VarType.@string, "org"), new(VarConstruct.VarType.@string, "new")},
             }, new(), this, mainInternalFunctionHandle);
-            
+
         }
     }
 }

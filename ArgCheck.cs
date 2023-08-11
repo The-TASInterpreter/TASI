@@ -11,14 +11,18 @@
 
         };
 
-        public static void InterpretArguments(List<ArgInstance> tokens)
+        public static void InterpretArguments(List<ArgInstance> tokens, Global global)
         {
             foreach (ArgInstance token in tokens)
             {
                 switch (token.argDefinition.argName)
                 {
                     case "p":
-                        throw new NotImplementedException();
+                        if (!File.Exists(token.argAttributes[0]))
+                            throw new ArgumentException($"The plugin file \" {token.argAttributes[0]} doesn't exist");
+
+                        global.Plugins.AddRange(PluginManager.PluginManager.GetPluginsFromAssembly(PluginManager.PluginManager.LoadPluginAssembly(token.argAttributes[0])));
+                        break;
                     case "r":
                         throw new NotImplementedException();
                     case "a":
@@ -53,9 +57,9 @@
                     }
                     string actualArg = arg[1..];
                     currentArg = new(argDefinitions.FirstOrDefault(x => x.argName == actualArg) ?? throw new ArgumentException($"An argument with the name \"{actualArg}\" doesn't exist. Use the /help argument to see all arguments."));
-                    
 
-                } 
+
+                }
                 else
                 {
                     if (currentArg == null)

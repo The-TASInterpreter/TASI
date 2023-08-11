@@ -27,7 +27,7 @@ namespace TASI
             } 
             else if (args.Length != 0)
             {
-                ArgCheck.InterpretArguments( ArgCheck.TokeniseArgs(args, ArgCheck.argCommandsDefinitions));
+                ArgCheck.InterpretArguments(ArgCheck.TokeniseArgs(args, ArgCheck.argCommandsDefinitions), global);
 
             }
 
@@ -109,8 +109,9 @@ namespace TASI
                     Console.ReadKey();
                 }
                 */
-
-                InterpretMain.InterpretNormalMode(startCode, new(new(), startValues.Item2, global));
+                AccessableObjects accessableObjects = new(new(), startValues.Item2, global);
+                PluginManager.PluginManager.InitialiseAndCheckPlugins(global.Plugins, accessableObjects);
+                InterpretMain.InterpretNormalMode(startCode, accessableObjects);
                 codeRuntime.Stop();
                 Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
                 Console.ReadKey(false);

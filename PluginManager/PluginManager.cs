@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestPlatform.TestHost;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace TASI.PluginManager
 {
@@ -18,16 +17,39 @@ namespace TASI.PluginManager
 
         public static Assembly LoadPluginAssembly(string relativePath) // https://learn.microsoft.com/en-us/dotnet/core/tutorials/creating-app-with-plugin-support
         {
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+            {
+                Console.WriteLine("Resorted to fallback host injector");
+                // Get the name of the assembly that failed to load
+                string assemblyName = new AssemblyName(args.Name).Name;
+                Console.WriteLine(assemblyName + " assembly name");
+
+                // Check if the failed assembly is one of the dependencies
+                if (assemblyName == "TASI")
+                {
+                    // Get a reference to the currently executing assembly
+                    Assembly hostAssembly = Assembly.GetExecutingAssembly();
+
+                    // Return the host assembly
+                    return hostAssembly;
+                }
+
+                return null;
+            };
+            return Assembly.LoadFile(relativePath);
+
+
             // Navigate up to the solution root
             //Note from Ekischleki: I have no idea what that does
-            string root = Path.GetFullPath(Path.Combine(
+            string root =
                 Path.GetDirectoryName(
                     Path.GetDirectoryName(
                         Path.GetDirectoryName(
                             Path.GetDirectoryName(
-                                Path.GetDirectoryName(typeof(Program).Assembly.Location)))))));
-            Console.WriteLine(typeof(Program).Assembly.Location);
-
+                                Path.GetDirectoryName(
+                                    typeof(TASI_Main).Assembly.Location)))));
+            Console.WriteLine(Path.Combine(root, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
+            Console.WriteLine(root);
             string pluginLocation = Path.GetFullPath(Path.Combine(root, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
             Console.WriteLine($"Loading commands from: {pluginLocation}");
             AssemblyLoader loadContext = new(pluginLocation);
@@ -53,25 +75,48 @@ namespace TASI.PluginManager
 
         }
 
-        public static void InitialiseAndCheckPlugins(IEnumerable<ITASIPlugin> plugins, AccessableObjects accessableObjects)
+
+
+        public static void InitFunctionPlugins(IEnumerable<ITASIPlugin> plugins, Global global)
+        {
+            foreach (ITASIPlugin plugin in plugins)
+            {
+                if (plugin is IInternalFunctionPlugin functionPlugin)
+                {
+                    functionPlugin.InitFunctions(global);
+                }
+            }
+        }
+        public static void InitBeforeRuntimePlugins(IEnumerable<ITASIPlugin> plugins, AccessableObjects accessableObjects)
+        {
+            foreach (ITASIPlugin plugin in plugins)
+            {
+                if (plugin is IInitialisationPlugin initPlugin)
+                {
+                    initPlugin.Execute(accessableObjects);
+                }
+            }
+        }
+
+        public static void CheckPlugins(IEnumerable<ITASIPlugin> plugins)
         {
             foreach (ITASIPlugin plugin in plugins)
             {
                 if (plugin.CompatibilityVersion > PLUGIN_COMPATIBILITY_VERSION)
                     throw new FaultyPluginException("The plugin compatibility version is greater that the plugin compatibility version of this program. Try to download the newest release and try again.", plugin);
 
-                if (plugin is IInternalFunctionPlugin internalFunctionPlugin)
+                switch (plugin)
                 {
-                    internalFunctionPlugin.InitFunctions(accessableObjects.global);
-                } else if (plugin is IInitialisationPlugin initialisationPlugin)
-                {
-                    initialisationPlugin.Execute(accessableObjects);
-                } else
-                {
-                    throw new FaultyPluginException("This plugin type is not supported. Please keep in mind that the ITASIPlugin cannot be used directly as it just defines the base of a plugin.", plugin);
+                    case IInitialisationPlugin:
+                    case IInternalFunctionPlugin:
+                        break;
+                    default:
+                        throw new FaultyPluginException("This plugin type is not supported. Please keep in mind that the ITASIPlugin cannot be used directly as it just defines the base of a plugin.", plugin);
+
                 }
 
-                
+
+
             }
         }
 

@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using TASI.debug;
+using TASI.Exceptions;
 using static TASI.Command;
 
 namespace TASI
@@ -122,6 +123,28 @@ namespace TASI
 
                 switch (ex)
                 {
+
+                    case FaultyPluginException faultyPluginException:
+                        Console.WriteLine("You tried to load a plugin which was faulty or could not be loaded for another reason.");
+
+                        Console.WriteLine($"Error: {faultyPluginException.Message}");
+                        if (faultyPluginException.faultyPlugin.CompatibilityVersion == PluginManager.PluginManager.PLUGIN_COMPATIBILITY_VERSION)
+                            Console.WriteLine("This plugin is on the current plugin version, so it should work. Please contact the Author if this is a problem on the plugin-side or the TASI developers if this is a plugin manager problem.");
+                        else if (faultyPluginException.faultyPlugin.CompatibilityVersion < PluginManager.PluginManager.PLUGIN_COMPATIBILITY_VERSION && faultyPluginException.faultyPlugin.CompatibilityVersion >= PluginManager.PluginManager.OLDEST_SUPPORTED_PLUGIN_COMPATIBILITY_VERSION)
+                            Console.WriteLine("This plugin isn't on the current plugin version but it is still supported, so it should work. Please contact the Author if this is a problem on the plugin-side or the TASI developers if this is a plugin manager problem.");
+                        else if (faultyPluginException.faultyPlugin.CompatibilityVersion < PluginManager.PluginManager.OLDEST_SUPPORTED_PLUGIN_COMPATIBILITY_VERSION)
+                            Console.WriteLine("This plugin version is no longer supported. Please check for an update from the developer or download an older version of the interpreter.");
+                            
+
+                        Console.WriteLine($"Plugin name: {faultyPluginException.faultyPlugin.Name}\nDescription: {faultyPluginException.faultyPlugin.Description}\nVersion: {faultyPluginException.faultyPlugin.Version}\nAuthor: {faultyPluginException.faultyPlugin.Author}\nPlugin Compatibility version: {faultyPluginException.faultyPlugin.CompatibilityVersion}\nPlugin manager Compatibility version: {PluginManager.PluginManager.PLUGIN_COMPATIBILITY_VERSION}");
+
+                        break;
+                    case InternalPluginException internalPluginException:
+                        Console.WriteLine("There was an internal plugin error.");
+                        Console.WriteLine($"Error: {internalPluginException.Message}");
+                        Console.WriteLine($"Plugin name: {internalPluginException.plugin.Name}\nDescription: {internalPluginException.plugin.Description}\nVersion: {internalPluginException.plugin.Version}\nAuthor: {internalPluginException.plugin.Author}\nPlugin Compatibility version: {internalPluginException.plugin.CompatibilityVersion}\nPlugin manager Compatibility version: {PluginManager.PluginManager.PLUGIN_COMPATIBILITY_VERSION}");
+                        break;
+
                     case CodeSyntaxException:
                         if (DateTime.Now.Month == 4 && DateTime.Now.Day == 1 && new Random().Next(0, 20) == 1) //April fools
                         {
@@ -129,12 +152,8 @@ namespace TASI
                             Console.WriteLine("April fools, it's your fault :P");
                             Console.WriteLine("--------------");
                         }
-                        Console.WriteLine("There was a syntathical error in your code.");
-                        if (global.CurrentLine != -1)
-                            Console.WriteLine($"\nThe error happened on line: {global.CurrentLine + 1}");
-                        Console.WriteLine("The error message is:");
-                        Console.WriteLine(ex.Message);
-                        break;
+                        goto default;
+                        
                     default:
                     case InternalInterpreterException:
                         Console.WriteLine("There was an internal error in the compiler.");

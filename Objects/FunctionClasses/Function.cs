@@ -15,9 +15,9 @@ namespace TASI
         public List<List<VarConstruct>> functionArguments;
         public List<List<Command>> functionCode = new();
         public event EventHandler<Function> functionCreated;
-        private IInternalFunctionHandle? functionHandle;
+        private IInternalFunctionHandler? functionHandle;
 
-        public IInternalFunctionHandle FunctionHandler
+        public IInternalFunctionHandler FunctionHandler
         {
             get
             {
@@ -34,7 +34,7 @@ namespace TASI
 
 
 
-        public Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, IInternalFunctionHandle? functionHandle = null) // Is a Main function and is not a void
+        public Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, IInternalFunctionHandler? functionHandle = null) // Is a Main function and is not a void
         {
             this.funcName = funcName.ToLower();
             this.parentFunction = null;

@@ -207,7 +207,7 @@
         }
         public Global(string currentFile = "")
         {
-            InternalFunctionHandle mainInternalFunctionHandle = new();
+            InternalFunctionHandler mainInternalFunctionHandle = new();
             globalContext = new GlobalContext();
             globalContext.currentFile = currentFile;
             globalProjectShared = new GlobalProjectShared();

@@ -5,9 +5,9 @@ using TASI.LangFuncHandle;
 
 namespace TASI
 {
-    internal class InternalFunctionHandle : IInternalFunctionHandle
+    internal class InternalFunctionHandler : IInternalFunctionHandler
     {
-        public InternalFunctionHandle() { }
+        public InternalFunctionHandler() { }
         public Value? HandleInternalFunc(string funcName, List<Value> input, AccessableObjects accessableObjects)
         {
             switch (funcName)

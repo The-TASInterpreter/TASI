@@ -9,8 +9,8 @@ namespace TASI.PluginManager
     /// <summary>
     /// This plugin will run before any code is executed but after all files were parsed
     /// </summary>
-    public interface InitialisationPlugin : ITASIPlugin
+    public interface IInitialisationPlugin : ITASIPlugin
     {
-        void Execute(AccessableObjects accessableObjects, List<Command> commands);
+        void Execute(AccessableObjects accessableObjects);
     }
 }

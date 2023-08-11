@@ -23,6 +23,11 @@ namespace TASI
             if (args.Length == 1)
             {
                 location = args[0];
+            } 
+            else if (args.Length != 0)
+            {
+                ArgCheck.InterpretArguments( ArgCheck.TokeniseArgs(args, ArgCheck.argCommandsDefinitions));
+
             }
 
             if (location == null)

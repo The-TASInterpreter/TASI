@@ -28,7 +28,7 @@ namespace TASI
             else if (args.Length != 0)
             {
                 ArgCheck.InterpretArguments(ArgCheck.TokeniseArgs(args, ArgCheck.argCommandsDefinitions), global);
-
+                PluginManager.PluginManager.CheckPlugins(global.Plugins);
             }
 
             if (location == null)
@@ -48,6 +48,8 @@ namespace TASI
             //Remove comments 
             try
             {
+                PluginManager.PluginManager.InitFunctionPlugins(global.Plugins, global);
+
                 if (location == null)
                     location = (Console.ReadLine() ?? throw new CodeSyntaxException("Code is null.")).Replace("\"", "");
                 global.MainFilePath = Path.GetDirectoryName(location);
@@ -65,7 +67,6 @@ namespace TASI
                         throw new CodeSyntaxException("You can't start a library-type namespace directly.");
                     else
                         throw new CodeSyntaxException("You need to define a start. You can use the start statement to do so.");
-
 
                 foreach (NamespaceInfo namespaceInfo in global.Namespaces) //Activate functioncalls after scanning headers to not cause any errors. BTW im sorry
                 {
@@ -110,7 +111,7 @@ namespace TASI
                 }
                 */
                 AccessableObjects accessableObjects = new(new(), startValues.Item2, global);
-                PluginManager.PluginManager.InitialiseAndCheckPlugins(global.Plugins, accessableObjects);
+                PluginManager.PluginManager.InitBeforeRuntimePlugins(global.Plugins, accessableObjects);
                 InterpretMain.InterpretNormalMode(startCode, accessableObjects);
                 codeRuntime.Stop();
                 Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
@@ -153,8 +154,13 @@ namespace TASI
                             Console.WriteLine("April fools, it's your fault :P");
                             Console.WriteLine("--------------");
                         }
-                        goto default;
-                        
+                        Console.WriteLine("There was a syntathical error in your code.");
+                        if (global.CurrentLine != -1)
+                            Console.WriteLine($"\nThe error happened on line: {global.CurrentLine + 1}");
+                        Console.WriteLine("The error message is:");
+                        Console.WriteLine(ex.Message);
+                        break;
+
                     default:
                     case InternalInterpreterException:
                         Console.WriteLine("There was an internal error in the compiler.");

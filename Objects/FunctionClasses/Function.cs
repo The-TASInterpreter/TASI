@@ -1,4 +1,6 @@
-﻿namespace TASI
+﻿using TASI.LangFuncHandle;
+
+namespace TASI
 {
     // [TASI.DecFunc "Main","void",[SArray.DecArray "array cum, string cool"]];
     public class Function
@@ -12,25 +14,27 @@
         public NamespaceInfo parentNamespace;
         public List<List<VarConstruct>> functionArguments;
         public List<List<Command>> functionCode = new();
+        public event EventHandler<Function> functionCreated;
+        private IInternalFunctionHandle? functionHandle;
 
-
-        public Function(string funcName, Function parentFunction, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global) // Has a variable return type and is not a void, but is a sub function
+        public IInternalFunctionHandle FunctionHandler
         {
-            this.funcName = funcName;
-            this.parentFunction = parentFunction;
-            this.isSubfunction = true;
-            this.returnType = returnType;
-            this.subFunctions = new List<Function>();
-            this.parentNamespace = parentNamespace;
-            parentNamespace.namespaceFuncitons.Add(this);
-            functionLocation = GetFunctionLocationString();
-            this.functionArguments = new List<List<VarConstruct>>(functionArguments);
-            global.AllFunctions.Add(this);
-            this.functionCode.Add(functionCode);
-
+            get
+            {
+                if (functionHandle == null) 
+                {
+                    if (parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
+                        throw new InternalInterpreterException("function handler for internal function was not defined.");
+                    else
+                        throw new InternalInterpreterException("tried to access function handler for non-internal function.");
+                }
+                return functionHandle;
+            }
         }
 
-        public Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global) // Is a Main function and is not a void
+
+
+        public Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, IInternalFunctionHandle? functionHandle = null) // Is a Main function and is not a void
         {
             this.funcName = funcName.ToLower();
             this.parentFunction = null;
@@ -43,7 +47,9 @@
             this.functionArguments = new List<List<VarConstruct>>(functionArguments);
             global.AllFunctions.Add(this);
             this.functionCode.Add(functionCode);
-
+            this.functionHandle = functionHandle;
+            if (parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal && functionHandle == null)
+                throw new InternalInterpreterException("function handler for internal function was null.");
         }
 
         private string GetFunctionLocationString()

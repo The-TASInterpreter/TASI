@@ -11,10 +11,10 @@
         public static List<VarConstruct> InterpretCopyVar(List<Command> commands)
         {
             bool statementMode = false;
-            CommandLine? commandLine = new(new(), -1);
+            CommandLine? commandStatement = new(new(), -1);
             List<VarConstruct> result = new();
 
-            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand, ";", commands.Last().commandLine));
+            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand, ";", commands.Last().commandStatement));
 
             foreach (Command command in commands)
             {
@@ -23,31 +23,31 @@
                 {
                     if (command.commandType != Command.CommandTypes.EndCommand)
                     {
-                        commandLine.commands.Add(command);
+                        commandStatement.commands.Add(command);
                         continue;
                     }
 
-                    if (commandLine.commands.Count != 2 && commandLine.commands[0].commandType == Command.CommandTypes.Statement && commandLine.commands[1].commandType == Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarCopy statement.\nRight way of using it:<statemt: var one> <statement: var two>;");
-                    if (commandLine.commands.Count == 3) // Is link
+                    if (commandStatement.commands.Count != 2 && commandStatement.commands[0].commandType == Command.CommandTypes.Statement && commandStatement.commands[1].commandType == Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarCopy statement.\nRight way of using it:<statemt: var one> <statement: var two>;");
+                    if (commandStatement.commands.Count == 3) // Is link
                     {
-                        if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
-                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        if (commandStatement.commands[1].commandType != Command.CommandTypes.Statement || commandStatement.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
+                        if (!Enum.TryParse<VarConstruct.VarType>(commandStatement.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandStatement.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
-                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                            if (x.name == commandStatement.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandStatement.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
                         });
-                        result.Add(new(varType, commandLine.commands[2].commandText.ToLower(), true));
+                        result.Add(new(varType, commandStatement.commands[2].commandText.ToLower(), true));
                     }
                     else
                     {
-                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
-                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        if (commandStatement.commands[0].commandType != Command.CommandTypes.Statement || commandStatement.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
+                        if (!Enum.TryParse<VarConstruct.VarType>(commandStatement.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandStatement.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
-                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                            if (x.name == commandStatement.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandStatement.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
                         });
 
-                        result.Add(new(varType, commandLine.commands[1].commandText.ToLower()));
+                        result.Add(new(varType, commandStatement.commands[1].commandText.ToLower()));
 
                     }
                     statementMode = false;
@@ -58,9 +58,9 @@
                 switch (command.commandType)
                 {
                     case Command.CommandTypes.Statement:
-                        Global.CurrentLine = command.commandLine;
+                        Global.CurrentLine = command.commandStatement;
                         statementMode = true;
-                        commandLine = new(new List<Command> { command }, 1);
+                        commandStatement = new(new List<Command> { command }, 1);
                         break;
                     default:
                         throw new NotImplementedException($"You can only use statements in VarConstruct-mode.");
@@ -270,7 +270,7 @@
                                 Value? setToValue = null;
                                 if (commandLine.commands.Count == 4)
                                 {
-                                    setToValue = Statement.GetValueOfCommandLine(new CommandLine(new() { commandLine.commands[3] }, -1), new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false,global), global));
+                                    setToValue = Statement.GetValueOfCommands(new() { commandLine.commands[3] }, new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false,global), global));
                                 }
 
                                 if (commandLine.commands[1].commandText == "all")
@@ -342,7 +342,7 @@
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal functions to the code.
             bool statementMode = false;
             Value? returnValue;
-            CommandLine? commandLine = new(new(), -1);
+            List<Command> commandStatement = new();
             foreach (Command command in commands)
             {
                 accessableObjects.global.CurrentFile = command.commandFile;
@@ -357,14 +357,14 @@
 
                         }
 
-                        returnValue = Statement.StaticStatement(commandLine, accessableObjects);
+                        returnValue = Statement.StaticStatement(commandStatement, accessableObjects);
                         if (returnValue != null)
                             return returnValue;
 
                         statementMode = false;
                         continue;
                     }
-                    commandLine.commands.Add(command);
+                    commandStatement.Add(command);
                     continue;
                 }
 
@@ -384,7 +384,7 @@
                     case Command.CommandTypes.Statement:
                         accessableObjects.global.CurrentLine = command.commandLine;
                         statementMode = true;
-                        commandLine = new(new List<Command> { command }, 1);
+                        commandStatement = new List<Command> { command };
                         break;
                     default:
                         throw new NotImplementedException($"You can't use a {command.commandType}-type directly.");

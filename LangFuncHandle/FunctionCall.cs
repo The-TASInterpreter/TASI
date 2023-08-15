@@ -1,5 +1,6 @@
 ﻿
 using System.Collections;
+using System.Reflection.Metadata;
 using System.Text;
 using static TASI.Command;
 
@@ -235,7 +236,7 @@ namespace TASI
                 inputValues = new();
                 foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
                 {
-                    inputValues.Add(Statement.GetValueOfCommandLine(commandLine, accessableObjects));
+                    inputValues.Add(Statement.GetValueOfCommands(commandLine.commands, accessableObjects));
                 }
             }
 

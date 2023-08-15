@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TASI
 {
-    public class InternalInterpreterException : Exception
+    internal class InternalInterpreterException : Exception
     {
         public InternalInterpreterException()
         {

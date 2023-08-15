@@ -247,7 +247,7 @@ namespace TASI
 
             if (CallFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
             {
-                Value? returnValue = InternalFunctionHandle.HandleInternalFunc(CallFunction.functionLocation, inputValues, accessableObjects);
+                Value? returnValue = CallFunction.FunctionHandler.HandleInternalFunc(CallFunction.functionLocation, inputValues, accessableObjects);
                 if (accessableObjects.global.DebugMode)
                 {
                     Console.WriteLine($"Did function call to {CallFunction.parentNamespace.namespaceIntend}-intend {CallFunction.functionLocation}.\nIt returns a {CallFunction.returnType}.\nIt returned a {returnValue.valueType}-type with a value of \"{returnValue.ObjectValue}\".");

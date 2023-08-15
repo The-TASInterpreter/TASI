@@ -1,13 +1,14 @@
 ﻿
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters;
+using TASI.LangFuncHandle;
 
 namespace TASI
 {
-    internal class InternalFunctionHandle
+    internal class InternalFunctionHandler : IInternalFunctionHandler
     {
-
-        public static Value? HandleInternalFunc(string funcName, List<Value> input, AccessableObjects accessableObjects)
+        public InternalFunctionHandler() { }
+        public Value? HandleInternalFunc(string funcName, List<Value> input, AccessableObjects accessableObjects)
         {
             switch (funcName)
             {

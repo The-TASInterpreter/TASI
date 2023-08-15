@@ -2,9 +2,13 @@
 using System.Collections;
 using System.Reflection.Metadata;
 using System.Text;
+using TASI.RuntimeObjects;
+using TASI.RuntimeObjects.FunctionClasses;
+using TASI.RuntimeObjects.VarClasses;
+using TASI.Token;
 using static TASI.Command;
 
-namespace TASI
+namespace TASI.InternalLangCoreHandle
 {
     public class FunctionCall
     {
@@ -30,8 +34,8 @@ namespace TASI
 
         public FunctionCall(Function callFunction, List<Value> inputVars)
         {
-            this.CallFunction = callFunction;
-            this.inputValues = new List<Value>(inputVars);
+            CallFunction = callFunction;
+            inputValues = new List<Value>(inputVars);
         }
 
         public FunctionCall(Command command, Global global)
@@ -69,7 +73,7 @@ namespace TASI
                     {
                         case '\"':
                             currentArgument.Append('\"');
-                            currentArgument.Append(StringProcess.HandleString(command.commandText, i, out i, out _, global, -1, false).commandText);
+                            currentArgument.Append(Tokeniser.HandleString(command.commandText, i, out i, out _, global, -1, false).commandText);
                             currentArgument.Append('\"');
 
                             continue;
@@ -118,11 +122,11 @@ namespace TASI
 
             if (currentArgumentString.Replace(" ", "") == "" && functionArguments.Count != 0) // If argument minus Space is nothing
                 throw new CodeSyntaxException("Cant have an empty argument (Check for double commas like \"[Example.Function:test,,]\")");
-            if (functionArguments.Count != 0 || (currentArgumentString.Replace(" ", "") != ""))
+            if (functionArguments.Count != 0 || currentArgumentString.Replace(" ", "") != "")
                 functionArguments.Add(currentArgumentString);
             argumentCommands = new(functionArguments.Count);
             foreach (string argument in functionArguments) //Convert string arguments to commands
-                argumentCommands.Add(new(StringProcess.ConvertLineToCommand(argument, global, command.commandLine), -1));
+                argumentCommands.Add(new(Tokeniser.CallTokeniseInput(argument, global, command.commandLine), -1));
             global.AllFunctionCalls.Add(this);
 
 
@@ -140,7 +144,7 @@ namespace TASI
             foreach (CommandLine commandLine in argumentCommands)
                 foreach (Command command in commandLine.commands)
                 {
-                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace, global);
+                    if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace, global);
                     if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace, global);
                     if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace, global);
 
@@ -158,7 +162,7 @@ namespace TASI
                     matching = true;
                     for (int i = 0; i < inputVars.Count; i++)
                     {
-                        if ((functionInputType[i].type != Value.ConvertValueTypeToVarType(inputVars[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")) && functionInputType[i].type != VarConstruct.VarType.all) || (inputVars[i].comesFromVarValue == null && functionInputType[i].isLink))
+                        if (functionInputType[i].type != Value.ConvertValueTypeToVarType(inputVars[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")) && functionInputType[i].type != VarConstruct.VarType.all || inputVars[i].comesFromVarValue == null && functionInputType[i].isLink)
                         {
                             matching = false;
                             break;
@@ -277,7 +281,7 @@ namespace TASI
 
 
 
-            if (functionReturnValue == null || (Value.ConvertValueTypeToVarType(functionReturnValue.valueType ?? throw new InternalInterpreterException("Value type of value was null")) != CallFunction.returnType && CallFunction.returnType != VarConstruct.VarType.all))
+            if (functionReturnValue == null || Value.ConvertValueTypeToVarType(functionReturnValue.valueType ?? throw new InternalInterpreterException("Value type of value was null")) != CallFunction.returnType && CallFunction.returnType != VarConstruct.VarType.all)
                 throw new CodeSyntaxException($"The function \"{CallFunction.functionLocation}\" didn't return the expected {CallFunction.returnType}-type.");
             return functionReturnValue;
 

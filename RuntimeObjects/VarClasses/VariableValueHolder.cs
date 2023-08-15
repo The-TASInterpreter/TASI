@@ -1,4 +1,6 @@
-﻿namespace TASI.Objects.VarClasses
+﻿using TASI.RuntimeObjects;
+
+namespace TASI.Objects.VarClasses
 {
     public class VariableValueHolder
     {

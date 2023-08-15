@@ -1,12 +1,15 @@
-﻿using static TASI.Command;
+﻿using TASI.RuntimeObjects;
+using TASI.RuntimeObjects.FunctionClasses;
+using TASI.Token;
+using static TASI.Command;
 
-namespace TASI
+namespace TASI.InternalLangCoreHandle
 {
     public class Calculation
     {
         public static Value DoCalculation(Command command, AccessableObjects accessableObjects)
         {
-            if (command.commandType != Command.CommandTypes.Calculation) throw new InternalInterpreterException("Internal: Do calculation only works with num calculation tokens");
+            if (command.commandType != CommandTypes.Calculation) throw new InternalInterpreterException("Internal: Do calculation only works with num calculation tokens");
             Value returnValue = (command.calculation ?? throw new InternalInterpreterException("Internal: Calculation was not parsed.")).GetValue(accessableObjects);
             return returnValue;
         }
@@ -31,7 +34,7 @@ namespace TASI
                 case Type.returnStatement:
                     foreach (Command command in returnStatement)
                     {
-                        if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace, global);
+                        if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(currentNamespace, global);
                         if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(currentNamespace, global);
                         if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(currentNamespace, global);
                     }
@@ -204,11 +207,11 @@ namespace TASI
             line = command.commandLine;
             switch (command.commandType)
             {
-                case Command.CommandTypes.FunctionCall:
-                    this.functionCall = command.functionCall;
+                case CommandTypes.FunctionCall:
+                    functionCall = command.functionCall;
                     type = Type.function;
                     return;
-                case Command.CommandTypes.Statement:
+                case CommandTypes.Statement:
                     int foundAt = -1;
                     if (operators.Any(x => { foundAt++; return x == command.commandText; }))
                     {
@@ -225,22 +228,22 @@ namespace TASI
                     type = Type.value;
                     this.value = new(Value.ValueType.num, value);
                     return;
-                case Command.CommandTypes.String:
+                case CommandTypes.String:
                     type = Type.value;
                     this.value = new(Value.ValueType.@string, command.commandText);
                     return;
-                case Command.CommandTypes.Calculation:
+                case CommandTypes.Calculation:
 
                     if (command.commandText.StartsWith('$'))
                     {
                         type = Type.returnStatement;
-                        returnStatement = StringProcess.ConvertLineToCommand(command.commandText.Substring(1, command.commandText.Count() - 1), global, command.commandLine);
+                        returnStatement = Tokeniser.CallTokeniseInput(command.commandText.Substring(1, command.commandText.Count() - 1), global, command.commandLine);
                         return;
                     }
                     else
                     {
                         type = Type.calculation;
-                        List<Command> subCalculationTypes = StringProcess.ConvertLineToCommand(command.commandText, global, command.commandLine);
+                        List<Command> subCalculationTypes = Tokeniser.CallTokeniseInput(command.commandText, global, command.commandLine);
                         List<CalculationType> subCalculationTypesTokenSplit = new();
                         foreach (Command subCalculationType in subCalculationTypes)
                         {

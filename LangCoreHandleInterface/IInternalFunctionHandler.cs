@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TASI.InternalLangCoreHandle;
+using TASI.RuntimeObjects;
 
-namespace TASI.LangFuncHandle
+namespace TASI.LangCoreHandleInterface
 {
     public interface IInternalFunctionHandler
     {

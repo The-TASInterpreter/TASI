@@ -1,9 +1,11 @@
 ﻿
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters;
-using TASI.LangFuncHandle;
+using TASI.LangCoreHandleInterface;
+using TASI.RuntimeObjects;
+using TASI.RuntimeObjects.VarClasses;
 
-namespace TASI
+namespace TASI.InternalLangCoreHandle
 {
     internal class InternalFunctionHandler : IInternalFunctionHandler
     {
@@ -19,7 +21,7 @@ namespace TASI
                         Console.WriteLine("No text pritable.");
                     return null;
                 case "console.readline":
-                    return new(Value.ValueType.@string, Console.ReadLine()?? throw new RuntimeCodeExecutionFailException("Console.ReadLine returned null", "InternalFuncException"));
+                    return new(Value.ValueType.@string, Console.ReadLine() ?? throw new RuntimeCodeExecutionFailException("Console.ReadLine returned null", "InternalFuncException"));
                 case "console.clear":
                     Console.Clear();
                     return null;
@@ -34,7 +36,7 @@ namespace TASI
                     FileMode mode = FileMode.Open;
                     FileAccess access = FileAccess.ReadWrite;
 
-                    
+
                     if (input[1].StringValue.Contains('w'))
                         access |= FileAccess.Write;
 
@@ -66,7 +68,7 @@ namespace TASI
                     return new(Value.ValueType.@int, streamIndex);
                 case "filesystem.close":
                     {
-                
+
                         FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
                         fileStream.Close();
@@ -116,7 +118,7 @@ namespace TASI
                     }
                 case "filestream.writeline":
                     {
-                        
+
                         FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
                         if (!fileStream.CanWrite)
@@ -128,9 +130,9 @@ namespace TASI
                             writer.WriteLine(input[1].NumValue);
                         else
                             writer.WriteLine(input[1].StringValue);
-                            
+
                         return null;
-                        
+
                     }
                 case "filestream.flush":
                     {
@@ -139,7 +141,7 @@ namespace TASI
                         fileStream.Flush();
 
                         return null;
-                     
+
                     }
                 case "filestream.read":
                     {
@@ -161,7 +163,7 @@ namespace TASI
                     return null;
                 case "inf.defvar":
 
-                    if (!Enum.TryParse<Value.ValueType>(input[0].StringValue, true, out Value.ValueType varType) && input[0].StringValue != "all") throw new CodeSyntaxException($"The vartype \"{input[0].StringValue}\" doesn't exist.");
+                    if (!Enum.TryParse(input[0].StringValue, true, out Value.ValueType varType) && input[0].StringValue != "all") throw new CodeSyntaxException($"The vartype \"{input[0].StringValue}\" doesn't exist.");
                     if (input[0].StringValue == "all")
                     {
                         accessableObjects.accessableVars.Add(input[1].StringValue, new Var(new VarConstruct(VarConstruct.VarType.all, input[1].StringValue), new(varType)));
@@ -170,7 +172,7 @@ namespace TASI
                     accessableObjects.accessableVars.Add(input[1].StringValue, new Var(new VarConstruct(Value.ConvertValueTypeToVarType(varType), input[1].StringValue), new(varType)));
                     return null;
                 case "inf.makeconst":
-                    {     
+                    {
                         Var var = (Var)(accessableObjects.accessableVars[input[0].StringValue] ?? throw new CodeSyntaxException($"The variable \"{input[0]}\" cannot be found."));
 
                         var.varConstruct.isConstant = true;

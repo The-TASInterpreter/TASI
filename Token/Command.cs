@@ -1,5 +1,9 @@
 ﻿
 
+using TASI.InternalLangCoreHandle;
+using TASI.RuntimeObjects.FunctionClasses;
+using TASI.Token;
+
 namespace TASI
 {
     public class Command
@@ -86,7 +90,7 @@ namespace TASI
                     originalCommandText = $"\"{commandText}\"";
                     break;
                 case CommandTypes.CodeContainer:
-                    this.codeContainerCommands = StringProcess.ConvertLineToCommand(commandText, global, commandLine);
+                    this.codeContainerCommands = Tokeniser.CallTokeniseInput(commandText, global, commandLine);
 
                     originalCommandText = "{" + commandText + "}";
                     break;

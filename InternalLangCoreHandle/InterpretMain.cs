@@ -1,6 +1,11 @@
-﻿namespace TASI
+﻿using TASI.InterpretStartup;
+using TASI.RuntimeObjects;
+using TASI.RuntimeObjects.FunctionClasses;
+using TASI.RuntimeObjects.VarClasses;
+
+namespace TASI.InternalLangCoreHandle
 {
-    internal class InterpretMain
+    public static class InterpretMain
     {
         public static List<NamespaceInfo> allNamespaces = new();
         public static List<Var> allPublicVars = new();
@@ -77,7 +82,7 @@
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<VarConstruct> result = new();
-            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand,  ";", global, commands.Last().commandLine));
+            if (commands.Last().commandType != Command.CommandTypes.EndCommand) commands.Add(new(Command.CommandTypes.EndCommand, ";", global, commands.Last().commandLine));
 
             foreach (Command command in commands)
             {
@@ -94,7 +99,7 @@
                     if (commandLine.commands.Count == 3) // Is link
                     {
                         if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
-                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        if (!Enum.TryParse(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
                             if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
@@ -104,7 +109,7 @@
                     else
                     {
                         if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
-                        if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
+                        if (!Enum.TryParse(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
                             if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
@@ -165,7 +170,7 @@
                                     Tutorial.TutorialPhase0();
                                 if (commandLine.commands[1].commandText.ToLower() == "tutorial1")
                                     Tutorial.TutorialPhase1(commands);
-                                if (!Enum.TryParse<NamespaceInfo.NamespaceIntend>(commandLine.commands[1].commandText.ToLower(), out NamespaceInfo.NamespaceIntend result)) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
+                                if (!Enum.TryParse(commandLine.commands[1].commandText.ToLower(), out NamespaceInfo.NamespaceIntend result)) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 thisNamespace.namespaceIntend = result;
                                 break;
                             case "start":
@@ -186,7 +191,7 @@
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
 
 
-                                if (!Enum.TryParse<VarConstruct.VarType>(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType functionReturnType)) throw new CodeSyntaxException("function return type is invalid.");
+                                if (!Enum.TryParse(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType functionReturnType)) throw new CodeSyntaxException("function return type is invalid.");
                                 Function? thisFunction = null;
                                 foreach (Function function in thisNamespace.namespaceFuncitons) //Check if function with name already exist
                                 {
@@ -228,7 +233,7 @@
                                         break;
                                     case 3:
                                         if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandText.ToLower() != "base" || commandLine.commands[2].commandType != Command.CommandTypes.String) throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import <string: path>;\nor\nimport base <string: path>;");
-                                        pathLocation = Path.Combine( global.MainFilePath, commandLine.commands[2].commandText.ToLower());
+                                        pathLocation = Path.Combine(global.MainFilePath, commandLine.commands[2].commandText.ToLower());
                                         break;
                                     default:
                                         throw new CodeSyntaxException("Invalid usage of import statement.\nCorrect usage: import < string: path >;\nor\nimport base < string: path >;");
@@ -240,7 +245,7 @@
                                         alreadyImportedNamespaces.Add(pathLocation);
                                         string pathLocationCopy = pathLocation;
                                         global.AllLoadedFiles.Add(pathLocationCopy);
-                                        global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "", false,global));
+                                        global.Namespaces.Add(new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global));
                                         global.ProcessFiles.Add(Task.Run(() =>
                                         {
                                             var importNamespace = InterpretHeaders(LoadFile.ByPath(pathLocationCopy, global, false), pathLocationCopy, global);
@@ -261,16 +266,16 @@
                                 }
                                 break;
                             case "makeglobalvar":
-                                if ((commandLine.commands.Count != 3 && commandLine.commands.Count != 4) || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var name>;");
+                                if (commandLine.commands.Count != 3 && commandLine.commands.Count != 4 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var name>;");
 
 
 
-                                if (!Enum.TryParse<Value.ValueType>(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false,global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                if (!Enum.TryParse(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
+                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                                 Value? setToValue = null;
                                 if (commandLine.commands.Count == 4)
                                 {
-                                    setToValue = Statement.GetValueOfCommands(new() { commandLine.commands[3] }, new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false,global), global));
+                                    setToValue = Statement.GetValueOfCommands(new() { commandLine.commands[3] }, new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global));
                                 }
 
                                 if (commandLine.commands[1].commandText == "all")

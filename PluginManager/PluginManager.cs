@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using TASI.InterpretStartup;
 
 namespace TASI.PluginManager
 {

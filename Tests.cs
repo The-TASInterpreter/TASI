@@ -2,6 +2,11 @@
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
+using TASI.InternalLangCoreHandle;
+using TASI.InterpretStartup;
+using TASI.RuntimeObjects;
+using TASI.RuntimeObjects.FunctionClasses;
+using TASI.RuntimeObjects.VarClasses;
 using TASI.Token;
 
 namespace TASI
@@ -19,7 +24,7 @@ namespace TASI
             Global global = new Global();
             for (int i = 0; i < 1000000; i++)
             {
-                StringProcess.ConvertLineToCommand("\"1\"\"4\"\"789\"", global);
+                Tokeniser.CallTokeniseInput("\"1\"\"4\"\"789\"", global);
             }
             benchmark.Stop();
             Console.WriteLine($"Benchmark took {benchmark.ElapsedMilliseconds}ms");
@@ -33,7 +38,7 @@ namespace TASI
             benchmark.Start();
             for (int i = 0; i < 1000000; i++)
             {
-                StringProcess.ConvertLineToCommand("one four nt", global);
+                Tokeniser.CallTokeniseInput("one four nt", global);
             }
             benchmark.Stop();
             Console.WriteLine($"Benchmark took {benchmark.ElapsedMilliseconds}ms");
@@ -49,7 +54,7 @@ namespace TASI
         public static void SringTest()
         {
             global = new Global();
-            Command testCommand = StringProcess.HandleString("some statement \"\\nSome \\\"string\\\"\" some after that", 15, out int end, out _, global);
+            Command testCommand = Tokeniser.HandleString("some statement \"\\nSome \\\"string\\\"\" some after that", 15, out int end, out _, global);
             Assert.AreEqual(  "\nSome \"string\"", testCommand.commandText);
             Assert.AreEqual(33, end);
         }
@@ -327,7 +332,7 @@ namespace TASI
             AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
             accessableObjects.accessableVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.num, "promisetestvar"), new(Value.ValueType.num, "")));
-            Statement.StaticStatement(new(StringProcess.ConvertLineToCommand("promise promiseTestVar {} { makeVar num i; while (i < 6969) { set i (i + 1); }; return i; }", global)), accessableObjects);
+            Statement.StaticStatement(new(Tokeniser.CallTokeniseInput("promise promiseTestVar {} { makeVar num i; while (i < 6969) { set i (i + 1); }; return i; }", global)), accessableObjects);
             //Assert.AreEqual("", ((Var)accessableObjects.accessableVars["promisetestvar"]).varValueHolder.value.value); //This is the worst way to test, please don't send me to hell :3
             Assert.AreEqual( 6969, ((Var)accessableObjects.accessableVars["promisetestvar"]).VarValue.ObjectValue);
         }
@@ -340,7 +345,7 @@ namespace TASI
             accessableObjects.accessableVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.@string, "promisetestvar"), new(Value.ValueType.@string, "")));
             accessableObjects.accessableVars.Add("outside", new Var(new VarConstruct(VarConstruct.VarType.@string, "outside"), new(Value.ValueType.@string, "notChange")));
              
-            Statement.StaticStatement(new(StringProcess.ConvertLineToCommand("promise promiseTestVar {} { while (outside == \"notChange\" ) {}; return outside; }", global)), accessableObjects);
+            Statement.StaticStatement(new(Tokeniser.CallTokeniseInput("promise promiseTestVar {} { while (outside == \"notChange\" ) {}; return outside; }", global)), accessableObjects);
             Thread.Sleep(50);
             ((Var)accessableObjects.accessableVars["outside"]).VarValue.ObjectValue = "change";
             Assert.AreEqual("change", ((Var)accessableObjects.accessableVars["promisetestvar"]).VarValue.ObjectValue);

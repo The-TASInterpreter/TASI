@@ -1,4 +1,5 @@
-﻿namespace TASI
+﻿
+namespace TASI
 {
     internal class ArgCheck
     {

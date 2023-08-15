@@ -1,4 +1,6 @@
 ﻿using TASI.PluginManager;
+using TASI.RuntimeObjects.FunctionClasses;
+using TASI.InternalLangCoreHandle;
 
 namespace TASI
 {

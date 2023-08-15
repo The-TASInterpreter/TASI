@@ -1,6 +1,8 @@
-﻿using TASI.Objects.VarClasses;
+﻿using TASI.InternalLangCoreHandle;
+using TASI.Objects.VarClasses;
+using TASI.RuntimeObjects;
 
-namespace TASI
+namespace TASI.RuntimeObjects.VarClasses
 {
     public class Var
     {
@@ -77,7 +79,7 @@ namespace TASI
 
 
 
-            this.varValueHolder = new(varValue);
+            varValueHolder = new(varValue);
 
             if (Value.ConvertValueTypeToVarType(VarValue.valueType ?? throw new InternalInterpreterException("Value type of value was null")) != varConstruct.type && varConstruct.type != VarConstruct.VarType.all) throw new CodeSyntaxException($"The variable \"{varConstruct.name}\" can't be initialized with a {varValue.valueType}-type value, because it's a {varConstruct.type}-type variable.");
 
@@ -114,7 +116,7 @@ namespace TASI
                             break;
                         case VarConstruct.VarType.@int:
                             if (value.valueType != Value.ValueType.@int) throw new CodeSyntaxException($"{value.valueType} is not the expected {varConstruct.type}-type, the \"{varConstruct.name}\" variable expects, or can't be converted to that type");
-                                varValueHolder.value = value;
+                            varValueHolder.value = value;
 
                             break;
                         case VarConstruct.VarType.@bool:

@@ -4,9 +4,11 @@
 using System.Diagnostics;
 using TASI.debug;
 using TASI.Exceptions;
+using TASI.InternalLangCoreHandle;
+using TASI.RuntimeObjects.FunctionClasses;
 using static TASI.Command;
 
-namespace TASI
+namespace TASI.InterpretStartup
 {
     class TASI_Main
     {
@@ -24,7 +26,7 @@ namespace TASI
             if (args.Length == 1)
             {
                 location = args[0];
-            } 
+            }
             else if (args.Length != 0)
             {
                 ArgCheck.InterpretArguments(ArgCheck.TokeniseArgs(args, ArgCheck.argCommandsDefinitions), global);
@@ -77,7 +79,7 @@ namespace TASI
                             foreach (Command overloadCode in functionCodeOverload)
                             {
                                 global.CurrentLine = overloadCode.commandLine;
-                                if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo, global);
+                                if (overloadCode.commandType == CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo, global);
                                 if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo, global);
                                 if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo, global);
                             }
@@ -88,7 +90,7 @@ namespace TASI
                 foreach (Command command in startValues.Item1)
                 {
                     global.CurrentLine = command.commandLine;
-                    if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(startValues.Item2, global);
+                    if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(startValues.Item2, global);
                     if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(startValues.Item2, global);
                     if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(startValues.Item2, global);
                 }
@@ -136,7 +138,7 @@ namespace TASI
                             Console.WriteLine("This plugin isn't on the current plugin version but it is still supported, so it should work. Please contact the Author if this is a problem on the plugin-side or the TASI developers if this is a plugin manager problem.");
                         else if (faultyPluginException.faultyPlugin.CompatibilityVersion < PluginManager.PluginManager.OLDEST_SUPPORTED_PLUGIN_COMPATIBILITY_VERSION)
                             Console.WriteLine("This plugin version is no longer supported. Please check for an update from the developer or download an older version of the interpreter.");
-                            
+
 
                         Console.WriteLine($"Plugin name: {faultyPluginException.faultyPlugin.Name}\nDescription: {faultyPluginException.faultyPlugin.Description}\nVersion: {faultyPluginException.faultyPlugin.Version}\nAuthor: {faultyPluginException.faultyPlugin.Author}\nPlugin Compatibility version: {faultyPluginException.faultyPlugin.CompatibilityVersion}\nPlugin manager Compatibility version: {PluginManager.PluginManager.PLUGIN_COMPATIBILITY_VERSION}");
 

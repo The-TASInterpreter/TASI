@@ -1,6 +1,7 @@
 ﻿using System.Xml.Linq;
+using TASI.RuntimeObjects.FunctionClasses;
 
-namespace TASI
+namespace TASI.InternalLangCoreHandle
 {
     internal class Help
     {
@@ -57,10 +58,10 @@ namespace TASI
         public static void ListNamespaces(List<NamespaceInfo> namespaces)
         {
             if (namespaces.Count == 0) Console.WriteLine("\t<There are none>");
-            foreach (NamespaceInfo ns in namespaces)           
+            foreach (NamespaceInfo ns in namespaces)
                 Console.WriteLine("\t" + ns.Name);
             return;
-            
+
         }
 
         public static string ListFunctions(List<Function> functions)

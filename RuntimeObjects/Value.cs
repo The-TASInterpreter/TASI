@@ -1,5 +1,6 @@
-﻿
-namespace TASI
+﻿using TASI.RuntimeObjects.VarClasses;
+
+namespace TASI.RuntimeObjects
 {
     public class Value
     {
@@ -113,13 +114,13 @@ namespace TASI
                     ObjectValue = (double)0;
                     break;
                 case ValueType.@int:
-                    ObjectValue = (int)0;
+                    ObjectValue = 0;
                     break;
                 case ValueType.@bool:
                     ObjectValue = false;
                     break;
                 case ValueType.@string:
-                    ObjectValue = String.Empty;
+                    ObjectValue = string.Empty;
                     break;
                 case ValueType.list:
                     ObjectValue = new List<Value>();
@@ -131,7 +132,7 @@ namespace TASI
         {
             valueType = ValueType.@void;
         }
-        public Value(ValueType valueType, Object objectValue)
+        public Value(ValueType valueType, object objectValue)
         {
             this.valueType = valueType;
             ObjectValue = objectValue;
@@ -205,7 +206,7 @@ namespace TASI
         }
 
 
-        public Object ObjectValue
+        public object ObjectValue
         {
             get
             {

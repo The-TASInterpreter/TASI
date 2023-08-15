@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TASI.LangFuncHandle;
+using TASI.LangCoreHandleInterface;
 
 namespace TASI.PluginManager
 {

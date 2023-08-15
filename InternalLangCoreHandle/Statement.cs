@@ -1,7 +1,9 @@
 ﻿
 using System.Xml.Linq;
+using TASI.RuntimeObjects;
+using TASI.RuntimeObjects.VarClasses;
 
-namespace TASI
+namespace TASI.InternalLangCoreHandle
 {
 
 
@@ -160,7 +162,7 @@ namespace TASI
 
                     foundVar = FindVar(commands[1].commandText, accessableObjects, true);
                     AccessableObjects newPromise = new AccessableObjects(new(), accessableObjects.currentNamespace, accessableObjects.global.CreateNewContext(accessableObjects.global.CurrentFile));
-                    foreach(Var var in accessableObjects.accessableVars.Values)
+                    foreach (Var var in accessableObjects.accessableVars.Values)
                     {
                         newPromise.accessableVars.Add(var.varConstruct.name, new Var(var, true));
                     }
@@ -184,7 +186,7 @@ namespace TASI
 
 
 
-                    if (!Enum.TryParse<Value.ValueType>(commands[1].commandText, true, out Value.ValueType varType) && commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commands[1].commandText}\" doesn't exist.");
+                    if (!Enum.TryParse(commands[1].commandText, true, out Value.ValueType varType) && commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commands[1].commandText}\" doesn't exist.");
                     if (FindVar(commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commands[2].commandText}\" already exists in this context.");
                     if (commands[1].commandText == "all")
                     {
@@ -198,7 +200,7 @@ namespace TASI
                         if (commands.Count != 4 || commands[1].commandType != Command.CommandTypes.Statement || commands[2].commandType != Command.CommandTypes.Statement)
                             throw new CodeSyntaxException("Invalid usage of makeconst. Correct usage:\nmakeconst < statement: var type > < statement: var name > < statement: value >;");
 
-                        if (!Enum.TryParse<Value.ValueType>(commands[1].commandText, true, out Value.ValueType constVarType) && commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commands[1].commandText}\" doesn't exist.");
+                        if (!Enum.TryParse(commands[1].commandText, true, out Value.ValueType constVarType) && commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commands[1].commandText}\" doesn't exist.");
                         if (FindVar(commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commands[2].commandText}\" already exists in this context.");
                         if (commands[1].commandText == "all")
                         {
@@ -376,7 +378,7 @@ namespace TASI
                             return foundValue.comesFromVarValue.VarValue;
                         return foundValue;
                     }
-                    
+
 
                     if (int.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out int intResult))
                     {

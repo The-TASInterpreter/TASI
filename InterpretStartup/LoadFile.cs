@@ -1,7 +1,11 @@
 ﻿using System.Text;
+using TASI.InternalLangCoreHandle;
+using TASI.RuntimeObjects;
+using TASI.RuntimeObjects.FunctionClasses;
+using TASI.Token;
 using static TASI.Command;
 
-namespace TASI
+namespace TASI.InterpretStartup
 {
     internal class LoadFile
     {
@@ -30,13 +34,13 @@ namespace TASI
             }
             if (autoAddToGlobal)
                 global.AllLoadedFiles.Add(location);
-            return StringProcess.ConvertLineToCommand(sb.ToString(), global);
+            return Tokeniser.CallTokeniseInput(sb.ToString(), global);
 
         }
         public static Value? RunCode(string code)
         {
             Global global = new();
-            List<Command> tokenisedCode = StringProcess.ConvertLineToCommand(code, global);
+            List<Command> tokenisedCode = Tokeniser.CallTokeniseInput(code, global);
             var codeHeaderInformation = InterpretMain.InterpretHeaders(tokenisedCode, "", global);
             AccessableObjects initialAccessableObjects = new(new(), codeHeaderInformation.Item2, global);
 
@@ -49,7 +53,7 @@ namespace TASI
                         foreach (Command overloadCode in functionCodeOverload)
                         {
                             global.CurrentLine = overloadCode.commandLine;
-                            if (overloadCode.commandType == Command.CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo, global);
+                            if (overloadCode.commandType == CommandTypes.FunctionCall) overloadCode.functionCall.SearchCallFunction(namespaceInfo, global);
                             if (overloadCode.commandType == CommandTypes.CodeContainer) overloadCode.initCodeContainerFunctions(namespaceInfo, global);
                             if (overloadCode.commandType == CommandTypes.Calculation) overloadCode.calculation.InitFunctions(namespaceInfo, global);
                         }
@@ -60,7 +64,7 @@ namespace TASI
             foreach (Command command in codeHeaderInformation.Item1)
             {
                 global.CurrentLine = command.commandLine;
-                if (command.commandType == Command.CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(codeHeaderInformation.Item2, global);
+                if (command.commandType == CommandTypes.FunctionCall) command.functionCall.SearchCallFunction(codeHeaderInformation.Item2, global);
                 if (command.commandType == CommandTypes.Calculation) command.calculation.InitFunctions(codeHeaderInformation.Item2, global);
                 if (command.commandType == CommandTypes.CodeContainer) command.initCodeContainerFunctions(codeHeaderInformation.Item2, global);
             }

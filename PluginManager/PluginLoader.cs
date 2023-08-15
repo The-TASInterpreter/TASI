@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using TASI.PluginManager;
-using TASI;
+using TASI.InterpretStartup;
 
 namespace PluginLoader
 {

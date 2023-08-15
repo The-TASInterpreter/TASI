@@ -1,6 +1,7 @@
 ﻿using System.Collections;
+using TASI.InterpretStartup;
 
-namespace TASI
+namespace TASI.RuntimeObjects.FunctionClasses
 {
     public class NamespaceInfo
     {

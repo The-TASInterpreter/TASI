@@ -1,6 +1,6 @@
-﻿using TASI.LangFuncHandle;
+﻿using TASI.LangCoreHandleInterface;
 
-namespace TASI
+namespace TASI.RuntimeObjects.FunctionClasses
 {
     // [TASI.DecFunc "Main","void",[SArray.DecArray "array cum, string cool"]];
     public class Function
@@ -21,7 +21,7 @@ namespace TASI
         {
             get
             {
-                if (functionHandle == null) 
+                if (functionHandle == null)
                 {
                     if (parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
                         throw new InternalInterpreterException("function handler for internal function was not defined.");
@@ -37,10 +37,10 @@ namespace TASI
         public Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, IInternalFunctionHandler? functionHandle = null) // Is a Main function and is not a void
         {
             this.funcName = funcName.ToLower();
-            this.parentFunction = null;
-            this.isSubfunction = false;
+            parentFunction = null;
+            isSubfunction = false;
             this.returnType = returnType;
-            this.subFunctions = new List<Function>();
+            subFunctions = new List<Function>();
             this.parentNamespace = parentNamespace;
             parentNamespace.namespaceFuncitons.Add(this);
             functionLocation = GetFunctionLocationString();

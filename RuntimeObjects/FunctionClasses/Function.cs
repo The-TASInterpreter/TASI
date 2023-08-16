@@ -1,4 +1,5 @@
-﻿using TASI.LangCoreHandleInterface;
+﻿using System.Net;
+using TASI.LangCoreHandleInterface;
 using TASI.RuntimeObjects.VarClasses;
 
 namespace TASI.RuntimeObjects.FunctionClasses
@@ -16,9 +17,9 @@ namespace TASI.RuntimeObjects.FunctionClasses
         public List<List<VarConstruct>> functionArguments;
         public List<List<Command>> functionCode = new();
         public event EventHandler<Function> functionCreated;
-        private IInternalFunctionHandler? functionHandle;
+        private Handler? functionHandle;
 
-        public IInternalFunctionHandler FunctionHandler
+        public Handler FunctionHandler
         {
             get
             {
@@ -35,7 +36,7 @@ namespace TASI.RuntimeObjects.FunctionClasses
 
 
 
-        public Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, IInternalFunctionHandler? functionHandle = null) // Is a Main function and is not a void
+        internal Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, Handler? functionHandle = null) // Is a Main function and is not a void
         {
             this.funcName = funcName.ToLower();
             parentFunction = null;
@@ -52,6 +53,38 @@ namespace TASI.RuntimeObjects.FunctionClasses
             if (parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal && functionHandle == null)
                 throw new InternalInterpreterException("function handler for internal function was null.");
         }
+        
+        /// <summary>
+        /// Defines a default function
+        /// </summary>
+        /// <param name="funcName"></param>
+        /// <param name="returnType"></param>
+        /// <param name="parentNamespace"></param>
+        /// <param name="functionCode"></param>
+        /// <param name="global"></param>
+        /// <param name="functionHandle"></param>
+
+        public static void CreateFunctionToParentNamespace(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, Handler? functionHandle = null)
+        {
+            new Function(funcName, returnType, parentNamespace, functionArguments, functionCode, global, functionHandle);
+        }
+
+        public delegate Value? Handler(List<Value> list, AccessableObjects objs);
+
+        /// <summary>
+        /// Defines a default function which needs no input arguments
+        /// </summary>
+        /// <param name="funcName"></param>
+        /// <param name="returnType"></param>
+        /// <param name="parentNamespace"></param>
+        /// <param name="functionCode"></param>
+        /// <param name="global"></param>
+        /// <param name="functionHandle"></param>
+        public static void CreateFunctionToParentNamespace(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<Command> functionCode, Global global, Handler? handler)
+        {
+            new Function(funcName, returnType, parentNamespace, new() { new() }, functionCode, global, handler);
+        }
+
 
         private string GetFunctionLocationString()
         {

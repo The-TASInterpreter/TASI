@@ -1,6 +1,5 @@
 ﻿
 using System.Collections;
-using System.Reflection.Metadata;
 using System.Text;
 using TASI.RuntimeObjects;
 using TASI.RuntimeObjects.FunctionClasses;
@@ -162,7 +161,7 @@ namespace TASI.InternalLangCoreHandle
                     matching = true;
                     for (int i = 0; i < inputVars.Count; i++)
                     {
-                        if (functionInputType[i].type != Value.ConvertValueTypeToVarType(inputVars[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")) && functionInputType[i].type != VarConstruct.VarType.all || inputVars[i].comesFromVarValue == null && functionInputType[i].isLink)
+                        if ((functionInputType[i].type != Value.ConvertValueTypeToVarType(inputVars[i].valueType ?? throw new InternalInterpreterException("Value type of value was null")) && functionInputType[i].type != VarConstruct.VarType.all) || (inputVars[i].comesFromVarValue == null && functionInputType[i].isLink))
                         {
                             matching = false;
                             break;
@@ -193,13 +192,13 @@ namespace TASI.InternalLangCoreHandle
                 return null;
         }
 
-        public static Function? FindFunctionByPath(string name, List<NamespaceInfo> parentNamespaces, bool exceptionAtNotFound, NamespaceInfo? currentNamespace)
+        public static Function? FindFunctionByPath(string name, List<NamespaceInfo> allNamespaces, bool exceptionAtNotFound, NamespaceInfo? currentNamespace)
         {
 
             string[] nameSplit = name.Split('.');
             if (nameSplit.Length < 2)
                 throw new CodeSyntaxException($"Can't find Function \"{name}\" because there is no Function in the location.");
-            NamespaceInfo? parentNamespace = FindNamespaceByName(nameSplit[0], parentNamespaces, exceptionAtNotFound);
+            NamespaceInfo? parentNamespace = FindNamespaceByName(nameSplit[0], allNamespaces, exceptionAtNotFound);
             if (parentNamespace == null)
                 return null;
             List<Function> functions = parentNamespace.namespaceFuncitons;
@@ -252,7 +251,7 @@ namespace TASI.InternalLangCoreHandle
 
             if (CallFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
             {
-                Value? returnValue = CallFunction.FunctionHandler.HandleInternalFunc(CallFunction.functionLocation, inputValues, accessableObjects);
+                Value? returnValue = CallFunction.FunctionHandler.Invoke(inputValues, accessableObjects);
                 if (accessableObjects.global.DebugMode)
                 {
                     Console.WriteLine($"Did function call to {CallFunction.parentNamespace.namespaceIntend}-intend {CallFunction.functionLocation}.\nIt returns a {CallFunction.returnType}.\nIt returned a {returnValue.valueType}-type with a value of \"{returnValue.ObjectValue}\".");
@@ -281,7 +280,7 @@ namespace TASI.InternalLangCoreHandle
 
 
 
-            if (functionReturnValue == null || Value.ConvertValueTypeToVarType(functionReturnValue.valueType ?? throw new InternalInterpreterException("Value type of value was null")) != CallFunction.returnType && CallFunction.returnType != VarConstruct.VarType.all)
+            if (functionReturnValue == null || (Value.ConvertValueTypeToVarType(functionReturnValue.valueType ?? throw new InternalInterpreterException("Value type of value was null")) != CallFunction.returnType && CallFunction.returnType != VarConstruct.VarType.all))
                 throw new CodeSyntaxException($"The function \"{CallFunction.functionLocation}\" didn't return the expected {CallFunction.returnType}-type.");
             return functionReturnValue;
 

@@ -8,13 +8,13 @@ namespace TASI.PluginManager
         /// <summary>
         /// The current supported plugin loader version of the plugin manager. Plugins on this version should have no problem to be loaded
         /// </summary>
-        internal const int PLUGIN_COMPATIBILITY_VERSION = 2;
+        internal const int PLUGIN_COMPATIBILITY_VERSION = 3;
 
         /// <summary>
         /// The oldest supported plugin loader version of the plugin manager. Plugins between the current and oldest version should still load successfully
         /// Versions older than this might still work depending on the plugin type they're using
         /// </summary>
-        internal const int OLDEST_SUPPORTED_PLUGIN_COMPATIBILITY_VERSION = 2;
+        internal const int OLDEST_SUPPORTED_PLUGIN_COMPATIBILITY_VERSION = 3;
 
         public static Assembly LoadPluginAssembly(string relativePath) // https://learn.microsoft.com/en-us/dotnet/core/tutorials/creating-app-with-plugin-support
         {

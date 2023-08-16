@@ -7,7 +7,7 @@ using TASI.LangCoreHandleInterface;
 
 namespace TASI.PluginManager
 {
-    public interface IInternalFunctionPlugin : ITASIPlugin, IInternalFunctionHandler
+    public interface IInternalFunctionPlugin : ITASIPlugin
     {
         void InitFunctions(Global global);
     }

@@ -8,13 +8,13 @@ namespace TASI.PluginManager
         /// <summary>
         /// The current supported plugin loader version of the plugin manager. Plugins on this version should have no problem to be loaded
         /// </summary>
-        internal const int PLUGIN_COMPATIBILITY_VERSION = 1;
+        internal const int PLUGIN_COMPATIBILITY_VERSION = 2;
 
         /// <summary>
         /// The oldest supported plugin loader version of the plugin manager. Plugins between the current and oldest version should still load successfully
         /// Versions older than this might still work depending on the plugin type they're using
         /// </summary>
-        internal const int OLDEST_SUPPORTED_PLUGIN_COMPATIBILITY_VERSION = 1;
+        internal const int OLDEST_SUPPORTED_PLUGIN_COMPATIBILITY_VERSION = 2;
 
         public static Assembly LoadPluginAssembly(string relativePath) // https://learn.microsoft.com/en-us/dotnet/core/tutorials/creating-app-with-plugin-support
         {
@@ -96,6 +96,10 @@ namespace TASI.PluginManager
                 {
                     initPlugin.Execute(accessableObjects);
                 }
+                if (plugin is IStatementPlugin statementPlugin)
+                {
+                    statementPlugin.InitStatements(accessableObjects.global);
+                }
             }
         }
 
@@ -110,6 +114,7 @@ namespace TASI.PluginManager
                 {
                     case IInitialisationPlugin:
                     case IInternalFunctionPlugin:
+                    case IStatementPlugin:
                         break;
                     default:
                         throw new FaultyPluginException("This plugin type is not supported. Please keep in mind that the ITASIPlugin cannot be used directly as it just defines the base of a plugin.", plugin);

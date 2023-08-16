@@ -1,5 +1,4 @@
 ﻿using TASI.InternalLangCoreHandle;
-using TASI.Objects.VarClasses;
 using TASI.RuntimeObjects;
 
 namespace TASI.RuntimeObjects.VarClasses

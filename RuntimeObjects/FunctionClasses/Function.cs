@@ -1,4 +1,5 @@
 ﻿using TASI.LangCoreHandleInterface;
+using TASI.RuntimeObjects.VarClasses;
 
 namespace TASI.RuntimeObjects.FunctionClasses
 {

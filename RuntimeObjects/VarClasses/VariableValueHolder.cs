@@ -1,6 +1,6 @@
 ﻿using TASI.RuntimeObjects;
 
-namespace TASI.Objects.VarClasses
+namespace TASI.RuntimeObjects.VarClasses
 {
     public class VariableValueHolder
     {

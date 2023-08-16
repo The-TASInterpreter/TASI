@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using TASI.InterpretStartup;
+using TASI.RuntimeObjects.VarClasses;
 
 namespace TASI.RuntimeObjects.FunctionClasses
 {

@@ -1,4 +1,4 @@
-﻿namespace TASI
+﻿namespace TASI.RuntimeObjects.VarClasses
 {
     public class VarConstruct
     {
@@ -16,7 +16,7 @@
             this.name = name.ToLower();
             this.type = type;
             this.isLink = isLink;
-            this.isConstant = isConst;
+            isConstant = isConst;
         }
     }
 }

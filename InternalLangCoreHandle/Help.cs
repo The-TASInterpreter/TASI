@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using TASI.RuntimeObjects.FunctionClasses;
+using TASI.RuntimeObjects.VarClasses;
 
 namespace TASI.InternalLangCoreHandle
 {

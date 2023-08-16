@@ -3,6 +3,7 @@ using TASI.InternalLangCoreHandle;
 using TASI.LangCoreHandleInterface;
 using TASI.PluginManager;
 using TASI.RuntimeObjects.FunctionClasses;
+using TASI.RuntimeObjects.VarClasses;
 
 namespace TASI
 {

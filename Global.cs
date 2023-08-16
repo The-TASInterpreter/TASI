@@ -1,6 +1,8 @@
-﻿using TASI.PluginManager;
-using TASI.RuntimeObjects.FunctionClasses;
+﻿using TASI.InitialisationObjects;
 using TASI.InternalLangCoreHandle;
+using TASI.LangCoreHandleInterface;
+using TASI.PluginManager;
+using TASI.RuntimeObjects.FunctionClasses;
 
 namespace TASI
 {
@@ -21,6 +23,8 @@ namespace TASI
         public List<FileStream> allFileStreams = new();
         public Random randomGenerator = new();
         public List<ITASIPlugin> plugins = new();
+        public Dictionary<string, Statement> allStatements = new();
+        public Dictionary<string, ReturnStatement> allReturnStatements = new();
     }
 
     public class GlobalContext
@@ -31,6 +35,28 @@ namespace TASI
 
     public class Global
     {
+        public Dictionary<string, Statement> AllNormalStatements
+        {
+            get
+            {
+                return globalProjectShared.allStatements;
+            }
+            set
+            {
+                globalProjectShared.allStatements = value;
+            }
+        }
+        public Dictionary<string, ReturnStatement> AllNormalReturnStatements
+        {
+            get
+            {
+                return globalProjectShared.allReturnStatements;
+            }
+            set
+            {
+                globalProjectShared.allReturnStatements = value;
+            }
+        }
         public List<ITASIPlugin> Plugins
         {
             get
@@ -341,6 +367,99 @@ namespace TASI
             new Function("Replace", VarConstruct.VarType.@string, Namespaces[9], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "str"), new(VarConstruct.VarType.@string, "org"), new(VarConstruct.VarType.@string, "new")},
             }, new(), this, mainInternalFunctionHandle);
+
+            //Normal statements
+            InternalStatementHandler internalStatementHandler = new();
+            AllNormalStatements.Add("loop", new("loop", new()
+            {
+                new() {}
+            }, internalStatementHandler));
+            AllNormalStatements.Add("return", new("return", new()
+            {
+                new() {new(StatementInputType.StatementInput.ValueReturner, "valueToReturn") },
+                new()
+            }, internalStatementHandler));
+            AllNormalStatements.Add("set", new("set", new()
+            {
+                new() {new(StatementInputType.StatementInput.Statement, "variableName"), new(StatementInputType.StatementInput.ValueReturner, "newVariableValue") },
+            }, internalStatementHandler));
+            AllNormalStatements.Add("while", new("while", new()
+            {
+                new() {new(StatementInputType.StatementInput.ValueReturner, "loopWhileTrue"), new(StatementInputType.StatementInput.CodeContainer, "codeToLoop") },
+            }, internalStatementHandler));
+            AllNormalStatements.Add("if", new("if", new()
+            {
+                new() {new(StatementInputType.StatementInput.ValueReturner, "ifCheck"), new(StatementInputType.StatementInput.CodeContainer, "doIfTrue")},
+                new() {new(StatementInputType.StatementInput.ValueReturner, "ifCheck"), new(StatementInputType.StatementInput.CodeContainer, "doIfTrue"), new("else", "else"), new(StatementInputType.StatementInput.CodeContainer, "doIfFalse") }
+            }, internalStatementHandler));
+            AllNormalStatements.Add("helpm", new("helpm", new()
+            {
+                new() {new(StatementInputType.StatementInput.FunctionCall, "functionToCheck (The function call doesn't have to be a valid call)") },
+            }, internalStatementHandler));
+            AllNormalStatements.Add("listm", new("helpm", new()
+            {
+                new() {new(StatementInputType.StatementInput.String, "location") },
+            }, internalStatementHandler));
+            AllNormalStatements.Add("rootm", new("rootm", new()
+            {
+                new() {},
+            }, internalStatementHandler));
+
+
+            AllNormalStatements.Add("link", new("link", new()
+            {
+                new() {new(StatementInputType.StatementInput.Statement, "variableToLink"), new(StatementInputType.StatementInput.Statement, "variableToLinkTo") },
+            }, internalStatementHandler));
+            AllNormalStatements.Add("unlink", new("unlink", new()
+            {
+                new() {new(StatementInputType.StatementInput.Statement, "variableToReset (After an unlink the variable won't return to its value before the link)") },
+            }, internalStatementHandler));
+            AllNormalStatements.Add("promise", new("promise", new()
+            {
+                new() {new(StatementInputType.StatementInput.Statement, "variableName"), new(StatementInputType.StatementInput.CodeContainer, "initPromiseInPromiseContext"), new(StatementInputType.StatementInput.CodeContainer, "promiseCode") },
+                new() {new(StatementInputType.StatementInput.Statement, "variableName"), new(StatementInputType.StatementInput.CodeContainer, "promiseCode") },
+            }, internalStatementHandler));
+            AllNormalStatements.Add("unpromise", new("unpromise", new()
+            {
+                new() {new(StatementInputType.StatementInput.Statement, "variableName")},
+            }, internalStatementHandler));
+            AllNormalStatements.Add("makevar", new("makeVar", new()
+            {
+                new() {new(StatementInputType.StatementInput.Statement, "variableType"), new(StatementInputType.StatementInput.Statement, "variableName")},
+                new() {new(StatementInputType.StatementInput.Statement, "variableType"), new(StatementInputType.StatementInput.Statement, "variableName"), new(StatementInputType.StatementInput.ValueReturner, "initialisationValue")},
+            }, internalStatementHandler));
+            AllNormalStatements.Add("makeconst", new("makeConst", new()
+            {
+                new() {new(StatementInputType.StatementInput.Statement, "constType"), new(StatementInputType.StatementInput.Statement, "constName"), new(StatementInputType.StatementInput.ValueReturner, "initialisationValue")},
+            }, internalStatementHandler));
+
+            //Return statements
+            InternalReturnStatementHandler internalReturnStatementHandler = new InternalReturnStatementHandler();
+            AllNormalReturnStatements.Add("true", new("true", new()
+            {
+                new() {},
+            }, internalReturnStatementHandler));
+            AllNormalReturnStatements.Add("false", new("false", new()
+            {
+                new() {},
+            }, internalReturnStatementHandler));
+            AllNormalReturnStatements.Add("void", new("void", new()
+            {
+                new() {},
+            }, internalReturnStatementHandler));
+            AllNormalReturnStatements.Add("if", new("if", new()
+            {
+                new() {new(StatementInputType.StatementInput.ValueReturner, "ifCheck"), new(StatementInputType.StatementInput.CodeContainer, "doIfTrue"), new("else", "else"), new(StatementInputType.StatementInput.CodeContainer, "doIfFalse") }
+
+            }, internalReturnStatementHandler));
+            AllNormalReturnStatements.Add("do", new("do", new()
+            {
+                new() {new(StatementInputType.StatementInput.CodeContainer, "doCode")},
+            }, internalReturnStatementHandler));
+            AllNormalReturnStatements.Add("linkable", new("linkable", new()
+            {
+                new() {new(StatementInputType.StatementInput.Statement, "variableName")},
+            }, internalReturnStatementHandler));
 
         }
     }

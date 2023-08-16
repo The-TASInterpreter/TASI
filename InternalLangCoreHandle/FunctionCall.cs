@@ -240,7 +240,7 @@ namespace TASI.InternalLangCoreHandle
                 inputValues = new();
                 foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
                 {
-                    inputValues.Add(Statement.GetValueOfCommands(commandLine.commands, accessableObjects));
+                    inputValues.Add(InterpretationHelp.GetValueOfCommands(commandLine.commands, accessableObjects));
                 }
             }
 

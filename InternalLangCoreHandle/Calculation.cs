@@ -56,7 +56,7 @@ namespace TASI.InternalLangCoreHandle
             switch (type)
             {
                 case Type.value: return value ?? throw new InternalInterpreterException("Internal: value is null.");
-                case Type.returnStatement: return Statement.ReturnStatement(returnStatement ?? throw new InternalInterpreterException("Internal: return statement list is null."), accessableObjects);
+                case Type.returnStatement: return InterpretationHelp.HandleReturnStatement(returnStatement ?? throw new InternalInterpreterException("Internal: return statement list is null."), accessableObjects);
                 case Type.@operator: throw new InternalInterpreterException("Internal: Can't get the value of an operator.");
                 case Type.function: return (functionCall ?? throw new InternalInterpreterException("Internal: function call is null")).DoFunctionCall(accessableObjects);
                 case Type.calculation:

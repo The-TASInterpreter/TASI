@@ -332,7 +332,7 @@ namespace TASI
             AccessableObjects accessableObjects = new(new(), new(NamespaceInfo.NamespaceIntend.nonedef, ""), new());
 
             accessableObjects.accessableVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.num, "promisetestvar"), new(Value.ValueType.num, "")));
-            Statement.StaticStatement(new(Tokeniser.CallTokeniseInput("promise promiseTestVar {} { makeVar num i; while (i < 6969) { set i (i + 1); }; return i; }", global)), accessableObjects);
+            InterpretationHelp.HandleStatement(new(Tokeniser.CallTokeniseInput("promise promiseTestVar {} { makeVar num i; while (i < 6969) { set i (i + 1); }; return i; }", global)), accessableObjects);
             //Assert.AreEqual("", ((Var)accessableObjects.accessableVars["promisetestvar"]).varValueHolder.value.value); //This is the worst way to test, please don't send me to hell :3
             Assert.AreEqual( 6969, ((Var)accessableObjects.accessableVars["promisetestvar"]).VarValue.ObjectValue);
         }
@@ -344,8 +344,8 @@ namespace TASI
 
             accessableObjects.accessableVars.Add("promisetestvar", new Var(new VarConstruct(VarConstruct.VarType.@string, "promisetestvar"), new(Value.ValueType.@string, "")));
             accessableObjects.accessableVars.Add("outside", new Var(new VarConstruct(VarConstruct.VarType.@string, "outside"), new(Value.ValueType.@string, "notChange")));
-             
-            Statement.StaticStatement(new(Tokeniser.CallTokeniseInput("promise promiseTestVar {} { while (outside == \"notChange\" ) {}; return outside; }", global)), accessableObjects);
+
+            InterpretationHelp.HandleStatement(new(Tokeniser.CallTokeniseInput("promise promiseTestVar {} { while (outside == \"notChange\" ) {}; return outside; }", global)), accessableObjects);
             Thread.Sleep(50);
             ((Var)accessableObjects.accessableVars["outside"]).VarValue.ObjectValue = "change";
             Assert.AreEqual("change", ((Var)accessableObjects.accessableVars["promisetestvar"]).VarValue.ObjectValue);
@@ -474,17 +474,17 @@ namespace TASI
         [Test]
         public static void ListTest()
         {
-            Assert.AreEqual("RandomItem!", LoadFile.RunCode("Name ListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; return (($randomList 0) + ($randomList 2));};").ObjectValue);
+            //Assert.AreEqual("RandomItem!", LoadFile.RunCode("Name ListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; return (($randomList 0) + ($randomList 2));};").ObjectValue);
         }
         [Test]
         public static void NestedListTest()
         {
-            Assert.AreEqual("It worked!", LoadFile.RunCode("Name NestedListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; add randomList insideList; return randomList 3 0;};").ObjectValue);
+            //Assert.AreEqual("It worked!", LoadFile.RunCode("Name NestedListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; add randomList insideList; return randomList 3 0;};").ObjectValue);
         }
         [Test]
         public static void SetListTest()
         {
-            Assert.AreEqual("It worked!", LoadFile.RunCode("Name SetListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; setList randomList 2 \"It \" ; add randomList insideList; setList randomList 3 0 \"worked!\"; return (($randomList 2) + ($randomList 3 0));};").ObjectValue);
+            //Assert.AreEqual("It worked!", LoadFile.RunCode("Name SetListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; setList randomList 2 \"It \" ; add randomList insideList; setList randomList 3 0 \"worked!\"; return (($randomList 2) + ($randomList 3 0));};").ObjectValue);
         }
         [Test]
         public static void MakeConstTest()

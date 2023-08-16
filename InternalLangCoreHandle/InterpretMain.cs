@@ -2,6 +2,7 @@
 using TASI.RuntimeObjects;
 using TASI.RuntimeObjects.FunctionClasses;
 using TASI.RuntimeObjects.VarClasses;
+using TASI.InitialisationObjects;
 
 namespace TASI.InternalLangCoreHandle
 {
@@ -271,11 +272,11 @@ namespace TASI.InternalLangCoreHandle
 
 
                                 if (!Enum.TryParse(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                if (Statement.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                if (InterpretationHelp.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                                 Value? setToValue = null;
                                 if (commandLine.commands.Count == 4)
                                 {
-                                    setToValue = Statement.GetValueOfCommands(new() { commandLine.commands[3] }, new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global));
+                                    setToValue = InterpretationHelp.GetValueOfCommands(new() { commandLine.commands[3] }, new AccessableObjects(new(), new(NamespaceInfo.NamespaceIntend.nonedef, "", false, global), global));
                                 }
 
                                 if (commandLine.commands[1].commandText == "all")
@@ -331,7 +332,10 @@ namespace TASI.InternalLangCoreHandle
             return Path.GetFullPath(path1).Replace('\\', '/').ToLower() == Path.GetFullPath(path2).Replace('\\', '/').ToLower();
         }
 
-
+        /// <summary>
+        /// Contains all statements in the interpret normal mode. The string is the statement name.
+        /// </summary>
+        
 
         public static Value? InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
         {
@@ -361,8 +365,8 @@ namespace TASI.InternalLangCoreHandle
                         {
 
                         }
-
-                        returnValue = Statement.StaticStatement(commandStatement, accessableObjects);
+                        
+                        returnValue = InterpretationHelp.HandleStatement(commandStatement, accessableObjects);
                         if (returnValue != null)
                             return returnValue;
 

@@ -17,9 +17,9 @@ namespace TASI.RuntimeObjects.FunctionClasses
         public List<List<VarConstruct>> functionArguments;
         public List<List<Command>> functionCode = new();
         public event EventHandler<Function> functionCreated;
-        private Handler? functionHandle;
+        private FunctionHandler? functionHandle;
 
-        public Handler FunctionHandler
+        public FunctionHandler FunctionHandle
         {
             get
             {
@@ -36,7 +36,7 @@ namespace TASI.RuntimeObjects.FunctionClasses
 
 
 
-        internal Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, Handler? functionHandle = null) // Is a Main function and is not a void
+        internal Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, FunctionHandler? functionHandle = null) // Is a Main function and is not a void
         {
             this.funcName = funcName.ToLower();
             parentFunction = null;
@@ -64,12 +64,12 @@ namespace TASI.RuntimeObjects.FunctionClasses
         /// <param name="global"></param>
         /// <param name="functionHandle"></param>
 
-        public static void CreateFunctionToParentNamespace(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, Handler? functionHandle = null)
+        public static void CreateFunctionToParentNamespace(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, FunctionHandler? functionHandle = null)
         {
             new Function(funcName, returnType, parentNamespace, functionArguments, functionCode, global, functionHandle);
         }
 
-        public delegate Value? Handler(List<Value> list, AccessableObjects objs);
+        public delegate Value? FunctionHandler(List<Value> list, AccessableObjects objs);
 
         /// <summary>
         /// Defines a default function which needs no input arguments
@@ -80,7 +80,7 @@ namespace TASI.RuntimeObjects.FunctionClasses
         /// <param name="functionCode"></param>
         /// <param name="global"></param>
         /// <param name="functionHandle"></param>
-        public static void CreateFunctionToParentNamespace(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<Command> functionCode, Global global, Handler? handler)
+        public static void CreateFunctionToParentNamespace(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<Command> functionCode, Global global, FunctionHandler? handler)
         {
             new Function(funcName, returnType, parentNamespace, new() { new() }, functionCode, global, handler);
         }

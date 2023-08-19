@@ -1,11 +1,12 @@
 ﻿using TASI.RuntimeObjects;
+using TASI.Types.Instance;
 
 namespace TASI.RuntimeObjects.VarClasses
 {
     public class VariableValueHolder
     {
         public bool waitingPromise = false;
-        public Value value;
-        public VariableValueHolder(Value value) { this.value = value; }
+        public TypeInstance value;
+        public VariableValueHolder(TypeInstance value) { this.value = value; }
     }
 }

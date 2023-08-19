@@ -5,20 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TASI.RuntimeObjects.FunctionClasses;
+using TASI.RuntimeObjects.VarClasses;
 
 namespace TASI
 {
     public class AccessableObjects
     {
-        public Hashtable accessableVars = new();   //List<Var> accessableVars = new();
+        public Dictionary<string, Var> accessableVars = new();   //List<Var> accessableVars = new();
         public NamespaceInfo currentNamespace;
         public bool inLoop = false;
         public CancellationTokenSource? cancellationTokenSource;
         public Global global;
-        public AccessableObjects(Hashtable accessableVars, NamespaceInfo importedNamespaces, Global global)
+        public AccessableObjects(Dictionary<string, Var> accessableVars, NamespaceInfo currentNamespace, Global global)
         {
             this.accessableVars = accessableVars;
-            this.currentNamespace = importedNamespaces;
+            this.currentNamespace = currentNamespace;
             this.global = global;
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace TASI.RuntimeObjects.VarClasses
+﻿using TASI.Types.Definition;
+
+namespace TASI.RuntimeObjects.VarClasses
 {
     public class VarConstruct
     {
@@ -7,11 +9,11 @@
             num, @string, @bool, @void, @int, list, all
         }
         public string name;
-        public VarType type;
+        public TypeDef type;
         public bool isLink;
         public bool isConstant;
 
-        public VarConstruct(VarType type, string name, bool isLink = false, bool isConst = false)
+        public VarConstruct(TypeDef type, string name, bool isLink = false, bool isConst = false)
         {
             this.name = name.ToLower();
             this.type = type;

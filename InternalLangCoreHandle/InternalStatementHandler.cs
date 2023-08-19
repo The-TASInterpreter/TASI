@@ -32,7 +32,7 @@ namespace TASI.InternalLangCoreHandle
                 case "set":
 
                     Var? correctVar = InterpretationHelp.FindVar(commands[1].commandText, accessableObjects, true);
-                    if (correctVar.varConstruct.isConstant) throw new CodeSyntaxException($"The value of the constant \"{commands[1].commandText}\" cannot be modified!");
+                    if (correctVar.varType.isConstant) throw new CodeSyntaxException($"The value of the constant \"{commands[1].commandText}\" cannot be modified!");
                     correctVar.VarValue = InterpretationHelp.GetValueOfCommands(commands.GetRange(2, commands.Count - 2), accessableObjects);
                     return null;
                 case "setlist":
@@ -160,7 +160,7 @@ namespace TASI.InternalLangCoreHandle
                     AccessableObjects newPromise = new AccessableObjects(new(), accessableObjects.currentNamespace, accessableObjects.global.CreateNewContext(accessableObjects.global.CurrentFile));
                     foreach (Var var in accessableObjects.accessableVars.Values)
                     {
-                        newPromise.accessableVars.Add(var.varConstruct.name, new Var(var, true));
+                        newPromise.accessableVars.Add(var.varType.name, new Var(var, true));
                     }
 
                     if (commands.Count == 4)

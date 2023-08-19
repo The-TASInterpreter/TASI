@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using TASI.InterpretStartup;
 using TASI.RuntimeObjects.VarClasses;
+using TASI.Types.Definition;
 
 namespace TASI.RuntimeObjects.FunctionClasses
 {
@@ -9,18 +10,17 @@ namespace TASI.RuntimeObjects.FunctionClasses
         public enum NamespaceIntend
         {
             nonedef, // Not defined intend. Should only occur internaly.
-            supervisor, // A special namespace, used for handeling permissions, preimporting Librarys and starting a project.
             generic, // A normal program, with a start, that will have all permissions when started alone.
             @internal, // An internal namspace hard-coded in.
-            library // An also normal program, which doesn't have a start and will throw an error if tried to excecute normally.
+            library, // An also normal program, which doesn't have a start and will throw an error if tried to excecute normally.
+            typedef
         }
         private string? name;
-        public List<Function> namespaceFuncitons = new();
-        public List<VarConstruct.VarType> namespaceVars = new();
-        public Hashtable publicNamespaceVars = new();
-        public List<NamespaceInfo> accessableNamespaces = new();
+        public readonly List<Function>? namespaceFuncitons;
+        public List<NamespaceInfo> accessableNamespaces;
         public NamespaceIntend namespaceIntend;
         public bool autoImport;
+        public readonly List<TypeDef>? namespaceTypes;
 
         public string? Name
         {
@@ -35,6 +35,18 @@ namespace TASI.RuntimeObjects.FunctionClasses
                 else
                     name = value.ToLower();
             }
+        }
+
+        public NamespaceInfo(List<TypeDef> types, string? name, bool autoImport = false, Global? global = null)
+        {
+            namespaceIntend = NamespaceIntend.typedef;
+            Name = name;
+            accessableNamespaces.Add(this);
+            if (global != null)
+                accessableNamespaces.AddRange(global.Namespaces.Where(x => x.autoImport)); //Import all internal namespaces that have auto import activated
+            this.autoImport = autoImport;
+            this.namespaceTypes = types;
+            
         }
 
 

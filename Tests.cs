@@ -261,7 +261,7 @@ namespace TASI
         {
             StringWriter sw = new();
             Console.SetOut(sw);
-            LoadFile.RunCode("name ReadFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\"LICENSE.txt\",\"r?\"]; [Console.WriteLine:[Filestream.ReadLine:($stream)]];};");
+            LoadFile.RunCode("name ReadFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\"LICENSE.txt\",\"r?\"]; [Console.WriteLine:[Filestream.ReadLine:($stream)]];};");
             string consoleOutput = sw.ToString();
             Assert.That(consoleOutput, Contains.Substring("MIT License"));
         }
@@ -270,56 +270,56 @@ namespace TASI
         {
             StringWriter sw = new();
             Console.SetOut(sw);
-            LoadFile.RunCode("name WriteFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".write_test.tmp\",\"w?\"];[Filestream.WriteLine:($stream),\"Test Write!\"];};");
+            LoadFile.RunCode("name WriteFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".write_test.tmp\",\"w?\"];[Filestream.WriteLine:($stream),\"Test Write!\"];};");
         }
         [Test]
         public static void CloseFileTest()
         {
             StringWriter sw = new();
             Console.SetOut(sw);
-            LoadFile.RunCode("name CloseFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".close_test.tmp\",\"?\"];[Filesystem.Close:($stream)];};");
+            LoadFile.RunCode("name CloseFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".close_test.tmp\",\"?\"];[Filesystem.Close:($stream)];};");
         }
         [Test]
         public static void FlushFileTest()
         {
             StringWriter sw = new();
             Console.SetOut(sw);
-            LoadFile.RunCode("name FlushFileTest;Type Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".flush_test.tmp\",\"?\"];[Filestream.Flush:($stream)];};");
+            LoadFile.RunCode("name FlushFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".flush_test.tmp\",\"?\"];[Filestream.Flush:($stream)];};");
         }
         [Test]
         public static void FileExistsTest()
         {
-            Assert.IsTrue((LoadFile.RunCode("Name FileExistsTest;Type Generic; Start {return [Filesystem.Exists:\"LICENSE.txt\"];};")?? throw new InvalidDataException("Test Code returned null!")).BoolValue);
+            Assert.IsTrue((LoadFile.RunCode("Name FileExistsTest;Types Generic; Start {return [Filesystem.Exists:\"LICENSE.txt\"];};")?? throw new InvalidDataException("Test Code returned null!")).BoolValue);
         }
         [Test]
         public static void CreateFileTest()
         {
-            LoadFile.RunCode("Name CreateFileTest;Type Generic;Start {makeVar int stream; set stream [Filesystem.Create:\".create_file_test.tmp\"]; [Filesystem.Close:($stream)];};");
+            LoadFile.RunCode("Name CreateFileTest;Types Generic;Start {makeVar int stream; set stream [Filesystem.Create:\".create_file_test.tmp\"]; [Filesystem.Close:($stream)];};");
         }
         [Test]
         public static void DeleteFileTest()
         {
-            LoadFile.RunCode("Name DeleteFileTest;Type Generic; Start {makeVar int stream; set stream [Filesystem.Create:\".delete_file_test.tmp\"]; [Filesystem.Close:($stream)]; [Filesystem.Delete:\".delete_file_test.tmp\"];};");
+            LoadFile.RunCode("Name DeleteFileTest;Types Generic; Start {makeVar int stream; set stream [Filesystem.Create:\".delete_file_test.tmp\"]; [Filesystem.Close:($stream)]; [Filesystem.Delete:\".delete_file_test.tmp\"];};");
         }
         [Test]
         public static void NextRandomTest()
         {
-            LoadFile.RunCode("Name NextRandomTest;Type Generic; Start {[Random.Next];makeVar int min;set min 0;makeVar int max;set max 10;[Random.Next:($min)];[Random.Next:($min),($max)]};");
+            LoadFile.RunCode("Name NextRandomTest;Types Generic; Start {[Random.Next];makeVar int min;set min 0;makeVar int max;set max 10;[Random.Next:($min)];[Random.Next:($min),($max)]};");
         }
         [Test]
         public static void NextRandomNumTest()
         {
-            LoadFile.RunCode("Name NextRandomTest;Type Generic; Start {[Random.NextNum];};");
+            LoadFile.RunCode("Name NextRandomTest;Types Generic; Start {[Random.NextNum];};");
         }
         [Test]
         public static void UnsafeShellExecuteTest()
         {
-            Assert.That(LoadFile.RunCode("Name ShellExecuteTest;Type Generic;Import \"unsafe.shell\"; Start {return [Shell.Execute:\"echo test123\"];};")!.StringValue, Contains.Substring("test123"));
+            Assert.That(LoadFile.RunCode("Name ShellExecuteTest;Types Generic;Import \"unsafe.shell\"; Start {return [Shell.Execute:\"echo test123\"];};")!.StringValue, Contains.Substring("test123"));
         }
         [Test]
         public static void UnsafeShellRunTest()
         {
-            LoadFile.RunCode("Name NextRandomTest;Type Generic;Import \"unsafe.shell\"; Start {[Shell.Run:\"rem test123\"];};");
+            LoadFile.RunCode("Name NextRandomTest;Types Generic;Import \"unsafe.shell\"; Start {[Shell.Run:\"rem test123\"];};");
         }
     }
     [TestFixture]
@@ -363,7 +363,7 @@ namespace TASI
 
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
-            LoadFile.RunCode("name EscapeAdditionTest;Type Generic;start {[Console.WriteLine:([EscapeAdditionTest.ReturnInput:\"\\\"\"] + \"\\\"\")]};function string ReturnInput {string input} {return input;};");
+            LoadFile.RunCode("name EscapeAdditionTest;Types Generic;start {[Console.WriteLine:([EscapeAdditionTest.ReturnInput:\"\\\"\"] + \"\\\"\")]};function string ReturnInput {string input} {return input;};");
             string consoleOutput = sw.ToString();
             Assert.That(consoleOutput, Contains.Substring("\"\""));
 
@@ -379,7 +379,7 @@ namespace TASI
 
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
-            LoadFile.RunCode("name HelloWorldTest;Type Generic;Start {[Console.WriteLine:\"\\\"Hello World!\\\"\"];};");
+            LoadFile.RunCode("name HelloWorldTest;Types Generic;Start {[Console.WriteLine:\"\\\"Hello World!\\\"\"];};");
             string consoleOutput = sw.ToString();
             Assert.That(consoleOutput, Contains.Substring("\"Hello World!\""));
 
@@ -393,7 +393,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Type Generic;Start {[Console.WriteLine:[Console.ReadLine]];};");
+            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Types Generic;Start {[Console.WriteLine:[Console.ReadLine]];};");
             string consoleOutput = sw.ToString();
             Assert.That(consoleOutput, Contains.Substring("Hello world!"));
 
@@ -408,7 +408,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Type Generic;Start {makeVar int I; set i 0; while (i < 5){[Console.WriteLine:i] set i (i + 1);}; };");
+            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Types Generic;Start {makeVar int I; set i 0; while (i < 5){[Console.WriteLine:i] set i (i + 1);}; };");
             string consoleOutput = sw.ToString();
             Assert.AreEqual("0\n1\n2\n3\n4\n", consoleOutput.Replace("\r\n", "\n"));
 
@@ -422,7 +422,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("Name ComplexTest;Type Generic;Start {makevar num times;set times [Convert.ToNum:[Console.ReadLine], true];makevar string printText;set printText [Console.ReadLine];[Console.WriteLine:[ComplexTest.DoWhileLoop:printText, times]]return;};function string DoWhileLoop {string printText; num repeatLoop}{makevar num i;if (repeatLoop > 99999){return \"high\";} else {if (repeatLoop < 1){return \"low\";};};while (repeatLoop > i){[Console.WriteLine:(printText + \" | \" + (i + 1) + \" out of \" + repeatLoop)]set i (i + 1);}; return \"success\";};");
+            LoadFile.RunCode("Name ComplexTest;Types Generic;Start {makevar num times;set times [Convert.ToNum:[Console.ReadLine], true];makevar string printText;set printText [Console.ReadLine];[Console.WriteLine:[ComplexTest.DoWhileLoop:printText, times]]return;};function string DoWhileLoop {string printText; num repeatLoop}{makevar num i;if (repeatLoop > 99999){return \"high\";} else {if (repeatLoop < 1){return \"low\";};};while (repeatLoop > i){[Console.WriteLine:(printText + \" | \" + (i + 1) + \" out of \" + repeatLoop)]set i (i + 1);}; return \"success\";};");
             string consoleOutput = sw.ToString();
             Assert.AreEqual("Test | 1 out of 3\nTest | 2 out of 3\nTest | 3 out of 3\nsuccess\n", consoleOutput.Replace("\r\n", "\n"));
 
@@ -435,7 +435,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("Name ComplexTest;Type Generic;Start {makevar num times;set times [Convert.ToNum:[Console.ReadLine], true];makevar string printText;set printText [Console.ReadLine];[Console.WriteLine:[ComplexTest.DoWhileLoop:printText, times]]return;};function string DoWhileLoop {string printText; num repeatLoop}{makevar num i;if (repeatLoop > 99999){return \"high\";} else {if (repeatLoop < 1){return \"low\";};};while (repeatLoop > i){[Console.WriteLine:(printText + \" | \" + (i + 1) + \" out of \" + repeatLoop)]set i (i + 1);}; return \"success\";};");
+            LoadFile.RunCode("Name ComplexTest;Types Generic;Start {makevar num times;set times [Convert.ToNum:[Console.ReadLine], true];makevar string printText;set printText [Console.ReadLine];[Console.WriteLine:[ComplexTest.DoWhileLoop:printText, times]]return;};function string DoWhileLoop {string printText; num repeatLoop}{makevar num i;if (repeatLoop > 99999){return \"high\";} else {if (repeatLoop < 1){return \"low\";};};while (repeatLoop > i){[Console.WriteLine:(printText + \" | \" + (i + 1) + \" out of \" + repeatLoop)]set i (i + 1);}; return \"success\";};");
             string consoleOutput = sw.ToString();
             Assert.AreEqual("low\n", consoleOutput.Replace("\r\n", "\n"));
 
@@ -448,7 +448,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("Name ComplexTest;Type Generic;Start {makevar num times;set times [Convert.ToNum:[Console.ReadLine], true];makevar string printText;set printText [Console.ReadLine];[Console.WriteLine:[ComplexTest.DoWhileLoop:printText, times]]return;};function string DoWhileLoop {string printText; num repeatLoop}{makevar num i;if (repeatLoop > 99999){return \"high\";} else {if (repeatLoop < 1){return \"low\";};};while (repeatLoop > i){[Console.WriteLine:(printText + \" | \" + (i + 1) + \" out of \" + repeatLoop)]set i (i + 1);}; return \"success\";};");
+            LoadFile.RunCode("Name ComplexTest;Types Generic;Start {makevar num times;set times [Convert.ToNum:[Console.ReadLine], true];makevar string printText;set printText [Console.ReadLine];[Console.WriteLine:[ComplexTest.DoWhileLoop:printText, times]]return;};function string DoWhileLoop {string printText; num repeatLoop}{makevar num i;if (repeatLoop > 99999){return \"high\";} else {if (repeatLoop < 1){return \"low\";};};while (repeatLoop > i){[Console.WriteLine:(printText + \" | \" + (i + 1) + \" out of \" + repeatLoop)]set i (i + 1);}; return \"success\";};");
             string consoleOutput = sw.ToString();
             Assert.AreEqual("high\n", consoleOutput.Replace("\r\n", "\n"));
 
@@ -461,7 +461,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("Name LoopTest;Type Generic;Start {makevar int i;set i 0; while (i == 50 !){set i (i + 1); loop; [Console.WriteLine:\"Seems like looping didn't work...\"] };};");
+            LoadFile.RunCode("Name LoopTest;Types Generic;Start {makevar int i;set i 0; while (i == 50 !){set i (i + 1); loop; [Console.WriteLine:\"Seems like looping didn't work...\"] };};");
             string consoleOutput = sw.ToString();
             Assert.AreEqual("", consoleOutput);
 
@@ -469,22 +469,22 @@ namespace TASI
         [Test]
         public static void LinkTest()
         {
-            Assert.AreEqual(15, LoadFile.RunCode("Name LinkTest;Type Generic;Start {makevar num link; makevar num linkTo; set link 10.0; set linkTo 15.0; link link linkTo; return link;};").ObjectValue);
+            Assert.AreEqual(15, LoadFile.RunCode("Name LinkTest;Types Generic;Start {makevar num link; makevar num linkTo; set link 10.0; set linkTo 15.0; link link linkTo; return link;};").ObjectValue);
         }
         [Test]
         public static void ListTest()
         {
-            //Assert.AreEqual("RandomItem!", LoadFile.RunCode("Name ListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; return (($randomList 0) + ($randomList 2));};").ObjectValue);
+            //Assert.AreEqual("RandomItem!", LoadFile.RunCode("Name ListTest;Types Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; return (($randomList 0) + ($randomList 2));};").ObjectValue);
         }
         [Test]
         public static void NestedListTest()
         {
-            //Assert.AreEqual("It worked!", LoadFile.RunCode("Name NestedListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; add randomList insideList; return randomList 3 0;};").ObjectValue);
+            //Assert.AreEqual("It worked!", LoadFile.RunCode("Name NestedListTest;Types Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; add randomList insideList; return randomList 3 0;};").ObjectValue);
         }
         [Test]
         public static void SetListTest()
         {
-            //Assert.AreEqual("It worked!", LoadFile.RunCode("Name SetListTest;Type Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; setList randomList 2 \"It \" ; add randomList insideList; setList randomList 3 0 \"worked!\"; return (($randomList 2) + ($randomList 3 0));};").ObjectValue);
+            //Assert.AreEqual("It worked!", LoadFile.RunCode("Name SetListTest;Types Generic;Start {makevar list randomList; add randomList \"RandomItem\"; add randomList \"AnotherRandomItem\"; add randomList \"!\"; makeVar list insideList; add insideList \"It worked!\"; setList randomList 2 \"It \" ; add randomList insideList; setList randomList 3 0 \"worked!\"; return (($randomList 2) + ($randomList 3 0));};").ObjectValue);
         }
         [Test]
         public static void MakeConstTest()
@@ -493,7 +493,7 @@ namespace TASI
             Assert.Throws<CodeSyntaxException>(() =>
             {
                 LoadFile.RunCode(
-                    "Name MakeConstTest; Type Generic; Start {makeConst int c_int 14;set c_int 23;};"
+                    "Name MakeConstTest; Types Generic; Start {makeConst int c_int 14;set c_int 23;};"
                 );
             })?.Message, Contains.Substring("c_int"));
         }

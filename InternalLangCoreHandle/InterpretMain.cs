@@ -3,6 +3,7 @@ using TASI.RuntimeObjects;
 using TASI.RuntimeObjects.FunctionClasses;
 using TASI.RuntimeObjects.VarClasses;
 using TASI.InitialisationObjects;
+using TASI.Types.Instance;
 
 namespace TASI.InternalLangCoreHandle
 {
@@ -166,7 +167,7 @@ namespace TASI.InternalLangCoreHandle
                             case "type":
                                 if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
-                                if (thisNamespace.namespaceIntend != NamespaceInfo.NamespaceIntend.nonedef) throw new CodeSyntaxException("Type can't be defined twice.");
+                                if (thisNamespace.namespaceIntend != NamespaceInfo.NamespaceIntend.nonedef) throw new CodeSyntaxException("Types can't be defined twice.");
                                 if (commandLine.commands[1].commandText.ToLower() == "tutorial0")
                                     Tutorial.TutorialPhase0();
                                 if (commandLine.commands[1].commandText.ToLower() == "tutorial1")
@@ -337,15 +338,15 @@ namespace TASI.InternalLangCoreHandle
         /// </summary>
         
 
-        public static Value? InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
+        public static TypeInstance? InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
         {
             foreach (NamespaceInfo namespaceInfo in accessableObjects.currentNamespace.accessableNamespaces)
             {
                 foreach (Var var in namespaceInfo.publicNamespaceVars)
                 {
                     if (accessableObjects.accessableVars.Contains(var)) continue;
-                    if (accessableObjects.accessableVars.ContainsKey(var.varConstruct.name)) throw new CodeSyntaxException($"A global variable with the name \"{var.varConstruct.name}\" already exists. So you can't use this name again.");
-                    accessableObjects.accessableVars.Add(var.varConstruct.name, var);
+                    if (accessableObjects.accessableVars.ContainsKey(var.varType.name)) throw new CodeSyntaxException($"A global variable with the name \"{var.varType.name}\" already exists. So you can't use this name again.");
+                    accessableObjects.accessableVars.Add(var.varType.name, var);
                 }
             }
             //More or less the core of the language. It uses a Command-List and loops over every command, it then checks the command type and calls the corrosponding internal functions to the code.

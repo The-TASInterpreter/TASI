@@ -85,7 +85,7 @@ namespace TASI.InternalLangCoreHandle
                     if (values.Count == 1) return values[0];
                     if (values.Count == 0) throw new CodeSyntaxException("You can't end up with 0 values at the end of a num calculation (I don't even know how you managed to do this, but it's 100% your fault).");
                     throw new CodeSyntaxException("You can't end up with more than 1 value at the end of a num calculation.");
-                default: throw new InternalInterpreterException($"Internal: Unexpected \"{type}\" CalculationType.Type");
+                default: throw new InternalInterpreterException($"Internal: Unexpected \"{type}\" CalculationType.Types");
             }
         }
 
@@ -164,7 +164,7 @@ namespace TASI.InternalLangCoreHandle
                             throw new CodeSyntaxException($"The \"{values[0].StringValue}\"-type either doesn't exist, or is not suitable for the non strinct equal operator. Suitable types are:\nstring, bool and num.");
                     }
 
-                case "==": //Type strict equal
+                case "==": //Types strict equal
                     if (values.Count < 2) throw new CodeSyntaxException("You need at least 2 values for the type strict equal operator.");
 
                     Value.ValueType firstType = values[0].valueType ?? throw new InternalInterpreterException("Value type of value was null");

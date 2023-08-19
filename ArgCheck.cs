@@ -111,7 +111,7 @@ namespace TASI
         {
             if (!argDefinition.argAttributes.Contains(argAttributes.Count))
             {
-                throw new ArgumentException($"Invalid usage of {argDefinition.argName} argument. Type help to see correct uses");
+                throw new ArgumentException($"Invalid usage of {argDefinition.argName} argument. Types help to see correct uses");
             }
         }
     }

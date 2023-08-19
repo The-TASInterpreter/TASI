@@ -6,6 +6,9 @@ using TASI.PluginManager;
 using TASI.RuntimeObjects;
 using TASI.RuntimeObjects.FunctionClasses;
 using TASI.RuntimeObjects.VarClasses;
+using TASI.Types.Definition;
+using TASI.Types.Definition.Field;
+using TASI.Types.Instance;
 
 namespace TASI
 {
@@ -28,6 +31,35 @@ namespace TASI
         public List<ITASIPlugin> plugins = new();
         public Dictionary<string, Statement> allStatements = new();
         public Dictionary<string, ReturnStatement> allReturnStatements = new();
+        public TypeDef TYPE_DEF_STRING { get; private set; }
+        public TypeDef TYPE_DEF_DOUBLE { get; private set; }
+        public TypeDef TYPE_DEF_BOOL { get; private set; }
+        public TypeDef TYPE_DEF_VOID { get; private set; }
+        public TypeDef TYPE_DEF_INT { get; private set; }
+        public TypeDef TYPE_DEF_OBJECT { get; private set; }
+
+
+        public void InitTypes(Global global)
+        {
+            TYPE_DEF_OBJECT = new("Object", new(NamespaceInfo.NamespaceIntend.@internal, "Object", true, global), new()
+            , new(), true, TypeDef.InstantiationType.framework);
+            TYPE_DEF_STRING = new("String", new(NamespaceInfo.NamespaceIntend.@internal, "String", true, global), new() { }, new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
+            TYPE_DEF_DOUBLE = new("Double", new(NamespaceInfo.NamespaceIntend.@internal, "Double", true, global), new(), new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
+            TYPE_DEF_BOOL = new("Bool", new(NamespaceInfo.NamespaceIntend.@internal, "Bool", true, global), new(), new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
+            TYPE_DEF_VOID = new("Void", new(NamespaceInfo.NamespaceIntend.@internal, "Void", true, global), new(), new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
+            TYPE_DEF_INT = new("Int", new(NamespaceInfo.NamespaceIntend.@internal, "Int", true, global), new(), new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
+
+            TYPE_DEF_OBJECT.fields.Add(new Method(TYPE_DEF_OBJECT, "ToString", TYPE_DEF_STRING, new()
+            {
+                new(new(), (List<Value> input, AccessableObjects obj, TypeInstance self) =>
+                {
+                    return new()
+                } )
+            })
+
+        }
+
+
     }
 
     public class GlobalContext
@@ -38,6 +70,42 @@ namespace TASI
 
     public class Global
     {
+        public TypeDef TYPE_DEF_VOID
+        {
+            get
+            {
+                return globalProjectShared.TYPE_DEF_VOID;
+            }
+        }
+        public TypeDef TYPE_DEF_DOUBLE
+        {
+            get
+            {
+                return globalProjectShared.TYPE_DEF_DOUBLE;
+            }
+        }
+        public TypeDef TYPE_DEF_STRING
+        {
+            get
+            {
+                return globalProjectShared.TYPE_DEF_STRING;
+            }
+        }
+        public TypeDef TYPE_DEF_BOOL
+        {
+            get
+            {
+                return globalProjectShared.TYPE_DEF_BOOL;
+            }
+        }
+        public TypeDef TYPE_DEF_INT
+        {
+            get
+            {
+                return globalProjectShared.TYPE_DEF_INT;
+            }
+        }
+
         public Dictionary<string, Statement> AllNormalStatements
         {
             get
@@ -260,11 +328,14 @@ namespace TASI
 
 
             Namespaces = new();
+
+
+
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Test", true));
             AllLoadedFiles.Add("*internal");
             new Function("HelloWorld", VarConstruct.VarType.@void, Namespaces[0], new List<List<VarConstruct>> {
-                new List<VarConstruct> { new(VarConstruct.VarType.@bool, "display"), new(VarConstruct.VarType.@string, "text")}
-            }, new(), this, (input,accessableObjects) =>
+                new List<VarConstruct> { new(TYPE_DEF_BOOL, "display"), new(TYPE_DEF_STRING, "text")}
+            }, new(), this, (input, accessableObjects) =>
             {
                 if (input[0].NumValue == 1)
                     Console.WriteLine(input[1].StringValue);
@@ -347,7 +418,7 @@ namespace TASI
             {
                 Var var = (Var)(accessableObjects.accessableVars[input[0].StringValue] ?? throw new CodeSyntaxException($"The variable \"{input[0]}\" cannot be found."));
 
-                var.varConstruct.isConstant = true;
+                var.varType.isConstant = true;
                 return null;
             });
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Convert", true));

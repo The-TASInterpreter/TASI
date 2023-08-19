@@ -1,4 +1,6 @@
 ﻿using TASI.RuntimeObjects.VarClasses;
+using TASI.Types.Definition;
+using TASI.Types.Instance;
 
 namespace TASI.RuntimeObjects
 {
@@ -11,8 +13,7 @@ namespace TASI.RuntimeObjects
 
 
         public SpecialReturns? specialReturn = null;
-        public object? value;
-        public ValueType? valueType;
+        public readonly TypeInstance value;
         public bool isReturnValue;
         public bool isConstant;
         public Var? comesFromVarValue = null;
@@ -95,7 +96,7 @@ namespace TASI.RuntimeObjects
                     return VarConstruct.VarType.@void;
                 case ValueType.list:
                     return VarConstruct.VarType.list;
-                default: throw new InternalInterpreterException("Internal: Unimplemented Value Type.");
+                default: throw new InternalInterpreterException("Internal: Unimplemented Value Types.");
             }
         }
 
@@ -132,7 +133,7 @@ namespace TASI.RuntimeObjects
         {
             valueType = ValueType.@void;
         }
-        public Value(ValueType valueType, object objectValue)
+        public Value(TypeDef valueType, object objectValue)
         {
             this.valueType = valueType;
             ObjectValue = objectValue;

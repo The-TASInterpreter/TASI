@@ -16,8 +16,8 @@ namespace TASI.RuntimeObjects.FunctionClasses
         public NamespaceInfo parentNamespace;
         public List<List<VarConstruct>> functionArguments;
         public List<List<Command>> functionCode = new();
-        public event EventHandler<Function> functionCreated;
         private FunctionHandler? functionHandle;
+        public delegate Value? FunctionHandler(List<Value> list, AccessableObjects objs);
 
         public FunctionHandler FunctionHandle
         {
@@ -69,7 +69,6 @@ namespace TASI.RuntimeObjects.FunctionClasses
             new Function(funcName, returnType, parentNamespace, functionArguments, functionCode, global, functionHandle);
         }
 
-        public delegate Value? FunctionHandler(List<Value> list, AccessableObjects objs);
 
         /// <summary>
         /// Defines a default function which needs no input arguments

@@ -1,19 +1,33 @@
-﻿namespace TASI.Types.Definition.Field
+﻿using TASI.Types.Definition.Things;
+using TASI.Types.Definition.Visibility;
+
+namespace TASI.Types.Definition.Field
 {
-    public class Method
+    public class Method : Thing
     {
-        private TypeDef parentType;
+        public TypeDef ParentType { get; }
 
-        public TypeDef returnValue;
+        public TypeDef returnType;
         public List<Overload> overloads;
-        public string name;
 
-        public Method(TypeDef parentType, string name, TypeDef returnValue, List<Overload> overloads)
+
+        public string GetFullName
         {
-            this.parentType = parentType;
-            this.returnValue = returnValue;
+            get
+            {
+                return $"{ParentType.GetFullName}.{name}";
+            }
+        }
+
+        public override bool isStatic => true;
+
+        public override string actualType => "Method";
+
+        public Method(TypeDef parentType, string name, TypeDef returnValue, List<Overload> overloads) : base(name)
+        {
+            this.ParentType = parentType;
+            this.returnType = returnValue;
             this.overloads = overloads;
-            this.name = name;
         }
         /// <summary>
         /// 

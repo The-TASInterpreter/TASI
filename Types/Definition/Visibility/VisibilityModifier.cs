@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace TASI.Types.Definition.Visibility
 {
-    public abstract class Modifyer
+    public abstract class VisibilityModifier
     {
+
         public TypeDef parentTypeDef;
 
-        protected Modifyer(TypeDef parentTypeDef)
+        protected VisibilityModifier(TypeDef parentTypeDef)
         {
             this.parentTypeDef = parentTypeDef;
         }

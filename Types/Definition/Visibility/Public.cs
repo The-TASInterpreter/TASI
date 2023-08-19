@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TASI.Types.Definition.Visibility
 {
-    public class Public : Modifyer
+    public class Public : VisibilityModifier
     {
         public Public(TypeDef parentTypeDef) : base(parentTypeDef) { }
         public override bool HasAccess(TypeDef typeDef)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TASI.Types.Definition.Visibility
 {
-    public class Group : Modifyer
+    public class Group : VisibilityModifier
     {
         public List<TypeDef> AllowedTypeDefs { get; }
 

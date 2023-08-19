@@ -1,26 +1,46 @@
-﻿using TASI.RuntimeObjects;
+﻿using System.Text;
+using TASI.RuntimeObjects;
+using TASI.Types.Definition.Visibility;
 using TASI.Types.Instance;
 
 namespace TASI.Types.Definition.Field
 {
     public class Overload
     {
-        public List<TypeDef> inputTypes;
+        public VisibilityModifier Modifyer { get; }
+        public List<(TypeDef, string)> inputTypes;
         public readonly List<Command>? commands;
-        public readonly MethodHandler? methodHandler;
+        public readonly OverloadHandler? methodHandler;
+        
+        public string GetCallName
+        {
+            get
+            {
+                throw new NotImplementedException();
+                StringBuilder sb = new();
 
-        public delegate TypeInstance MethodHandler(List<Value> input, AccessableObjects objs, TypeInstance self);
+                for (int i = 0; i < inputTypes.Count; i++)
+                {
+                    (TypeDef, string) inputType = inputTypes[i];
+                }
+            }
+        }
 
-        public Overload(List<TypeDef> inputTypes, MethodHandler? methodHandler)
+
+        public delegate TypeInstance OverloadHandler(List<TypeInstance> input, AccessableObjects objs, TypeInstance self);
+
+        public Overload(List<(TypeDef, string)> inputTypes, OverloadHandler? methodHandler, VisibilityModifier modifyer)
         {
             this.inputTypes = inputTypes;
             this.methodHandler = methodHandler;
+            Modifyer = modifyer;
         }
 
-        public Overload(List<TypeDef> inputTypes, List<Command>? commands)
+        public Overload(List<(TypeDef, string)> inputTypes, List<Command>? commands, VisibilityModifier modifyer)
         {
             this.inputTypes = inputTypes;
             this.commands = commands;
+            Modifyer = modifyer;
         }
 
 
@@ -31,7 +51,7 @@ namespace TASI.Types.Definition.Field
                 return false;
             for (int i = 0; i < inputTypes.Count; i++)
             {
-                if (this.inputTypes[i] != inputTypes[i])
+                if (this.inputTypes[i].Item1 != inputTypes[i])
                     return false;
             }
             return true;

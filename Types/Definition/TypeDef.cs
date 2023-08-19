@@ -1,13 +1,13 @@
 ﻿using TASI.RuntimeObjects.FunctionClasses;
 using TASI.Types.Definition.Field;
+using TASI.Types.Definition.Things;
 
 namespace TASI.Types.Definition
 {
     public class TypeDef
     {
         public NamespaceInfo parentNamespace;
-        public List<FieldDef> fields;
-        public List<Method> methods;
+        public List<Thing> things;
         public List<TypeDef> inheritedTypes;
         public List<TypeDef> directBaseTypes;
         public Method constructor;
@@ -20,7 +20,7 @@ namespace TASI.Types.Definition
         {
             get
             {
-                return $"<T>{parentNamespace.Name}.{typeName}";
+                return $"{parentNamespace.Name}.{typeName}";
             }
         }
 
@@ -28,20 +28,20 @@ namespace TASI.Types.Definition
         {
             if (inheritedTypes.Contains(typeDef))
                 return true;
+            else if (typeDef == this)
+                return true;
             else
                 return false;
         }
 
-        public TypeDef(string typeName, NamespaceInfo parentNamespace, List<FieldDef> fields, List<Method> methods, List<TypeDef> directBaseTypes, bool isSimpleType, InstantiationType instantiationType)
+        public TypeDef(string typeName, NamespaceInfo parentNamespace, List<Thing> things, List<TypeDef> directBaseTypes, bool isSimpleType, InstantiationType instantiationType)
         {
             this.parentNamespace = parentNamespace;
-            this.fields = fields;
-
+            this.things = things;
             this.directBaseTypes = directBaseTypes;
             this.isSimpleType = isSimpleType;
             this.instantiationType = instantiationType;
             this.typeName = typeName;
-            this.methods = methods;
 
             inheritedTypes = GetInheritedTypesOfBaseType();
 

@@ -1,6 +1,6 @@
 ﻿namespace TASI.Types.Definition.Visibility
 {
-    public class Private : Modifyer
+    public class Private : VisibilityModifier
     {
         public Private(TypeDef parentTypeDef) : base(parentTypeDef) { }
 

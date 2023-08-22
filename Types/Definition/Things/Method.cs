@@ -23,11 +23,16 @@ namespace TASI.Types.Definition.Field
 
         public override string actualType => "Method";
 
-        public Method(TypeDef parentType, string name, TypeDef returnValue, List<Overload> overloads) : base(name)
+        public Method(TypeDef parentType, string name, TypeDef returnValue, List<Overload> overloads) : base(name, false)
         {
             this.ParentType = parentType;
             this.returnType = returnValue;
             this.overloads = overloads;
+        }
+        public Method(TypeDef parentType, string name, TypeDef returnValue) : base(name, true)
+        {
+            this.ParentType = parentType;
+            this.returnType = returnValue;
         }
         /// <summary>
         /// 

@@ -6,11 +6,21 @@ namespace TASI.Types.Definition
 {
     public class TypeDef
     {
+
+        public bool IsInternal
+        {
+            get
+            {
+                return parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal;
+            }
+        }
+
         public NamespaceInfo parentNamespace;
         public List<Thing> things;
-        public List<TypeDef> inheritedTypes;
-        public List<TypeDef> directBaseTypes;
-        public Method constructor;
+        //public List<Thing>? originalThings;
+        //public List<TypeDef> inheritedTypes;
+        //public List<TypeDef> directBaseTypes;
+        public Constructor? constructor;
         public bool isSimpleType;
 
         public InstantiationType instantiationType;
@@ -23,7 +33,9 @@ namespace TASI.Types.Definition
                 return $"{parentNamespace.Name}.{typeName}";
             }
         }
+        
 
+        /*
         public bool CanBeUsedAs(TypeDef typeDef)
         {
             if (inheritedTypes.Contains(typeDef))
@@ -33,21 +45,21 @@ namespace TASI.Types.Definition
             else
                 return false;
         }
-
-        public TypeDef(string typeName, NamespaceInfo parentNamespace, List<Thing> things, List<TypeDef> directBaseTypes, bool isSimpleType, InstantiationType instantiationType)
+        */
+        public TypeDef(string typeName, NamespaceInfo parentNamespace, List<Thing> things, bool isSimpleType, InstantiationType instantiationType, Constructor constructor)
         {
             this.parentNamespace = parentNamespace;
             this.things = things;
-            this.directBaseTypes = directBaseTypes;
+            //this.directBaseTypes = directBaseTypes;
             this.isSimpleType = isSimpleType;
             this.instantiationType = instantiationType;
             this.typeName = typeName;
-
-            inheritedTypes = GetInheritedTypesOfBaseType();
+            this.constructor = constructor;
+            //inheritedTypes = GetInheritedTypesOfBaseType();
 
 
         }
-
+        /*
         public List<TypeDef> GetInheritedTypesOfBaseType()
         {
 
@@ -61,6 +73,7 @@ namespace TASI.Types.Definition
             return result;
 
         }
+        */
 
         public enum InstantiationType
         {

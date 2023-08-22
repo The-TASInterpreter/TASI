@@ -13,7 +13,7 @@ namespace TASI.Types.Definition.Field
         public TypeDef valueType;
         public readonly VisibilityModifier modifyer;
 
-        public FieldDef(VisibilityModifier modifyer, TypeDef valueType, string fieldName) : base(fieldName)
+        public FieldDef(VisibilityModifier modifyer, TypeDef valueType, string fieldName) : base(fieldName, false)
         {
             this.valueType = valueType;
             this.modifyer = modifyer;

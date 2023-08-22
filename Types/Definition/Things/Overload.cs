@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using TASI.RuntimeObjects;
 using TASI.Types.Definition.Visibility;
 using TASI.Types.Instance;
 
@@ -11,7 +10,7 @@ namespace TASI.Types.Definition.Field
         public List<(TypeDef, string)> inputTypes;
         public readonly List<Command>? commands;
         public readonly OverloadHandler? methodHandler;
-        
+
         public string GetCallName
         {
             get
@@ -55,6 +54,16 @@ namespace TASI.Types.Definition.Field
                     return false;
             }
             return true;
+        }
+
+        public static Overload? GetCorrectOverload(List<Overload> allOverloads, List<TypeInstance> findArgs)
+        {
+            return GetCorrectOverload(allOverloads, TypeInstance.ConverToTypeDef(findArgs));
+        }
+        public static Overload? GetCorrectOverload(List<Overload> allOverloads, List<TypeDef> findArgs)
+        {
+
+            return allOverloads.FirstOrDefault(x => x.MatchesInput(findArgs));
         }
     }
 }

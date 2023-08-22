@@ -14,7 +14,7 @@ namespace TASI.Types.Definition.Things
         public VisibilityModifier? setterModifyer;
 
         
-        public Accessor(string name, VisibilityModifier? getterModifyer, List<Command>? getter, VisibilityModifier? setterModifyer, List<Command>? setter) : base(name)
+        public Accessor(string name, VisibilityModifier? getterModifyer, List<Command>? getter, VisibilityModifier? setterModifyer, List<Command>? setter, bool undefinedIsUnimplemented) : base(name, undefinedIsUnimplemented)
         {
             this.getterModifyer = getterModifyer;
             this.setterModifyer = setterModifyer;

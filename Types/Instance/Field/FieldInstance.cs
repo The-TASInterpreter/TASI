@@ -10,8 +10,13 @@ namespace TASI.Types.Instance.Field
 {
     public class FieldInstance
     {
-        public FieldDef fieldType;
-        public TypeInstance value;
-        
+        public FieldDef fieldDef;
+        public TypeInstance? value;
+
+        public FieldInstance(FieldDef fieldDef, TypeInstance? value)
+        {
+            this.fieldDef = fieldDef;
+            this.value = value;
+        }
     }
 }

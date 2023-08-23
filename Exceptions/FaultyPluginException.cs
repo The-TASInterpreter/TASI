@@ -13,8 +13,8 @@ namespace TASI
         /// <summary>
         /// This should get thrown if a plugin could not be loaded because it is faulty
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="faultyPlugin"></param>
+        /// <param Name="message"></param>
+        /// <param Name="faultyPlugin"></param>
         internal FaultyPluginException(string message, ITASIPlugin faultyPlugin) : base(message)
         {
             this.faultyPlugin = faultyPlugin;

@@ -1,5 +1,4 @@
 ﻿using TASI.RuntimeObjects.FunctionClasses;
-using TASI.Types.Definition.Field;
 using TASI.Types.Definition.Things;
 
 namespace TASI.Types.Definition
@@ -17,6 +16,7 @@ namespace TASI.Types.Definition
 
         public NamespaceInfo parentNamespace;
         public List<Thing> things;
+        public List<Implementation> implementations = new();
         //public List<Thing>? originalThings;
         //public List<TypeDef> inheritedTypes;
         //public List<TypeDef> directBaseTypes;
@@ -33,7 +33,7 @@ namespace TASI.Types.Definition
                 return $"{parentNamespace.Name}.{typeName}";
             }
         }
-        
+
 
         /*
         public bool CanBeUsedAs(TypeDef typeDef)
@@ -46,7 +46,7 @@ namespace TASI.Types.Definition
                 return false;
         }
         */
-        public TypeDef(string typeName, NamespaceInfo parentNamespace, List<Thing> things, bool isSimpleType, InstantiationType instantiationType, Constructor constructor)
+        public TypeDef(string typeName, NamespaceInfo parentNamespace, List<Thing> things, bool isSimpleType, InstantiationType instantiationType, Constructor? constructor)
         {
             this.parentNamespace = parentNamespace;
             this.things = things;
@@ -59,6 +59,16 @@ namespace TASI.Types.Definition
 
 
         }
+
+        public TypeDef(string typeName, NamespaceInfo parentNamespace, List<Thing> things, bool isSimpleType)
+            : this(typeName, parentNamespace, things, isSimpleType, InstantiationType.framework, null)
+
+        {
+
+
+        }
+
+
         /*
         public List<TypeDef> GetInheritedTypesOfBaseType()
         {

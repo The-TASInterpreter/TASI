@@ -37,9 +37,9 @@ namespace TASI
         /// <summary>
         /// For creating code containers
         /// </summary>
-        /// <param name="codeContainerCommands"></param>
-        /// <param name="commandLine"></param>
-        /// <param name="commandEnd"></param>
+        /// <param Name="codeContainerCommands"></param>
+        /// <param Name="commandLine"></param>
+        /// <param Name="commandEnd"></param>
         public Command(List<Command> codeContainerCommands, Global global, int commandLine = - 1)
         {
             commandFile = global.CurrentFile;
@@ -63,10 +63,10 @@ namespace TASI
         /// <summary>
         /// General purpose command creation
         /// </summary>
-        /// <param name="commandType"></param>
-        /// <param name="commandText"></param>
-        /// <param name="commandLine"></param>
-        /// <param name="commandEnd"></param>
+        /// <param Name="commandType"></param>
+        /// <param Name="commandText"></param>
+        /// <param Name="commandLine"></param>
+        /// <param Name="commandEnd"></param>
         public Command(CommandTypes commandType, string commandText, Global? global, int commandLine = -1, int commandEnd = -1)
         {
             this.commandText = commandText;
@@ -101,3 +101,4 @@ namespace TASI
         }
     }
 }
+  

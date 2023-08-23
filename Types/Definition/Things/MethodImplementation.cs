@@ -3,7 +3,7 @@ using TASI.Types.Definition.Visibility;
 
 namespace TASI.Types.Definition.Field
 {
-    public class Method : Thing
+    public class MethodImplementation : Thing
     {
         public TypeDef ParentType { get; }
 
@@ -15,21 +15,21 @@ namespace TASI.Types.Definition.Field
         {
             get
             {
-                return $"{ParentType.GetFullName}.{name}";
+                return $"{ParentType.GetFullName}.{Name}";
             }
         }
 
         public override bool isStatic => true;
 
-        public override string actualType => "Method";
+        public override ThingType actualType => ThingType.Method;
 
-        public Method(TypeDef parentType, string name, TypeDef returnValue, List<Overload> overloads) : base(name, false)
+        public MethodImplementation(TypeDef parentType, string name, TypeDef returnValue, List<Overload> overloads) : base(name, false)
         {
             this.ParentType = parentType;
             this.returnType = returnValue;
             this.overloads = overloads;
         }
-        public Method(TypeDef parentType, string name, TypeDef returnValue) : base(name, true)
+        public MethodImplementation(TypeDef parentType, string name, TypeDef returnValue) : base(name, true)
         {
             this.ParentType = parentType;
             this.returnType = returnValue;
@@ -37,7 +37,7 @@ namespace TASI.Types.Definition.Field
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="input"></param>
+        /// <param Name="input"></param>
         /// <returns>The fitting overload for given input types.
         /// If there was no matching overload found it'll return null</returns>
         public Overload? GetCorrectOverload(List<TypeDef> input)

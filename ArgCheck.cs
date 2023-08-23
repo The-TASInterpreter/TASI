@@ -57,7 +57,7 @@ namespace TASI
                         throw new ArgumentException("There are no empty arguments (\"/\")");
                     }
                     string actualArg = arg[1..];
-                    currentArg = new(argDefinitions.FirstOrDefault(x => x.argName == actualArg) ?? throw new ArgumentException($"An argument with the name \"{actualArg}\" doesn't exist. Use the /help argument to see all arguments."));
+                    currentArg = new(argDefinitions.FirstOrDefault(x => x.argName == actualArg) ?? throw new ArgumentException($"An argument with the Name \"{actualArg}\" doesn't exist. Use the /help argument to see all arguments."));
 
 
                 }

@@ -12,7 +12,7 @@ namespace TASI.PluginManager
     public interface ITASIPlugin
     {
         /// <summary>
-        /// The name of the plugin
+        /// The Name of the plugin
         /// </summary>
         string Name { get; } 
 

@@ -21,9 +21,9 @@ namespace TASI.PluginManager
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
             {
                 Console.WriteLine("Resorted to fallback host injector");
-                // Get the name of the assembly that failed to load
+                // Get the Name of the assembly that failed to load
                 string assemblyName = new AssemblyName(args.Name).Name;
-                Console.WriteLine(assemblyName + " assembly name");
+                Console.WriteLine(assemblyName + " assembly Name");
 
                 // Check if the failed assembly is one of the dependencies
                 if (assemblyName == "TASI")

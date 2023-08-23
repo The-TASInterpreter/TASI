@@ -48,7 +48,7 @@ namespace TASI.InternalLangCoreHandle
             string currentArgumentString;
             StringBuilder currentArgument = new();
 
-            //split function name from arguments and arguments with comma
+            //split function Name from arguments and arguments with comma
             for (int i = 0; i < command.commandText.Length; i++)
             {
                 char c = command.commandText[i];

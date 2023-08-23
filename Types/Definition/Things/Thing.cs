@@ -10,25 +10,35 @@ namespace TASI.Types.Definition.Things
 {
     public abstract class Thing
     { 
+        public enum ThingType
+        {
+            Field,
+            Method,
+            Accessor,
+            Operator
+        }
         public abstract bool isStatic { get; }
-        public abstract string actualType { get; }
-        public readonly string name;
-        public readonly bool isUnimplemented;
+        public abstract ThingType actualType { get; }
+        public string Name {
+            get
+            {
+                return thingDef.name;
+            }
+        }
 
-        public const string CONSTRUCTOR = "constructor";
 
         public static readonly string[] reservedNames = new string[]
         {
-            CONSTRUCTOR
+            
         };
+        ThingDef thingDef;
 
-        public Thing(string name, bool isUnimplemented, bool allowReservedNames = false)
+        public Thing(ThingDef thingDef)
         {
-            this.name = name.ToLower();
-            this.isUnimplemented = isUnimplemented;
-            if (reservedNames.Contains(this.name) ) 
+            this.thingDef = thingDef;
+            if (reservedNames.Contains(this.Name) ) 
             {
-                throw new CodeSyntaxException($"The name {this.name} is reserved for internal purposes");
+                throw new CodeSyntaxException($"The Name {this.Name} is reserved for internal purposes");
             }
         }
     }

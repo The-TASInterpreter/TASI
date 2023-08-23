@@ -21,6 +21,6 @@ namespace TASI.Types.Definition.Field
 
         public override bool isStatic => false;
 
-        public override string actualType => "Field";
+        public override ThingType actualType => ThingType.Field;
     }
 }

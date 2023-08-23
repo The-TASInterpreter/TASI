@@ -36,7 +36,7 @@ namespace TASI.InternalLangCoreHandle
                     correctVar.VarValue = InterpretationHelp.GetValueOfCommands(commands.GetRange(2, commands.Count - 2), accessableObjects);
                     return null;
                 case "setlist":
-                    if (commands.Count < 4) throw new CodeSyntaxException("invalid use of setlist statement. Correct use: setlist <statement: name> <num/s: index> <value: value>");
+                    if (commands.Count < 4) throw new CodeSyntaxException("invalid use of setlist statement. Correct use: setlist <statement: Name> <num/s: index> <value: value>");
                     Value foundValue = InterpretationHelp.GetValueOfListUsingIndex(commands.GetRange(2, commands.Count - 3), (Var)(accessableObjects.accessableVars[commands[1].commandText.ToLower()] ?? throw new CodeSyntaxException($"The list \"{commands[0].commandText}\" couldn't be found")), accessableObjects);
                     Value commandValue = InterpretationHelp.GetValueOfCommands(new(new List<Command> { commands.Last() }), accessableObjects);
                     if (foundValue.comesFromVarValue != null && commandValue.comesFromVarValue == null) //Is linked value so update both
@@ -46,7 +46,7 @@ namespace TASI.InternalLangCoreHandle
                     foundValue.ObjectValue = commandValue.ObjectValue;
                     return null;
                 case "add":
-                    if (commands.Count < 3) throw new CodeSyntaxException("invalid use of add statement. Correct use: add <statement: name> (optional<num/s: index for nested list>) <value: value>;");
+                    if (commands.Count < 3) throw new CodeSyntaxException("invalid use of add statement. Correct use: add <statement: Name> (optional<num/s: index for nested list>) <value: value>;");
                     foundValue = InterpretationHelp.GetValueOfListUsingIndex(commands.GetRange(2, commands.Count - 3), (Var)(accessableObjects.accessableVars[commands[1].commandText.ToLower()] ?? throw new CodeSyntaxException($"The list \"{commands[1].commandText}\" couldn't be found")), accessableObjects);
                     commandValue = InterpretationHelp.GetValueOfCommands(new(new List<Command> { commands.Last() }), accessableObjects);
                     if (foundValue.comesFromVarValue != null && commandValue.comesFromVarValue == null) //Is linked value so update both
@@ -154,7 +154,7 @@ namespace TASI.InternalLangCoreHandle
                     foundVar.varValueHolder = new(new(foundVar.varValueHolder.value.valueType ?? throw new InternalInterpreterException("Value type of value was null"), foundVar.varValueHolder.value.ObjectValue));
                     return null;
                 case "promise": //promise <var> <init> <code>;
-                    if (commands.Count != 3 && commands.Count != 4) throw new CodeSyntaxException("Invalid use of promise stratement. Valid use: promise <statement: var name> <code container: init> <code container: execute code>;\nOr\npromise <statement: var name> <code container: execute code>;");
+                    if (commands.Count != 3 && commands.Count != 4) throw new CodeSyntaxException("Invalid use of promise stratement. Valid use: promise <statement: var Name> <code container: init> <code container: execute code>;\nOr\npromise <statement: var Name> <code container: execute code>;");
 
                     foundVar = InterpretationHelp.FindVar(commands[1].commandText, accessableObjects, true);
                     AccessableObjects newPromise = new AccessableObjects(new(), accessableObjects.currentNamespace, accessableObjects.global.CreateNewContext(accessableObjects.global.CurrentFile));
@@ -178,12 +178,12 @@ namespace TASI.InternalLangCoreHandle
                     return null;
                 case "makevar":
 
-                    if (commands.Count != 3 || commands[1].commandType != Command.CommandTypes.Statement || commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var name>;");
+                    if (commands.Count != 3 || commands[1].commandType != Command.CommandTypes.Statement || commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var Name>;");
 
 
 
                     if (!Enum.TryParse(commands[1].commandText, true, out Value.ValueType varType) && commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commands[1].commandText}\" doesn't exist.");
-                    if (InterpretationHelp.FindVar(commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commands[2].commandText}\" already exists in this context.");
+                    if (InterpretationHelp.FindVar(commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the Name \"{commands[2].commandText}\" already exists in this context.");
                     if (commands[1].commandText == "all")
                     {
                         accessableObjects.accessableVars.Add(commands[2].commandText, new Var(new VarConstruct(VarConstruct.VarType.all, commands[2].commandText), new(varType)));
@@ -194,10 +194,10 @@ namespace TASI.InternalLangCoreHandle
                 case "makeconst":
                     {
                         if (commands.Count != 4 || commands[1].commandType != Command.CommandTypes.Statement || commands[2].commandType != Command.CommandTypes.Statement)
-                            throw new CodeSyntaxException("Invalid usage of makeconst. Correct usage:\nmakeconst < statement: var type > < statement: var name > < statement: value >;");
+                            throw new CodeSyntaxException("Invalid usage of makeconst. Correct usage:\nmakeconst < statement: var type > < statement: var Name > < statement: value >;");
 
                         if (!Enum.TryParse(commands[1].commandText, true, out Value.ValueType constVarType) && commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commands[1].commandText}\" doesn't exist.");
-                        if (InterpretationHelp.FindVar(commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the name \"{commands[2].commandText}\" already exists in this context.");
+                        if (InterpretationHelp.FindVar(commands[2].commandText, accessableObjects, false) != null) throw new CodeSyntaxException($"A variable with the Name \"{commands[2].commandText}\" already exists in this context.");
                         if (commands[1].commandText == "all")
                         {
                             accessableObjects.accessableVars.Add(commands[2].commandText, new Var(new VarConstruct(VarConstruct.VarType.all, commands[2].commandText), new(constVarType)));

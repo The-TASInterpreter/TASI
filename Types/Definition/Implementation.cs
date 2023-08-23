@@ -21,9 +21,9 @@ namespace TASI.Types.Definition
 
                 for (int i = 0; i < allNonImplementedThings.Count; i++)
                 {
-                    Thing? implementedItem = allNonImplementedThings.FirstOrDefault(x => x.name == implemented[i].name);
+                    Thing? implementedItem = allNonImplementedThings.FirstOrDefault(x => x.Name == implemented[i].Name);
                     if (implementedItem == null)
-                        return $"The thing \"{implemented[i].name}\" doesn't exist in the parent type as unimplemented or has already been implemented.";
+                        return $"The thing \"{implemented[i].Name}\" doesn't exist in the parent type as unimplemented or has already been implemented.";
                     allNonImplementedThings.Remove(implemented[i]);
                 }
                 return null;

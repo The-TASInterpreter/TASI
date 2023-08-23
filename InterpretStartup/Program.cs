@@ -140,13 +140,13 @@ namespace TASI.InterpretStartup
                             Console.WriteLine("This plugin version is no longer supported. Please check for an update from the developer or download an older version of the interpreter.");
 
 
-                        Console.WriteLine($"Plugin name: {faultyPluginException.faultyPlugin.Name}\nDescription: {faultyPluginException.faultyPlugin.Description}\nVersion: {faultyPluginException.faultyPlugin.Version}\nAuthor: {faultyPluginException.faultyPlugin.Author}\nPlugin Compatibility version: {faultyPluginException.faultyPlugin.CompatibilityVersion}\nPlugin manager Compatibility version: {PluginManager.PluginManager.PLUGIN_COMPATIBILITY_VERSION}");
+                        Console.WriteLine($"Plugin Name: {faultyPluginException.faultyPlugin.Name}\nDescription: {faultyPluginException.faultyPlugin.Description}\nVersion: {faultyPluginException.faultyPlugin.Version}\nAuthor: {faultyPluginException.faultyPlugin.Author}\nPlugin Compatibility version: {faultyPluginException.faultyPlugin.CompatibilityVersion}\nPlugin manager Compatibility version: {PluginManager.PluginManager.PLUGIN_COMPATIBILITY_VERSION}");
 
                         break;
                     case InternalPluginException internalPluginException:
                         Console.WriteLine("There was an internal plugin error.");
                         Console.WriteLine($"Error: {internalPluginException.Message}");
-                        Console.WriteLine($"Plugin name: {internalPluginException.plugin.Name}\nDescription: {internalPluginException.plugin.Description}\nVersion: {internalPluginException.plugin.Version}\nAuthor: {internalPluginException.plugin.Author}\nPlugin Compatibility version: {internalPluginException.plugin.CompatibilityVersion}\nPlugin manager Compatibility version: {PluginManager.PluginManager.PLUGIN_COMPATIBILITY_VERSION}");
+                        Console.WriteLine($"Plugin Name: {internalPluginException.plugin.Name}\nDescription: {internalPluginException.plugin.Description}\nVersion: {internalPluginException.plugin.Version}\nAuthor: {internalPluginException.plugin.Author}\nPlugin Compatibility version: {internalPluginException.plugin.CompatibilityVersion}\nPlugin manager Compatibility version: {PluginManager.PluginManager.PLUGIN_COMPATIBILITY_VERSION}");
                         break;
 
                     case CodeSyntaxException:

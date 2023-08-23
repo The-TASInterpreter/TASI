@@ -37,21 +37,21 @@ namespace TASI.InternalLangCoreHandle
                     if (commandStatement.commands.Count != 2 && commandStatement.commands[0].commandType == Command.CommandTypes.Statement && commandStatement.commands[1].commandType == Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarCopy statement.\nRight way of using it:<statemt: var one> <statement: var two>;");
                     if (commandStatement.commands.Count == 3) // Is link
                     {
-                        if (commandStatement.commands[1].commandType != Command.CommandTypes.Statement || commandStatement.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
+                        if (commandStatement.commands[1].commandType != Command.CommandTypes.Statement || commandStatement.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var Name>;");
                         if (!Enum.TryParse<VarConstruct.VarType>(commandStatement.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandStatement.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
-                            if (x.name == commandStatement.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandStatement.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                            if (x.Name == commandStatement.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the Name {commandStatement.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
                         });
                         result.Add(new(varType, commandStatement.commands[2].commandText.ToLower(), true));
                     }
                     else
                     {
-                        if (commandStatement.commands[0].commandType != Command.CommandTypes.Statement || commandStatement.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
+                        if (commandStatement.commands[0].commandType != Command.CommandTypes.Statement || commandStatement.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var Name>;");
                         if (!Enum.TryParse<VarConstruct.VarType>(commandStatement.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandStatement.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
-                            if (x.name == commandStatement.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandStatement.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                            if (x.Name == commandStatement.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the Name {commandStatement.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
                         });
 
                         result.Add(new(varType, commandStatement.commands[1].commandText.ToLower()));
@@ -97,24 +97,24 @@ namespace TASI.InternalLangCoreHandle
                         continue;
                     }
                     //Statenent is complete
-                    if (commandLine.commands.Count != 2 && commandLine.commands.Count != 3 && commandLine.commands[0].commandType == Command.CommandTypes.Statement && commandLine.commands[0].commandText == "link") throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
+                    if (commandLine.commands.Count != 2 && commandLine.commands.Count != 3 && commandLine.commands[0].commandType == Command.CommandTypes.Statement && commandLine.commands[0].commandText == "link") throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var Name>;");
                     if (commandLine.commands.Count == 3) // Is link
                     {
-                        if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var name>;");
+                        if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct link statement.\nRight way of using it:link <statemt: var type> <statement: var Name>;");
                         if (!Enum.TryParse(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
-                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the Name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
                         });
                         result.Add(new(varType, commandLine.commands[2].commandText.ToLower(), true));
                     }
                     else
                     {
-                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var name>;");
+                        if (commandLine.commands[0].commandType != Command.CommandTypes.Statement || commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid VarConstruct statement.\nRight way of using it:<statemt: var type> <statement: var Name>;");
                         if (!Enum.TryParse(commandLine.commands[0].commandText.ToLower(), out VarConstruct.VarType varType)) throw new CodeSyntaxException($"The variable type \"{commandLine.commands[0].commandText.ToLower()}\" is invalid.");
                         result.ForEach(x =>
                         {
-                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
+                            if (x.name == commandLine.commands[1].commandText.ToLower()) throw new CodeSyntaxException($"A variable with the Name {commandLine.commands[1].commandText.ToLower()} already exists. Keep in mind, that variable names are not case sensitive.");
                         });
 
                         result.Add(new(varType, commandLine.commands[1].commandText.ToLower()));
@@ -157,9 +157,9 @@ namespace TASI.InternalLangCoreHandle
                     {
                         switch (commandLine.commands[0].commandText.ToLower())
                         {
-                            case "name":
-                                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of name statement.\nCorrect usage: name <statement: name>;");
+                            case "Name":
+                                if (commandLine.commands.Count != 2) throw new CodeSyntaxException("Invalid usage of Name statement.\nCorrect usage: Name <statement: Name>;");
+                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of Name statement.\nCorrect usage: Name <statement: Name>;");
                                 if (thisNamespace.Name != null) throw new CodeSyntaxException("Name can't be defined twice.");
                                 thisNamespace.Name = commandLine.commands[1].commandText;
                                 break;
@@ -179,7 +179,7 @@ namespace TASI.InternalLangCoreHandle
                                 if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null)
                                 {
                                     Tutorial.TutorialPhaseMinusOne();
-                                    throw new CodeSyntaxException("You can't start while not having defined namespace name and type.\nYou can use the name and type statement to do this.");
+                                    throw new CodeSyntaxException("You can't start while not having defined namespace Name and type.\nYou can use the Name and type statement to do this.");
                                 }
                                 if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.library) throw new CodeSyntaxException("Library type namespaces can't have a start.");
 
@@ -189,20 +189,20 @@ namespace TASI.InternalLangCoreHandle
                                 startCode = commandLine.commands[1].codeContainerCommands;
                                 break;
                             case "function":
-                                if (commandLine.commands.Count != 5) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
-                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+                                if (commandLine.commands.Count != 5) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function Name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
+                                if (commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement || commandLine.commands[3].commandType != Command.CommandTypes.CodeContainer || commandLine.commands[4].commandType != Command.CommandTypes.CodeContainer) throw new CodeSyntaxException("Invalid usage of function statement.\nCorrect usage: function <statement: return type> <statement: function Name> <code container: semicolon seperated input values> <code container: function code>;\nExample:\nfunction num ReturnRandomChosenNumber {num randomness; num randomnessSeed;}\r\n{\r\nreturn (5984 + ($randomness) / ($randomnessSeed) * ($randomness) / 454);\r\n};");
 
 
                                 if (!Enum.TryParse(commandLine.commands[1].commandText.ToLower(), out VarConstruct.VarType functionReturnType)) throw new CodeSyntaxException("function return type is invalid.");
                                 Function? thisFunction = null;
-                                foreach (Function function in thisNamespace.namespaceFuncitons) //Check if function with name already exist
+                                foreach (Function function in thisNamespace.namespaceFuncitons) //Check if function with Name already exist
                                 {
                                     if (function.funcName == commandLine.commands[2].commandText.ToLower()) thisFunction = function;
                                 }
                                 string functionName = commandLine.commands[2].commandText.ToLower();
                                 List<VarConstruct> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
 
-                                if (thisFunction != null) //If function with name already exist, check if input combination already exist.
+                                if (thisFunction != null) //If function with Name already exist, check if input combination already exist.
                                 {
                                     foreach (List<VarConstruct> varDefs in thisFunction.functionArguments)
                                     {
@@ -268,12 +268,12 @@ namespace TASI.InternalLangCoreHandle
                                 }
                                 break;
                             case "makeglobalvar":
-                                if (commandLine.commands.Count != 3 && commandLine.commands.Count != 4 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var name>;");
+                                if (commandLine.commands.Count != 3 && commandLine.commands.Count != 4 || commandLine.commands[1].commandType != Command.CommandTypes.Statement || commandLine.commands[2].commandType != Command.CommandTypes.Statement) throw new CodeSyntaxException("Invalid usage of makevar. Correct usage:\nmakevar <statement: var type> <statement: var Name>;");
 
 
 
                                 if (!Enum.TryParse(commandLine.commands[1].commandText, true, out Value.ValueType varType) && commandLine.commands[1].commandText != "all") throw new CodeSyntaxException($"The vartype \"{commandLine.commands[1].commandText}\" doesn't exist.");
-                                if (InterpretationHelp.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the name \"{commandLine.commands[2].commandText}\" already exists in this context.");
+                                if (InterpretationHelp.FindVar(commandLine.commands[2].commandText, new AccessableObjects(thisNamespace.publicNamespaceVars, new(NamespaceInfo.NamespaceIntend.@internal, "", false, global), global), false) != null) throw new CodeSyntaxException($"A variable with the Name \"{commandLine.commands[2].commandText}\" already exists in this context.");
                                 Value? setToValue = null;
                                 if (commandLine.commands.Count == 4)
                                 {
@@ -315,9 +315,9 @@ namespace TASI.InternalLangCoreHandle
             if (thisNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.nonedef || thisNamespace.Name == null)
             {
                 Tutorial.TutorialPhaseMinusOne();
-                throw new CodeSyntaxException("You need to enter name and type for this namespace. You can do that using the name and type statements.");
+                throw new CodeSyntaxException("You need to enter Name and type for this namespace. You can do that using the Name and type statements.");
             }
-            if (global.Namespaces.Any(x => x != thisNamespace && x.Name == thisNamespace.Name)) throw new CodeSyntaxException($"A namespace with the name \"{thisNamespace.Name}\" has already been defined.");
+            if (global.Namespaces.Any(x => x != thisNamespace && x.Name == thisNamespace.Name)) throw new CodeSyntaxException($"A namespace with the Name \"{thisNamespace.Name}\" has already been defined.");
 
 
 
@@ -334,7 +334,7 @@ namespace TASI.InternalLangCoreHandle
         }
 
         /// <summary>
-        /// Contains all statements in the interpret normal mode. The string is the statement name.
+        /// Contains all statements in the interpret normal mode. The string is the statement Name.
         /// </summary>
         
 
@@ -345,7 +345,7 @@ namespace TASI.InternalLangCoreHandle
                 foreach (Var var in namespaceInfo.publicNamespaceVars)
                 {
                     if (accessableObjects.accessableVars.Contains(var)) continue;
-                    if (accessableObjects.accessableVars.ContainsKey(var.varType.name)) throw new CodeSyntaxException($"A global variable with the name \"{var.varType.name}\" already exists. So you can't use this name again.");
+                    if (accessableObjects.accessableVars.ContainsKey(var.varType.name)) throw new CodeSyntaxException($"A global variable with the Name \"{var.varType.name}\" already exists. So you can't use this Name again.");
                     accessableObjects.accessableVars.Add(var.varType.name, var);
                 }
             }

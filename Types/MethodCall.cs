@@ -16,7 +16,7 @@ namespace TASI.Types
 
         public TypeInstance DoCall(TypeInstance baseInstance, List<TypeInstance> arguments, AccessableObjects accessableObjects)
         {
-            Method callMethod = GetCallMethod(baseInstance);
+            MethodImplementation callMethod = GetCallMethod(baseInstance);
             Overload callOverload = callMethod.GetCorrectOverload(TypeInstance.ConverToTypeDef(arguments)) ?? throw new CodeSyntaxException($"The provided input types\n{TypeInstance.GetDescriberOfInput(arguments)}\ndidn't match any of the possible input types of the thing \"{callMethod.GetFullName}\" ");
 
             if (callMethod.ParentType.parentNamespace.namespaceIntend == RuntimeObjects.FunctionClasses.NamespaceInfo.NamespaceIntend.@internal)
@@ -42,11 +42,11 @@ namespace TASI.Types
             return returnValue;
         }
 
-        private Method GetCallMethod(TypeInstance baseInstance)
+        private MethodImplementation GetCallMethod(TypeInstance baseInstance)
         {
-            Thing thing = baseInstance.typeDef.things.FirstOrDefault(x => callMethodName == x.name) ?? throw new CodeSyntaxException($"\"{baseInstance.typeDef.GetFullName}\" doesn't have a definition for \"{callMethodName}\"");
+            Thing thing = baseInstance.typeDef.things.FirstOrDefault(x => callMethodName == x.Name) ?? throw new CodeSyntaxException($"\"{baseInstance.typeDef.GetFullName}\" doesn't have a definition for \"{callMethodName}\"");
 
-            if (thing is Method method)
+            if (thing is MethodImplementation method)
                 return method;
             else
                 throw new CodeSyntaxException($"\"{callMethodName}\" can't be called as a thing because it is of type {thing.actualType}");

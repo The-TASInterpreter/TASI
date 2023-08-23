@@ -261,7 +261,7 @@ namespace TASI
         {
             StringWriter sw = new();
             Console.SetOut(sw);
-            LoadFile.RunCode("name ReadFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\"LICENSE.txt\",\"r?\"]; [Console.WriteLine:[Filestream.ReadLine:($stream)]];};");
+            LoadFile.RunCode("Name ReadFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\"LICENSE.txt\",\"r?\"]; [Console.WriteLine:[Filestream.ReadLine:($stream)]];};");
             string consoleOutput = sw.ToString();
             Assert.That(consoleOutput, Contains.Substring("MIT License"));
         }
@@ -270,21 +270,21 @@ namespace TASI
         {
             StringWriter sw = new();
             Console.SetOut(sw);
-            LoadFile.RunCode("name WriteFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".write_test.tmp\",\"w?\"];[Filestream.WriteLine:($stream),\"Test Write!\"];};");
+            LoadFile.RunCode("Name WriteFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".write_test.tmp\",\"w?\"];[Filestream.WriteLine:($stream),\"Test Write!\"];};");
         }
         [Test]
         public static void CloseFileTest()
         {
             StringWriter sw = new();
             Console.SetOut(sw);
-            LoadFile.RunCode("name CloseFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".close_test.tmp\",\"?\"];[Filesystem.Close:($stream)];};");
+            LoadFile.RunCode("Name CloseFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".close_test.tmp\",\"?\"];[Filesystem.Close:($stream)];};");
         }
         [Test]
         public static void FlushFileTest()
         {
             StringWriter sw = new();
             Console.SetOut(sw);
-            LoadFile.RunCode("name FlushFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".flush_test.tmp\",\"?\"];[Filestream.Flush:($stream)];};");
+            LoadFile.RunCode("Name FlushFileTest;Types Generic;Start {[Inf.DefVar:\"int\",\"stream\"]; set stream [Filesystem.Open:\".flush_test.tmp\",\"?\"];[Filestream.Flush:($stream)];};");
         }
         [Test]
         public static void FileExistsTest()
@@ -363,7 +363,7 @@ namespace TASI
 
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
-            LoadFile.RunCode("name EscapeAdditionTest;Types Generic;start {[Console.WriteLine:([EscapeAdditionTest.ReturnInput:\"\\\"\"] + \"\\\"\")]};function string ReturnInput {string input} {return input;};");
+            LoadFile.RunCode("Name EscapeAdditionTest;Types Generic;start {[Console.WriteLine:([EscapeAdditionTest.ReturnInput:\"\\\"\"] + \"\\\"\")]};function string ReturnInput {string input} {return input;};");
             string consoleOutput = sw.ToString();
             Assert.That(consoleOutput, Contains.Substring("\"\""));
 
@@ -379,7 +379,7 @@ namespace TASI
 
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
-            LoadFile.RunCode("name HelloWorldTest;Types Generic;Start {[Console.WriteLine:\"\\\"Hello World!\\\"\"];};");
+            LoadFile.RunCode("Name HelloWorldTest;Types Generic;Start {[Console.WriteLine:\"\\\"Hello World!\\\"\"];};");
             string consoleOutput = sw.ToString();
             Assert.That(consoleOutput, Contains.Substring("\"Hello World!\""));
 
@@ -393,7 +393,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Types Generic;Start {[Console.WriteLine:[Console.ReadLine]];};");
+            LoadFile.RunCode("Name ConsoleReadLineHelloWorldTest;Types Generic;Start {[Console.WriteLine:[Console.ReadLine]];};");
             string consoleOutput = sw.ToString();
             Assert.That(consoleOutput, Contains.Substring("Hello world!"));
 
@@ -408,7 +408,7 @@ namespace TASI
             StringWriter sw = new StringWriter();
             Console.SetOut(sw);
             Console.SetIn(sr);
-            LoadFile.RunCode("name ConsoleReadLineHelloWorldTest;Types Generic;Start {makeVar int I; set i 0; while (i < 5){[Console.WriteLine:i] set i (i + 1);}; };");
+            LoadFile.RunCode("Name ConsoleReadLineHelloWorldTest;Types Generic;Start {makeVar int I; set i 0; while (i < 5){[Console.WriteLine:i] set i (i + 1);}; };");
             string consoleOutput = sw.ToString();
             Assert.AreEqual("0\n1\n2\n3\n4\n", consoleOutput.Replace("\r\n", "\n"));
 

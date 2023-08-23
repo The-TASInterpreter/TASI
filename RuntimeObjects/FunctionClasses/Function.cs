@@ -57,12 +57,12 @@ namespace TASI.RuntimeObjects.FunctionClasses
         /// <summary>
         /// Defines a default function
         /// </summary>
-        /// <param name="funcName"></param>
-        /// <param name="returnType"></param>
-        /// <param name="parentNamespace"></param>
-        /// <param name="functionCode"></param>
-        /// <param name="global"></param>
-        /// <param name="functionHandle"></param>
+        /// <param Name="funcName"></param>
+        /// <param Name="returnType"></param>
+        /// <param Name="parentNamespace"></param>
+        /// <param Name="functionCode"></param>
+        /// <param Name="global"></param>
+        /// <param Name="functionHandle"></param>
 
         public static void CreateFunctionToParentNamespace(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, FunctionHandler? functionHandle = null)
         {
@@ -73,12 +73,12 @@ namespace TASI.RuntimeObjects.FunctionClasses
         /// <summary>
         /// Defines a default function which needs no input arguments
         /// </summary>
-        /// <param name="funcName"></param>
-        /// <param name="returnType"></param>
-        /// <param name="parentNamespace"></param>
-        /// <param name="functionCode"></param>
-        /// <param name="global"></param>
-        /// <param name="functionHandle"></param>
+        /// <param Name="funcName"></param>
+        /// <param Name="returnType"></param>
+        /// <param Name="parentNamespace"></param>
+        /// <param Name="functionCode"></param>
+        /// <param Name="global"></param>
+        /// <param Name="functionHandle"></param>
         public static void CreateFunctionToParentNamespace(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<Command> functionCode, Global global, FunctionHandler? handler)
         {
             new Function(funcName, returnType, parentNamespace, new() { new() }, functionCode, global, handler);
@@ -100,7 +100,7 @@ namespace TASI.RuntimeObjects.FunctionClasses
 
                 checkSubPath = checkSubPath.parentFunction ?? throw new InternalInterpreterException("Internal: Parent function of current function is null for some reason.");
             } while (result.Length < 1024);
-            throw new CodeSyntaxException("To large subfunction-function name lenght. I could easily make the max lenght bigger, but I won't. Haha!");
+            throw new CodeSyntaxException("To large subfunction-function Name lenght. I could easily make the max lenght bigger, but I won't. Haha!");
         }
 
 

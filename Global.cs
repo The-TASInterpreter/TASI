@@ -41,15 +41,14 @@ namespace TASI
 
         public void InitTypes(Global global)
         {
-            TYPE_DEF_OBJECT = new("Object", new(NamespaceInfo.NamespaceIntend.@internal, "Object", true, global), new()
-            , new(), true, TypeDef.InstantiationType.framework);
-            TYPE_DEF_STRING = new("String", new(NamespaceInfo.NamespaceIntend.@internal, "String", true, global), new() { }, new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
+            TYPE_DEF_OBJECT = new("Object", new(NamespaceInfo.NamespaceIntend.@internal, "Object", true, global), new(), false);
+            TYPE_DEF_STRING = new("String", new(NamespaceInfo.NamespaceIntend.@internal, "String", true, global), new(), true);
             TYPE_DEF_DOUBLE = new("Double", new(NamespaceInfo.NamespaceIntend.@internal, "Double", true, global), new(), new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
             TYPE_DEF_BOOL = new("Bool", new(NamespaceInfo.NamespaceIntend.@internal, "Bool", true, global), new(), new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
             TYPE_DEF_VOID = new("Void", new(NamespaceInfo.NamespaceIntend.@internal, "Void", true, global), new(), new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
             TYPE_DEF_INT = new("Int", new(NamespaceInfo.NamespaceIntend.@internal, "Int", true, global), new(), new() { TYPE_DEF_OBJECT }, true, TypeDef.InstantiationType.normal);
 
-            TYPE_DEF_OBJECT.fields.Add(new Method(TYPE_DEF_OBJECT, "ToString", TYPE_DEF_STRING, new()
+            TYPE_DEF_OBJECT.fields.Add(new MethodImplementation(TYPE_DEF_OBJECT, "ToString", TYPE_DEF_STRING, new()
             {
                 new(new(), (List<Value> input, AccessableObjects obj, TypeInstance self) =>
                 {

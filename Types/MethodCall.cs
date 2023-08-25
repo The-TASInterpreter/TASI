@@ -17,7 +17,7 @@ namespace TASI.Types
         public TypeInstance DoCall(TypeInstance baseInstance, List<TypeInstance> arguments, AccessableObjects accessableObjects)
         {
             MethodImplementation callMethod = GetCallMethod(baseInstance);
-            Overload callOverload = callMethod.GetCorrectOverload(TypeInstance.ConverToTypeDef(arguments)) ?? throw new CodeSyntaxException($"The provided input types\n{TypeInstance.GetDescriberOfInput(arguments)}\ndidn't match any of the possible input types of the thing \"{callMethod.GetFullName}\" ");
+            OverloadImplementation callOverload = callMethod.GetCorrectOverload(TypeInstance.ConverToTypeDef(arguments)) ?? throw new CodeSyntaxException($"The provided input types\n{TypeInstance.GetDescriberOfInput(arguments)}\ndidn't match any of the possible input types of the thing \"{callMethod.GetFullName}\" ");
 
             if (callMethod.ParentType.parentNamespace.namespaceIntend == RuntimeObjects.FunctionClasses.NamespaceInfo.NamespaceIntend.@internal)
             {

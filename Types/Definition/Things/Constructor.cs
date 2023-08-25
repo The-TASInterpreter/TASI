@@ -11,9 +11,9 @@ namespace TASI.Types.Definition.Things
 {
     public class Constructor
     {
-        public readonly List<Overload> overloads;
+        public readonly List<OverloadImplementation> overloads;
 
-        public Constructor(List<Overload> overloads)
+        public Constructor(List<OverloadImplementation> overloads)
         {
             this.overloads = overloads;
         }

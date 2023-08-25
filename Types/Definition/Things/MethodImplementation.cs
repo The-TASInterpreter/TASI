@@ -8,7 +8,7 @@ namespace TASI.Types.Definition.Field
         public TypeDef ParentType { get; }
 
         public TypeDef returnType;
-        public List<Overload> overloads;
+        public List<OverloadImplementation> overloads;
 
 
         public string GetFullName
@@ -23,7 +23,7 @@ namespace TASI.Types.Definition.Field
 
         public override ThingType actualType => ThingType.Method;
 
-        public MethodImplementation(TypeDef parentType, string name, TypeDef returnValue, List<Overload> overloads) : base(name, false)
+        public MethodImplementation(TypeDef parentType, string name, TypeDef returnValue, List<OverloadImplementation> overloads) : base(name, false)
         {
             this.ParentType = parentType;
             this.returnType = returnValue;
@@ -40,7 +40,7 @@ namespace TASI.Types.Definition.Field
         /// <param Name="input"></param>
         /// <returns>The fitting overload for given input types.
         /// If there was no matching overload found it'll return null</returns>
-        public Overload? GetCorrectOverload(List<TypeDef> input)
+        public OverloadImplementation? GetCorrectOverload(List<TypeDef> input)
         {
             return overloads.FirstOrDefault(x => x.MatchesInput(input));
         }

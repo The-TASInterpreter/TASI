@@ -70,7 +70,7 @@ namespace TASI.Types.Instance
             {
                 {"self", new(typeDef, this) }
             }, typeDef.parentNamespace, accessableObjects.global);
-            Overload correctConstructor = Overload.GetCorrectOverload(typeDef.constructor.overloads, constructorArgs) ?? throw new CodeSyntaxException($"A constructor for the type \"{typeDef.GetFullName}\" doesn't exist with the provided input values.");
+            OverloadImplementation correctConstructor = OverloadImplementation.GetCorrectOverload(typeDef.constructor.overloads, constructorArgs) ?? throw new CodeSyntaxException($"A constructor for the type \"{typeDef.GetFullName}\" doesn't exist with the provided input values.");
             TypeInstance returnValue; //This should be void
             if (typeDef.IsInternal)
                 returnValue = correctConstructor.methodHandler.Invoke(constructorArgs, inMethod, this);

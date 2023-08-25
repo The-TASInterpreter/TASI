@@ -8,8 +8,10 @@ namespace TASI.Types.Definition.Things
 {
     public class MethodDef : ThingDef
     {
-        public MethodDef(string name, bool isUnimplemented, TypeDef parentType) : base(name, isUnimplemented, parentType)
+        List<OverloadDef> overloads;
+        public MethodDef(string name, bool isUnimplemented, TypeDef parentType, List<OverloadDef> overloads) : base(name, isUnimplemented, parentType)
         {
+            this.overloads = overloads;
         }
     }
 }

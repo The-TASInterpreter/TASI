@@ -49,6 +49,34 @@ namespace TASI.RuntimeObjects
             }
         }
 
+
+        public int IntValue
+        {
+            get
+            {
+                switch (valueType)
+                {
+                    case ValueType.num:
+                        if (value is not double)
+                            throw new InternalInterpreterException("Internal: value is not a double value");
+                        return (int)value;
+                    case ValueType.@int:
+                        if (value is not int)
+                            throw new InternalInterpreterException("Internal: value is not an int value");
+                        return (int)value;
+                    case ValueType.@bool:
+                        if (value is not bool)
+                            throw new InternalInterpreterException("Internal: value is not a bool value");
+                        if ((bool)value)
+                            return 1;
+                        else
+                            return 0;
+                    default: throw new InternalInterpreterException($"Internal: Can't convert a {valueType} to a numeric type.");
+
+                }
+            }
+        }
+
         public double NumValue
         {
             get
@@ -181,7 +209,8 @@ namespace TASI.RuntimeObjects
                         if ((double)value == 0) return false;
                         throw new CodeSyntaxException($"The num value \"{valueType}\" can't be converted to a bool, because it is neither 1 or 0.");
                     case ValueType.@int:
-                        if (value is not int) throw new InternalInterpreterException("Internal: value is not a int value");
+                        if (value is not int) 
+                            throw new InternalInterpreterException("Internal: value is not a int value");
                         if ((int)value == 1) return true;
                         if ((int)value == 0) return false;
                         throw new CodeSyntaxException($"The int value \"{valueType}\" can't be converted to a bool, because it is neither 1 or 0.");

@@ -107,6 +107,7 @@ namespace TASI.InternalLangCoreHandle
                             throw new CodeSyntaxException("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
                         if (commands[4].commandType != Command.CommandTypes.CodeContainer)
                             throw new CodeSyntaxException("Invalid if statement syntax. Example for right syntax:\nif <bool> <code container>;\nor:\nif <bool> <code container> else <code container>;");
+                        
                         if (InterpretationHelp.GetValueOfCommands(new List<Command> { commands[1] }, accessableObjects).BoolValue)
                         {
                             returnValue = InterpretMain.InterpretNormalMode(commands[2].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list."), accessableObjects);
@@ -310,14 +311,32 @@ namespace TASI.InternalLangCoreHandle
                     return foundValue.comesFromVarValue.VarValue;
                 return foundValue;
             }
+            double doubleResult;
+            int intResult;
+            if (commands[0].commandText.Length != 1)
+            if (commands[0].commandText.Last() == 'i')
+            {
+                if (int.TryParse(commands[0].commandText[0..(commands[0].commandText.Length - 1)], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out  intResult))
+                {
+                    return new(Value.ValueType.@int, intResult);
+                }
+            }
+            else if (commands[0].commandText.Last() == 'n')
+            {
+                if (double.TryParse(commands[0].commandText[0..(commands[0].commandText.Length - 1)], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out  doubleResult))
+                {
+                    return new(Value.ValueType.num, doubleResult);
+                }
+            }
 
 
-            if (int.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out int intResult))
+
+            if (int.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out  intResult))
             {
                 return new(Value.ValueType.@int, intResult);
             }
 
-            if (double.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double doubleResult))
+            if (double.TryParse(commands[0].commandText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out  doubleResult))
             {
                 return new(Value.ValueType.num, doubleResult);
             }

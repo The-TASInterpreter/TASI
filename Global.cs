@@ -364,7 +364,18 @@ namespace TASI
 
                 return new(Value.ValueType.num, result);
             });
+            new Function("ToInt", VarConstruct.VarType.num, Namespaces[4], new List<List<VarConstruct>> {
+                new List<VarConstruct> {new(VarConstruct.VarType.@string, "ConvertFrom"), new(VarConstruct.VarType.@bool, "errorOnParseFail")}
+            }, new(), this, (input, accessableObjects) =>
+            {
+                if (!int.TryParse(input[0].StringValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out int result))
+                    if (input[1].BoolValue)
+                        throw new CodeSyntaxException("Can't convert string in current format to int.");
+                    else
+                        return new(Value.ValueType.@int, 0);
 
+                return new(Value.ValueType.@int, result);
+            });
             Namespaces.Add(new NamespaceInfo(NamespaceInfo.NamespaceIntend.@internal, "Filesystem", true));
             AllLoadedFiles.Add("*internal");
             new Function("Open", VarConstruct.VarType.@int, Namespaces[5], new List<List<VarConstruct>> {

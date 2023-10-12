@@ -79,6 +79,7 @@ namespace TASI.InternalLangCoreHandle
                                 values.Add(calculationType.GetValue(accessableObjects));
                                 break;
                         }
+                    
                     }
                     if (currentOperator != "")
                         values = new() { SimulateOperator(values, currentOperator) };
@@ -96,7 +97,8 @@ namespace TASI.InternalLangCoreHandle
                 case "+":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for an addition operator.");
                     if (values[0].valueType == Value.ValueType.@string || values[1].valueType == Value.ValueType.@string) return new(Value.ValueType.@string, values[0].ObjectValue.ToString() + values[1].ObjectValue.ToString());
-                    return new(Value.ValueType.num, values[0].NumValue + values[1].NumValue);
+                    if (values[0].valueType == Value.ValueType.num || values[1].valueType == Value.ValueType.num) return new(Value.ValueType.num, values[0].NumValue + values[1].NumValue);
+                    return new(Value.ValueType.@int, values[0].IntValue + values[1].IntValue);
                 case "-":
                     if (values.Count == 1)
                     {
@@ -105,16 +107,22 @@ namespace TASI.InternalLangCoreHandle
                     }
                     else if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for a subtraction operator.");
                     if (values.Any(x => !x.IsNumeric)) throw new CodeSyntaxException("You can't substract with a non-number type.");
-                    return new(Value.ValueType.num, values[0].NumValue - values[1].NumValue);
+                    if (values[0].valueType == Value.ValueType.num || values[1].valueType == Value.ValueType.num) return new(Value.ValueType.num, values[0].NumValue - values[1].NumValue);
+                    return new(Value.ValueType.@int, values[0].IntValue - values[1].IntValue);
+
                 case "*":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for a multiplication operator.");
                     if (values.Any(x => !x.IsNumeric)) throw new CodeSyntaxException("You can't multiply with a non-number type.");
-                    return new(Value.ValueType.num, values[0].NumValue * values[1].NumValue);
+                                      if (values[0].valueType == Value.ValueType.num || values[1].valueType == Value.ValueType.num) return new(Value.ValueType.num, values[0].NumValue * values[1].NumValue);
+                    return new(Value.ValueType.@int, values[0].IntValue * values[1].IntValue);
+
                 case "/":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for a division operator.");
                     if (values.Any(x => !x.IsNumeric)) throw new CodeSyntaxException("You can't devide with a non-number type.");
                     if (values[1].NumValue == 0) throw new CodeSyntaxException("Devision by zero.");
-                    return new(Value.ValueType.num, values[0].NumValue / values[1].NumValue);
+                    if (values[0].valueType == Value.ValueType.num || values[1].valueType == Value.ValueType.num) return new(Value.ValueType.num, values[0].NumValue / values[1].NumValue);
+                    return new(Value.ValueType.@int, values[0].IntValue / values[1].IntValue);
+
                 case "and":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for an and operator.");
                     return new(Value.ValueType.@bool, values[0].BoolValue && values[1].BoolValue);
@@ -127,7 +135,10 @@ namespace TASI.InternalLangCoreHandle
                 case "%":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for a modulus operator.");
                     if (values.Any(x => !x.IsNumeric)) throw new CodeSyntaxException("You can't mod with a non-number type.");
-                    return new(Value.ValueType.num, values[0].NumValue % values[1].NumValue);
+                    
+                    if (values[0].valueType == Value.ValueType.num || values[1].valueType == Value.ValueType.num) return new(Value.ValueType.num, values[0].NumValue % values[1].NumValue);
+                    return new(Value.ValueType.@int, values[0].IntValue % values[1].IntValue);
+
                 case "=": //Non strict equal
                     if (values.Count < 3 || values[0].valueType != Value.ValueType.@string) throw new CodeSyntaxException("You need at least 3 values for the non strict equal operator and the first value must be the comparison-type in a string form.");
 
@@ -175,11 +186,15 @@ namespace TASI.InternalLangCoreHandle
                 case "<":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for a less than operator.");
                     if (values.Any(x => !x.IsNumeric)) throw new CodeSyntaxException("You can't use the less than operator with a non-number type.");
-                    return new(Value.ValueType.@bool, values[0].NumValue < values[1].NumValue);
+                    if (values[0].valueType == Value.ValueType.num || values[1].valueType == Value.ValueType.num) return new(Value.ValueType.@bool, values[0].NumValue < values[1].NumValue);
+                    return new(Value.ValueType.@bool, values[0].IntValue < values[1].IntValue);
+
                 case ">":
                     if (values.Count != 2) throw new CodeSyntaxException("You need 2 values for a greater than operator.");
                     if (values.Any(x => !x.IsNumeric)) throw new CodeSyntaxException("You can't use the greater than operator with a non-number type.");
-                    return new(Value.ValueType.@bool, values[0].NumValue > values[1].NumValue);
+                    if (values[0].valueType == Value.ValueType.num || values[1].valueType == Value.ValueType.num) return new(Value.ValueType.@bool, values[0].NumValue > values[1].NumValue);
+                    return new(Value.ValueType.@bool, values[0].IntValue > values[1].IntValue);
+
                 default: throw new InternalInterpreterException($"Internal: \"{@operator.ToLower()}\" is not a valid operator and should have thrown an exeption already.");
 
 

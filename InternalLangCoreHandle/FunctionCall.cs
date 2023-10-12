@@ -234,14 +234,13 @@ namespace TASI.InternalLangCoreHandle
 
         public Value DoFunctionCall(AccessableObjects accessableObjects)
         {
-            if (inputValues == null)
-            {
-                inputValues = new();
+
+                inputValues = new(argumentCommands.Count);
                 foreach (CommandLine commandLine in argumentCommands) // Exicute arguments
                 {
                     inputValues.Add(InterpretationHelp.GetValueOfCommands(commandLine.commands, accessableObjects));
                 }
-            }
+            
 
             FunctionCallInputHelp? functionCallInputHelp = CheckIfFunctionCallHasValidArgTypesAndReturnCode(inputValues);
 

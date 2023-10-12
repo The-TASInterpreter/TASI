@@ -341,7 +341,7 @@ namespace TASI.InternalLangCoreHandle
                 return new(Value.ValueType.num, doubleResult);
             }
             commands[0].commandText = commands[0].commandText.ToLower();
-            return ((Var?)accessableObjects.accessableVars[commands[0].commandText] ?? throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"")).varValueHolder.value;
+            return ((Var?)accessableObjects.accessableVars[commands[0].commandText] ?? throw new CodeSyntaxException($"Unknown return statement \"{commands[0].commandText}\"")).VarValue;
 
 
             //Var not found

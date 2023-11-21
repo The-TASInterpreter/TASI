@@ -138,11 +138,11 @@ namespace TASI.InternalLangCoreHandle
             return result;
         }
 
-        public static Tuple<List<Command>?, NamespaceInfo> InterpretHeaders(List<Command> commands, string currentFile, Global global) //This function will interpret the headers of the file and return the start code.
+        public static (IEnumerable<Command>? startCode, NamespaceInfo startNamespace) InterpretHeaders(IEnumerable<Command> commands, string currentFile, Global global) //This function will interpret the headers of the file and return the start code.
         {
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
-            List<Command>? startCode = null;
+            IEnumerable<Command>? startCode = null;
             NamespaceInfo thisNamespace = new(NamespaceInfo.NamespaceIntend.nonedef, null, false, global);
             List<string> alreadyImportedNamespaces = new();
             global.Namespaces.Add(thisNamespace);
@@ -170,7 +170,7 @@ namespace TASI.InternalLangCoreHandle
                                 if (commandLine.commands[1].commandText.ToLower() == "tutorial0")
                                     Tutorial.TutorialPhase0();
                                 if (commandLine.commands[1].commandText.ToLower() == "tutorial1")
-                                    Tutorial.TutorialPhase1(commands);
+                                    Tutorial.TutorialPhase1(commands.ToList());
                                 if (!Enum.TryParse(commandLine.commands[1].commandText.ToLower(), out NamespaceInfo.NamespaceIntend result)) throw new CodeSyntaxException("Invalid usage of type statement.\nCorrect usage: type <statement: type>;\nPossible types are: Supervisor, Generic, Internal, Library.");
                                 thisNamespace.namespaceIntend = result;
                                 break;
@@ -199,7 +199,7 @@ namespace TASI.InternalLangCoreHandle
                                     if (function.funcName == commandLine.commands[2].commandText.ToLower()) thisFunction = function;
                                 }
                                 string functionName = commandLine.commands[2].commandText.ToLower();
-                                List<VarConstruct> functionInputVars = InterpretVarDef(commandLine.commands[3].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated."), global);
+                                List<VarConstruct> functionInputVars = InterpretVarDef((commandLine.commands[3].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container tokens were not generated.")).ToList(), global);
 
                                 if (thisFunction != null) //If function with name already exist, check if input combination already exist.
                                 {
@@ -321,7 +321,7 @@ namespace TASI.InternalLangCoreHandle
 
 
 
-            return new(startCode, thisNamespace);
+            return (startCode, thisNamespace);
         }
 
 
@@ -337,7 +337,7 @@ namespace TASI.InternalLangCoreHandle
         /// </summary>
         
 
-        public static Value? InterpretNormalMode(List<Command> commands, AccessableObjects accessableObjects)
+        public static Value? InterpretNormalMode(IEnumerable<Command> commands, AccessableObjects accessableObjects)
         {
             foreach (NamespaceInfo namespaceInfo in accessableObjects.currentNamespace.accessableNamespaces)
             {

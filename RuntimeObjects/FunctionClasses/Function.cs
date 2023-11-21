@@ -15,7 +15,7 @@ namespace TASI.RuntimeObjects.FunctionClasses
         public List<Function> subFunctions;
         public NamespaceInfo parentNamespace;
         public List<List<VarConstruct>> functionArguments;
-        public List<List<Command>> functionCode = new();
+        public List<IEnumerable<Command>> functionCode = new();
         public event EventHandler<Function> functionCreated;
         private FunctionHandler? functionHandle;
 
@@ -36,7 +36,7 @@ namespace TASI.RuntimeObjects.FunctionClasses
 
 
 
-        internal Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, List<Command> functionCode, Global global, FunctionHandler? functionHandle = null) // Is a Main function and is not a void
+        internal Function(string funcName, VarConstruct.VarType returnType, NamespaceInfo parentNamespace, List<List<VarConstruct>> functionArguments, IEnumerable<Command> functionCode, Global global, FunctionHandler? functionHandle = null) // Is a Main function and is not a void
         {
             this.funcName = funcName.ToLower();
             parentFunction = null;

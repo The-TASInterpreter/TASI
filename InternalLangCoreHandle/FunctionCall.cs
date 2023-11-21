@@ -170,7 +170,7 @@ namespace TASI.InternalLangCoreHandle
                     if (matching)
                     {
                         if (CallFunction.parentNamespace.namespaceIntend == NamespaceInfo.NamespaceIntend.@internal)
-                            return new(new(), new());
+                            return new(Array.Empty<Command>(), new());
                         return new(CallFunction.functionCode[j], functionInputType);
                     }
                 }
@@ -290,9 +290,9 @@ namespace TASI.InternalLangCoreHandle
 
     public class FunctionCallInputHelp
     {
-        public List<Command> inputCode;
+        public IEnumerable<Command> inputCode;
         public List<VarConstruct> inputVarType;
-        public FunctionCallInputHelp(List<Command> inputCode, List<VarConstruct> inputVarType)
+        public FunctionCallInputHelp(IEnumerable<Command> inputCode, List<VarConstruct> inputVarType)
         {
             this.inputCode = inputCode;
             this.inputVarType = inputVarType;

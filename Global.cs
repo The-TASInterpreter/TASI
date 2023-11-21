@@ -264,7 +264,7 @@ namespace TASI
             AllLoadedFiles.Add("*internal");
             new Function("HelloWorld", VarConstruct.VarType.@void, Namespaces[0], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@bool, "display"), new(VarConstruct.VarType.@string, "text")}
-            }, new(), this, (input,accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input,accessableObjects) =>
             {
                 if (input[0].NumValue == 1)
                     Console.WriteLine(input[1].StringValue);
@@ -280,7 +280,7 @@ namespace TASI
                 new List<VarConstruct> { new(VarConstruct.VarType.num, "num")},
                 new List<VarConstruct> { new(VarConstruct.VarType.@bool, "bool")},
                 new List<VarConstruct> { new(VarConstruct.VarType.@int, "int")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 if (input[0].IsNumeric)
                     Console.WriteLine(input[0].NumValue);
@@ -290,7 +290,7 @@ namespace TASI
             });
             new Function("Write", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@string, "text")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 if (input[0].IsNumeric)
                     Console.Write(input[0].NumValue);
@@ -301,13 +301,13 @@ namespace TASI
             new Function("ReadLine", VarConstruct.VarType.@string, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> { new(VarConstruct.VarType.@bool, "showTextWhenTyping")},
                 new List<VarConstruct> {}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 return new(Value.ValueType.@string, Console.ReadLine() ?? throw new RuntimeCodeExecutionFailException("Console.ReadLine returned null", "InternalFuncException"));
             });
             new Function("Clear", VarConstruct.VarType.@void, Namespaces[1], new List<List<VarConstruct>> {
                 new List<VarConstruct> {}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 Console.Clear();
                 return null;
@@ -318,11 +318,11 @@ namespace TASI
             new Function("Pause", VarConstruct.VarType.@void, Namespaces[2], new List<List<VarConstruct>> {
                 new List<VarConstruct> {},
                 new List<VarConstruct> {new(VarConstruct.VarType.@bool, "showPausedMessage")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 if (input.Count == 1 && input[0].NumValue == 1)
                     Console.WriteLine("Press any key to continue.");
-                Console.ReadKey();
+                Console.ReadKey(true);
                 return null;
             });
 
@@ -330,7 +330,7 @@ namespace TASI
             AllLoadedFiles.Add("*internal");
             new Function("DefVar", VarConstruct.VarType.@void, Namespaces[3], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "VarType"), new(VarConstruct.VarType.@string, "VarName")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 if (!Enum.TryParse(input[0].StringValue, true, out Value.ValueType varType) && input[0].StringValue != "all") throw new CodeSyntaxException($"The vartype \"{input[0].StringValue}\" doesn't exist.");
                 if (input[0].StringValue == "all")
@@ -343,7 +343,7 @@ namespace TASI
             });
             new Function("MakeConst", VarConstruct.VarType.@void, Namespaces[3], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "VarName")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 Var var = (Var)(accessableObjects.accessableVars[input[0].StringValue] ?? throw new CodeSyntaxException($"The variable \"{input[0]}\" cannot be found."));
 
@@ -354,7 +354,7 @@ namespace TASI
             AllLoadedFiles.Add("*internal");
             new Function("ToNum", VarConstruct.VarType.num, Namespaces[4], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "ConvertFrom"), new(VarConstruct.VarType.@bool, "errorOnParseFail")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 if (!double.TryParse(input[0].StringValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))
                     if (input[1].BoolValue)
@@ -366,7 +366,7 @@ namespace TASI
             });
             new Function("ToInt", VarConstruct.VarType.num, Namespaces[4], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "ConvertFrom"), new(VarConstruct.VarType.@bool, "errorOnParseFail")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 if (!int.TryParse(input[0].StringValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out int result))
                     if (input[1].BoolValue)
@@ -380,7 +380,7 @@ namespace TASI
             AllLoadedFiles.Add("*internal");
             new Function("Open", VarConstruct.VarType.@int, Namespaces[5], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "FilePath"), new(VarConstruct.VarType.@string, "Mode") }
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 FileMode mode = FileMode.Open;
                 FileAccess access = FileAccess.ReadWrite;
@@ -418,7 +418,7 @@ namespace TASI
             });
             new Function("Close", VarConstruct.VarType.@void, Namespaces[5], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
 
                 FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
@@ -431,7 +431,7 @@ namespace TASI
             new Function("Delete", VarConstruct.VarType.@void, Namespaces[5], new List<List<VarConstruct>>
             {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "FilePath")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 File.Delete(input[0].StringValue);
                 return null;
@@ -439,7 +439,7 @@ namespace TASI
             new Function("Create", VarConstruct.VarType.@int, Namespaces[5], new List<List<VarConstruct>>
             {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "FilePath")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 FileStream new_stream = File.Create(input[0].StringValue);
                 accessableObjects.global.AllFileStreams.Add(new_stream);
@@ -451,7 +451,7 @@ namespace TASI
             new Function("Exists", VarConstruct.VarType.@bool, Namespaces[5], new List<List<VarConstruct>>
             {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "FilePath")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 return new(Value.ValueType.@bool, File.Exists(input[0].StringValue));
             });
@@ -459,7 +459,7 @@ namespace TASI
             AllLoadedFiles.Add("*internal");
             new Function("ReadLine", VarConstruct.VarType.@string, Namespaces[6], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
@@ -474,7 +474,7 @@ namespace TASI
             });
             new Function("Read", VarConstruct.VarType.@int, Namespaces[6], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
@@ -488,7 +488,7 @@ namespace TASI
             });
             new Function("Flush", VarConstruct.VarType.@void, Namespaces[6], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
@@ -498,7 +498,7 @@ namespace TASI
             });
             new Function("Write", VarConstruct.VarType.@void, Namespaces[6], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.@int, "Char")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
@@ -515,7 +515,7 @@ namespace TASI
                 new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.num, "num")},
                 new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.@bool, "bool")},
                 new List<VarConstruct> { new(VarConstruct.VarType.@int, "StreamIndex"), new(VarConstruct.VarType.@int, "int")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 FileStream fileStream = accessableObjects.global.AllFileStreams[(int)input[0].NumValue];
 
@@ -537,7 +537,7 @@ namespace TASI
                 new List<VarConstruct> {},
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "min")},
                 new List<VarConstruct> {new(VarConstruct.VarType.@int, "min"), new(VarConstruct.VarType.@int, "max")}
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 if (input.Count == 0)
                     return new(Value.ValueType.@int, accessableObjects.global.RandomGenerator.Next());
@@ -550,7 +550,7 @@ namespace TASI
             });
             new Function("NextNum", VarConstruct.VarType.num, Namespaces[7], new List<List<VarConstruct>> {
                 new List<VarConstruct> {},
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 if (input.Count == 0)
                     return new(Value.ValueType.num, accessableObjects.global.RandomGenerator.NextDouble());
@@ -561,7 +561,7 @@ namespace TASI
             AllLoadedFiles.Add("unsafe.shell");
             new Function("Execute", VarConstruct.VarType.@string, Namespaces[8], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "cmd")},
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 Process process = new Process();
                 process.StartInfo.FileName = "cmd.exe";
@@ -581,7 +581,7 @@ namespace TASI
             });
             new Function("Run", VarConstruct.VarType.@void, Namespaces[8], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "cmd")},
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 Process i_process = new Process();
                 i_process.StartInfo.FileName = "cmd.exe";
@@ -601,7 +601,7 @@ namespace TASI
             AllLoadedFiles.Add("*internal");
             new Function("Replace", VarConstruct.VarType.@string, Namespaces[9], new List<List<VarConstruct>> {
                 new List<VarConstruct> {new(VarConstruct.VarType.@string, "str"), new(VarConstruct.VarType.@string, "org"), new(VarConstruct.VarType.@string, "new")},
-            }, new(), this, (input, accessableObjects) =>
+            }, Array.Empty<Command>(), this, (input, accessableObjects) =>
             {
                 return new Value(Value.ValueType.@string, input[0].StringValue.Replace(input[1].StringValue, input[2].StringValue));
             });

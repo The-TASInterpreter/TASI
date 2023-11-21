@@ -11,9 +11,38 @@ namespace TASI
         public string commandText;
         public CommandTypes commandType;
         public int commandLine;
-        public int commandEnd;
+        private int? commandEnd;
+
+        public int CommandEnd
+        {
+            get
+            {
+                if (commandEnd == null)
+                {
+                    if (commandType == CommandTypes.CodeContainer)
+                    {
+                        if (codeContainerCommands.Any())
+                        {
+                            commandEnd = codeContainerCommands.Last().CommandEnd;
+                        }
+                        else
+                        {
+                            commandEnd = commandLine;
+                        }
+
+                    }
+                    else throw new InternalInterpreterException("End was not defined");
+                }
+                return commandEnd ?? 0;
+            }
+            set
+            {
+                commandEnd = value;
+            }
+        }
+
         public string originalCommandText;
-        public List<Command>? codeContainerCommands;
+        public IEnumerable<Command>? codeContainerCommands;
         public FunctionCall? functionCall;
         public CalculationType? calculation;
         public string commandFile = "";
@@ -40,20 +69,13 @@ namespace TASI
         /// <param name="codeContainerCommands"></param>
         /// <param name="commandLine"></param>
         /// <param name="commandEnd"></param>
-        public Command(List<Command> codeContainerCommands, Global global, int commandLine = - 1)
+        public Command(IEnumerable<Command> codeContainerCommands, Global? global, int commandLine = - 1)
         {
-            commandFile = global.CurrentFile;
+            if (global != null)
+                commandFile = global.CurrentFile;
             commandType = CommandTypes.CodeContainer;
             commandText = string.Empty;
             this.commandLine = commandLine;
-            if (codeContainerCommands.Any())
-            {
-                commandEnd = codeContainerCommands.Last().commandEnd;
-            }
-            else
-            {
-                commandEnd = commandLine;
-            }
 
             
             this.codeContainerCommands = codeContainerCommands;

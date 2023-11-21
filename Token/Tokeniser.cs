@@ -241,7 +241,7 @@ namespace TASI.Token
                         lastCharBackslash = true;
                         continue;
                     case '\"':
-                        result.commandEnd = endLine;
+                        result.CommandEnd = endLine;
                         result.commandText = resultString.ToString();
                         return result;
                 }

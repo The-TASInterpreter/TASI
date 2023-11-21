@@ -54,12 +54,12 @@
                 Console.WriteLine("That wasn't quite right. As I said, code container in code container underneeth \"type Tutorial1;\". This happened, because that wasn't a code container. If you want to see what a code container is again, update \"type Tutorial1;\" to \"type Tutorial0;\"");
                 AnyKeyToContinue();
             }
-            if (codeFile[3].codeContainerCommands.Count != 1)
+            if (codeFile[3].codeContainerCommands.ToList().Count != 1)
             {
                 Console.WriteLine("You got there half way. As I said, code container in code container underneeth \"type Tutorial1;\". NOTHING ELSE. This happened, because you had something else. No creativity allowed!");
                 AnyKeyToContinue();
             }
-            if (codeFile[4].codeContainerCommands[0].commandType != Command.CommandTypes.CodeContainer)
+            if (codeFile[4].codeContainerCommands.ToList()[0].commandType != Command.CommandTypes.CodeContainer)
             {
                 Console.WriteLine("You got there half way. As I said, code container in code container underneeth \"type Tutorial1;\". This happened, because there wasn't another code container inside the initial code container, but another token type.");
                 AnyKeyToContinue();

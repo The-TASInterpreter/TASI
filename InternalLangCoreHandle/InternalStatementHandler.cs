@@ -73,7 +73,7 @@ namespace TASI.InternalLangCoreHandle
                             throw new CodeSyntaxException($"Unexpected {commands[checkStatement.Count + 1].commandType} in while loop.");
                     if (commands[checkStatement.Count + 1].commandType != Command.CommandTypes.CodeContainer)
                         throw new CodeSyntaxException("Invalid stuff in while loop I hate writeing these messages pls kill me");
-                    List<Command> code = commands[checkStatement.Count + 1].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list.");
+                    IEnumerable<Command> code = commands[checkStatement.Count + 1].codeContainerCommands ?? throw new InternalInterpreterException("Internal: Code container was not converted to a command list.");
                     accessableObjects.inLoop = true;
                     while (InterpretationHelp.GetValueOfCommands(checkStatement, accessableObjects).BoolValue)
                     {

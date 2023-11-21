@@ -146,7 +146,7 @@ namespace TASI.debug
         }
 
 
-        public static Tuple<string, int> FormatCommands(List<Command> commands, int highlightCurrentLine = -1, int deph = 0, int currentCommandLine = -1, bool statementMode = false)
+        public static Tuple<string, int> FormatCommands(IEnumerable<Command> commands, int highlightCurrentLine = -1, int deph = 0, int currentCommandLine = -1, bool statementMode = false)
         {
             string result = "";
             bool isNewLine = false;
@@ -186,10 +186,10 @@ namespace TASI.debug
                         result += $"ⅬW{{{insideContainer.Item1}";
                         currentCommandLine = insideContainer.Item2;
 
-                        if (executingCommand.commandEnd > currentCommandLine)
+                        if (executingCommand.CommandEnd > currentCommandLine)
                         {
 
-                            executingCommand = new(Command.CommandTypes.Statement, "ⅬW}", null, executingCommand.commandEnd);
+                            executingCommand = new(Command.CommandTypes.Statement, "ⅬW}", null, executingCommand.CommandEnd);
                             goto start;
                         }
                         else

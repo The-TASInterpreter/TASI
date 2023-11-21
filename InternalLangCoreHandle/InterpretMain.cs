@@ -80,6 +80,10 @@ namespace TASI.InternalLangCoreHandle
 
         public static List<VarConstruct> InterpretVarDef(List<Command> commands, Global global)
         {
+            if (!commands.Any())
+            {
+                return new();
+            }
             bool statementMode = false;
             CommandLine? commandLine = new(new(), -1);
             List<VarConstruct> result = new();
@@ -327,7 +331,7 @@ namespace TASI.InternalLangCoreHandle
 
 
 
-        private static bool ComparePaths(string path1, string path2)
+        internal static bool ComparePaths(string path1, string path2)
         {
             return Path.GetFullPath(path1).Replace('\\', '/').ToLower() == Path.GetFullPath(path2).Replace('\\', '/').ToLower();
         }

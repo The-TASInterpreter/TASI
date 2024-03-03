@@ -48,7 +48,7 @@ namespace TASI.InterpretStartup
             {
                 foreach (Function function in namespaceInfo.namespaceFuncitons)
                 {
-                    foreach (List<Command> functionCodeOverload in function.functionCode)
+                    foreach (IEnumerable<Command> functionCodeOverload in function.functionCode)
                     {
                         foreach (Command overloadCode in functionCodeOverload)
                         {

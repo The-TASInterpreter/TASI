@@ -14,9 +14,10 @@ namespace TASI
 {
     public class ShellStatementHandler : ShellMode, IStatementHandler
     {
-        public ShellStatementHandler()
+        public ShellStatementHandler(Global global) : base(global)
         {
             statementHandler = this;
+
         }
 
         public Value? HandleStatement(List<Command> inputStatement, AccessableObjects accessableObjects)
@@ -34,14 +35,24 @@ namespace TASI
             }
         }
 
+        internal void InitShell(Global global)
+        {
+            global.AllNormalStatements.Add("clear", new("clear", new() { new() }, statementHandler));
+            global.AllNormalStatements.Add("exit", new("exit", new() { new() }, statementHandler));
+
+        }
     }
     public class ShellMode
     {
         protected IStatementHandler statementHandler = null!;
         protected bool exitRequest = false;
         public NamespaceInfo currentNamespace = null!;
-
-        public IEnumerable<Command> GetShell( Global global)
+        protected Global global;
+        public ShellMode(Global global)
+        {
+            this.global = global;
+        }
+        public IEnumerable<Command> GetShell()
         {
 
 

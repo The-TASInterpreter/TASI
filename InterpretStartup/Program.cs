@@ -2,7 +2,6 @@
 
 
 using System.Diagnostics;
-using TASI.debug;
 using TASI.Exceptions;
 using TASI.InternalLangCoreHandle;
 using TASI.RuntimeObjects.FunctionClasses;
@@ -14,13 +13,54 @@ namespace TASI.InterpretStartup
     {
 
 
+        public static void ShellMode()
+        {
+            Global global = new();
+            ShellStatementHandler statementHandler = new(global);
 
+            statementHandler.InitShell(global);
+            (IEnumerable<Command>? startCode, NamespaceInfo startNamespace) codeHeaderInformation = (statementHandler.GetShell(), new NamespaceInfo(NamespaceInfo.NamespaceIntend.generic, "ShellInput", true, global));
+            bool repeat = true;
+            while (repeat)
+            {
+                try
+                {
+                    /*
+                List<Command> start = new()
+                {
+                new Command(CommandTypes.Statement, "name", null),
+                new Command(CommandTypes.Statement, "ShellInput", null),
+                new Command(CommandTypes.EndCommand, "", null),
+                new Command(CommandTypes.Statement, "type", null),
+                new Command(CommandTypes.Statement, "generic", null),
+                new Command(CommandTypes.EndCommand, "", null),
+                new Command(CommandTypes.Statement, "start", null),
+                new Command(statementHandler.GetShell(), null),
+                new Command(CommandTypes.EndCommand, "", null)
+                };
+                    */
+                    statementHandler.currentNamespace = codeHeaderInformation.startNamespace;
+                    LoadFile.RunCode(codeHeaderInformation.startCode, true, global, codeHeaderInformation);
+                    repeat = false;
+                } catch (CodeSyntaxException e)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(e.Message);
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("This was a code syntax exeption. All context information was lost (Context information only consists out of variables).");
+                    Console.ResetColor();
+                }
+            }
+
+        }
 
 
         public const string interpreterVer = "1.0";
         public static Logger interpretInitLog = new();
         public static void Main(string[] args)
         {
+            ShellMode();
+            return;
             Global global = new Global();
             string? location = null;
             if (args.Length == 1)
@@ -117,7 +157,7 @@ namespace TASI.InterpretStartup
                 InterpretMain.InterpretNormalMode(startCode, accessableObjects);
                 codeRuntime.Stop();
                 Console.WriteLine($"Code finished; Runtime: {codeRuntime.ElapsedMilliseconds} ms");
-                Console.ReadKey(false);
+                Console.ReadKey(true);
 
             }
             catch (Exception ex)

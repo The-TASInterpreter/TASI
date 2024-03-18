@@ -19,8 +19,11 @@ namespace TASI
         public static void Main(string[] args)
         {
 
-
-
+            foreach (string arg in args)
+            {
+                Console.WriteLine(arg);
+            }
+            //Console.ReadKey();
             string? location = null;
             if (args.Length >= 1)
             {
